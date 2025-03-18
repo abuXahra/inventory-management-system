@@ -39,28 +39,30 @@ export default function Login() {
     // input Login handler
     const onSubmitHandler = async (e) =>{
 
-        e.preventDefault();
+        navigate('/dashboard');
+        
+        // e.preventDefault();
 
-        if (email === null || email === '') {
-            setEmailError(true);
-        }else if(password === null || password === '') {
-            setPasswordError(true);
-        }else{
-            setIsLoading(true);
-            try {
-                const res = await axios.post(process.env.REACT_APP_URL + '/api/auth/login', { email, password }, { withCredentials: true });
-                console.log(res.status + " \nLOGIN DATA:\n" + res.data + " Login successful")
-                setUser(res.data);
-                navigate('/dashboard');
-            } catch (err) {
-                setLoginError(true);
-                setIsLoading(false)
-                console.log(err)
-            }
+        // if (email === null || email === '') {
+        //     setEmailError(true);
+        // }else if(password === null || password === '') {
+        //     setPasswordError(true);
+        // }else{
+        //     setIsLoading(true);
+        //     try {
+        //         const res = await axios.post(process.env.REACT_APP_URL + '/api/auth/login', { email, password }, { withCredentials: true });
+        //         console.log(res.status + " \nLOGIN DATA:\n" + res.data + " Login successful")
+        //         setUser(res.data);
+        //         navigate('/dashboard');
+        //     } catch (err) {
+        //         setLoginError(true);
+        //         setIsLoading(false)
+        //         console.log(err)
+        //     }
 
-            setEmail('');
-            setPassword('')
-        }
+        //     setEmail('');
+        //     setPassword('')
+        // }
     }
 
 
