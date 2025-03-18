@@ -118,7 +118,7 @@ function App() {
           {/* Routes */}
           <Routes>
             {/* Redirect to Dashboard if logged in */}
-            <Route path="/" element={<DashboardHome />} />
+            <Route path="/" element={<Login />} />
             <Route path="/dashboard" element={<DashboardHome />} />
 
             {/* CATEGORY */}
