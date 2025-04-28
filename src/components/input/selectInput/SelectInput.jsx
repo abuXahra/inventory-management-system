@@ -3,12 +3,12 @@
 import React from 'react'
 import { SelectInputError, SelectInputLabel, SelectInputOption, SelectInputStyle, SelectInputWrapper } from './SelectInput.style'
 
-export default function SelectInput({title, error,options, label, onChange, value}) {
+export default function SelectInput({title, error,options, label, onChange, value, requiredSymbol}) {
 
 
   return (
     <SelectInputWrapper>
-        <SelectInputLabel htmlFor="country">{label}</SelectInputLabel>
+        <SelectInputLabel htmlFor="country">{label} <span>{requiredSymbol}</span></SelectInputLabel>
         <SelectInputStyle value={value} id="country" name="country" onChange={onChange}>
            
            {options && 

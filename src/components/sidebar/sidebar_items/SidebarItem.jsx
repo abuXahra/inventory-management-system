@@ -61,12 +61,13 @@ import { ArrowDropdownStyled, SidebarDropdown, SidebarDropdownItem, SidebarItemC
 import { useNavigate } from 'react-router-dom';
 import { MdOutlineKeyboardArrowRight } from 'react-icons/md';
 
-export default function SidebarItem({ bg, icon, title, subMenu, handleClick, isActive, onToggleDropdown }) {
+export default function SidebarItem({ bg, icon, title, subMenu, handleClick, isActive, onToggleDropdown, setDisplayShowSidebar }) {
   const navigate = useNavigate();
 
   const handleDropdown = (url) => {
     navigate(url);
     onToggleDropdown(); // Close the dropdown after selecting a sub-item
+    setDisplayShowSidebar("none");
   };
 
   return (

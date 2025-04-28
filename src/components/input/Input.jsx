@@ -8,7 +8,7 @@ export default function Input({Icon, iconColor, title, value, txtColor, error, b
 
   return (
                 <InputWrapper InputWidth={InputWidth} inputDisplay={inputDisplay}>
-                    <InputLabel htmlFor="name">{label}{requiredSymbol}</InputLabel>
+                    <InputLabel htmlFor="name">{label}<span>{requiredSymbol}</span></InputLabel>
                     <InputStyle
                         inputPadding={inputPadding} 
                         type={type} 

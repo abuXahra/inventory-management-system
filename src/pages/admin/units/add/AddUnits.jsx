@@ -12,6 +12,9 @@ import { FaLocationDot } from 'react-icons/fa6'
 import ButtonLoader from '../../../../components/clicks/button/button_loader/ButtonLoader'
 import { AiFillPicture } from 'react-icons/ai'
 import { AddUnitContent, AddUnitWrapper } from './addUnits.style'
+import axios from 'axios'
+import ToastComponents from '../../../../components/toast_message/toast_component/ToastComponents'
+import { toast } from 'react-toastify'
 
 export default function AddUnits() {
 
@@ -93,7 +96,7 @@ const [unitNameError, setUnitNameError] = useState(false);
         }
     }
 
-    const submitHandler = (e) => {
+    const submitHandler = async (e) => {
         e.preventDefault();
         let isValid = true;
 
@@ -115,8 +118,33 @@ const [unitNameError, setUnitNameError] = useState(false);
 
         if(isValid){
             setIsLoading(true)
-            navigate(`/units`)
+            try {
+                
+                const newUnit = {
+                    title: unitName,
+                    note: note,
+                    status: unitStatus, 
+                }
+                const res = await axios.post(process.env.REACT_APP_URL + '/api/units/create', newUnit)
+                console.log(res.data);
+                navigate(`/units`)
+                setIsLoading(false)
+                toast.success('Unit successfully added');
+            } catch (err) {
+                console.log(err)
+                setIsLoading(false)             
+                               
+                            if (err.response && err.response.data && err.response.data.message) {
+                                toast.error(err.response.data.message);
+                            } else {
+                                toast.error('An error occurred while registering');
+                            }
+            }
         }
+
+        setNote('')
+        setUnitName('')
+        setUnitStatus('')
     }
 
   return (
@@ -177,6 +205,8 @@ const [unitNameError, setUnitNameError] = useState(false);
                     </ItemContainer>
                 </form>
         </AddUnitContent>
+        {/* toast message */}
+        <ToastComponents/>
     </AddUnitWrapper>
   )
 }

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import PageTitle from '../../../../components/page_title/PageTitle'
 import ItemContainer from '../../../../components/item_container/ItemContainer'
 import Input from '../../../../components/input/Input'
@@ -6,23 +6,30 @@ import SelectInput from '../../../../components/input/selectInput/SelectInput'
 import TextArea from '../../../../components/input/textArea/TextArea'
 import { ItemButtonWrapper } from '../../../../components/item_container/itemContainer.style'
 import Button from '../../../../components/clicks/button/Button'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { AnyItemContainer, ItemListContent, TableStyled, TdStyled } from '../../sale/Add/addSale.style'
 import { FaLocationDot } from 'react-icons/fa6'
 import ButtonLoader from '../../../../components/clicks/button/button_loader/ButtonLoader'
 import { AiFillPicture } from 'react-icons/ai'
 import { FaTrash } from 'react-icons/fa'
 import { EditExpenseContent, EditExpenseWrapper } from './editExpense.style'
+import axios from 'axios'
+import { toast } from 'react-toastify'
+import { List } from 'react-content-loader'
 
 
 export default function EditExpenses() {
 
-// Payment for
+     const {expenseId} = useParams();
+
+     // Payment for
 const [itemList, setItemList] = useState([])
 
     const navigate = useNavigate();
 
     const [isLoading, setIsLoading] = useState(false);
+     const [isBtnLoading, setIsBtnLoading] = useState(false);
+
 
     const todayDate = new Date().toISOString().split('T')[0]; // Format: YYYY-MM-DD (2025-02-29)
 
@@ -59,9 +66,31 @@ const [itemList, setItemList] = useState([])
         }
     }
 
+    
+    // fetch expense data
+    useEffect(()=>{
+        const getUnit = async () =>{
+            setIsLoading(true)
+            try {
+                const res = await axios.get(process.env.REACT_APP_URL+'/api/expense/'+ expenseId);
+                console.log(res.data);
+                setDate(res.data.expenseDate)
+                setExpenseFor(res.data.expenseFor)
+                setAmount(res.data.amount)
+                setNote(res.data.note)
+                setIsLoading(false)
+    
+            } catch (error) {
+                console.log(error);
+                setIsLoading(false)
+            }
+        }
+        getUnit();
+    }, [expenseId]);
+    
 
-
-    const submitHandler = (e) => {
+// hand sumbit button
+    const submitHandler = async (e) => {
         e.preventDefault();
         let isValid = true;
 
@@ -82,42 +111,39 @@ const [itemList, setItemList] = useState([])
 
         
         if(isValid){
+
+          const updatedExpense = {
+              expenseDate: date,  
+              expenseFor: expenseFor, 
+              amount: amount,
+              note: note
+            }
+
             setIsLoading(true)
-            alert('updated');
+    
+            try {
+
+                const res= await axios.put(process.env.REACT_APP_URL+"/api/expense/"+expenseId, updatedExpense);
+                console.log(res.data)
+                if(res.success){
+                    toast.success(res.data.message)
+                }
+                
+            } catch (error) {
+                toast.error(error.data.message)
+            }
         }
     }
 
 
-// POST TO DB
-    // const postItemsToAPI = async () => {
-    //     try {
-    //       setIsLoading(true);
-    //       // Replace with your API endpoint
-    //       const response = await fetch('/api/expenses', {
-    //         method: 'POST',
-    //         headers: { 'Content-Type': 'application/json' },
-    //         body: JSON.stringify({ items: itemList }),
-    //       });
-    //       if (response.ok) {
-    //         // Handle successful API response
-    //         console.log('Items added successfully!');
-    //         // Optionally redirect or reset
-    //         navigate('/expenses'); // Example redirect
-    //       } else {
-    //         // Handle API error
-    //         console.error('Error posting items');
-    //       }
-    //     } catch (error) {
-    //       console.error('Error posting items to API:', error);
-    //     } finally {
-    //       setIsLoading(false);
-    //     }
-    //   };
+
   return (
     <EditExpenseWrapper>
     {/* Page title */}
         <PageTitle title={'Expense'} subTitle={'/ Add'}/>
 
+   <>
+        {isLoading? <List/> :
         <EditExpenseContent>
             <form action="" onSubmit={submitHandler}>
                     <ItemContainer title={'Edit Expense'}>
@@ -184,7 +210,7 @@ const [itemList, setItemList] = useState([])
                     </ItemContainer>
                 </form>
 
-        </EditExpenseContent>
+        </EditExpenseContent>}</>
     </EditExpenseWrapper>
   )
 }

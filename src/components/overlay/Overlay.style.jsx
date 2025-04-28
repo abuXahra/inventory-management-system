@@ -27,6 +27,7 @@ export const OverlayCard = styled.div`
     width: ${({contentWidth})=> contentWidth || "35%"};
     height: ${({contentHight})=> contentHight || 'auto'};
     background-color: white;
+    color: black;
     border-radius: 10px;
     justify-content: center;
     align-items: ${({contentAlignment}) => contentAlignment || "center"};

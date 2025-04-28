@@ -2,7 +2,7 @@ import React from 'react';
 import { ButtonWrapper } from './Button.style';
 import { Link } from 'react-router-dom';
 
-const Button = ({btnBdRd, btnFontSize, btnColor, btnText, btnTxtClr, btnBorder, btnPd, btnLeftIcon, btnRightIcon, type, btnOnClick, btnDisplay }) => {
+const Button = ({btnBdRd, btnFontSize, btnColor, btnText, btnTxtClr, btnBorder, btnMobileBorder, btnPd, btnLeftIcon, btnRightIcon, type, btnOnClick, btnDisplay }) => {
 
     return (
         <ButtonWrapper 
@@ -15,6 +15,7 @@ const Button = ({btnBdRd, btnFontSize, btnColor, btnText, btnTxtClr, btnBorder, 
             btnPd={btnPd}
             btnFontSize={btnFontSize}
             btnBdRd={btnBdRd}
+            btnMobileBorder={btnMobileBorder}
         >
             {btnLeftIcon}
             {btnText}

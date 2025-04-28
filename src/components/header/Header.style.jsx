@@ -10,7 +10,7 @@ export const  HeadWrapper = styled.div`
  background-color: #80808048;
  /* box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px; */
  padding-right: 5px;
- border-bottom: 1px solid #00032a;
+ /* border-bottom: 1px solid #00032a; */
 `
 
 

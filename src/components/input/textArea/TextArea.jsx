@@ -7,7 +7,7 @@ export default function TextArea({Icon, iconColor, title, value, txtColor, error
 
   return (
                 <InputWrapper InputWidth={InputWidth}>
-                    <InputLabel htmlFor="name"><b>{label}</b>{requiredSymbol}</InputLabel>
+                    <InputLabel htmlFor="name"><b>{label}</b><span>{requiredSymbol}</span></InputLabel>
                     <InputStyle
                         inputPadding={inputPadding} 
                         placeholder={placeholder} 

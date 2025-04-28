@@ -11,4 +11,11 @@ export const ButtonWrapper = styled.button`
     border-radius: ${({btnBdRd})=> btnBdRd || "5px"};
     cursor: pointer;
     font-size: ${({btnFontSize}) => btnFontSize || ''};
+
+    @media (max-width: 768px) {
+    display: flex;
+    flex-direction: row;
+    font-size: 9px;
+    border: ${({ btnMobileBorder }) => btnMobileBorder || "none"};
+  }
 `

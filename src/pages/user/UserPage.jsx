@@ -1,12 +1,13 @@
 
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import profileHolder from '../../images/placeholder_image.png'
 import UserTable from '../../components/table/user_table/UserTable'
 import { UserPageContent, UserPageWrapper } from './userPages.style'
 import ListHeader from '../../components/page_title/list_header/ListHeader'
 import PageTitle from '../../components/page_title/PageTitle'
-
+import axios from 'axios'
+import ContentLoader, {List } from 'react-content-loader'
 
 
 
@@ -14,27 +15,67 @@ import PageTitle from '../../components/page_title/PageTitle'
 
 
 export default function UserPage() {
+
+
+      const[userRecords, setUserRecords] = useState([]);
+      const [allUserRecords, setAllUserRecords] = useState([]);
+      const [isLoading, setIsLoading] = useState(false);
+
+// fetch users handler 
+      useEffect(() => {
+          const getUsers = async () => { // to keep user login when browser refresh
+            setIsLoading(true)  
+            try {
+                  const res = await axios.get(process.env.REACT_APP_URL + "/api/users")
+                 
+                  // Filter users based on their role
+                  const filteredRecords = res.data.filter(user => user.role === 'user' || user.role === 'admin');
+                 
+                  setUserRecords(filteredRecords)
+                  setAllUserRecords(filteredRecords);
+                  setIsLoading(false)
+
+                  console.log(res.data)
+              } catch (err) {
+                  console.log(err)
+                  setIsLoading(false)
+              }
+      
+          }
+          getUsers()
+      }, [])
   
-  const data = [
-    {
-      id: 1,
-      imgUrl: profileHolder,
-      name: 'Abdulmumin Isah',
-      email: 'abdulmuminisah79@gmail.com',
-      mobile: '09055001663',
-      role: 'admin',
-      address: "No 22, Back of Apostolic, Ajegule, Mpape, Abuja",
-    },
-  ];
+
+// handle user delete
+      const deleteUser = async (userId) => {
+        try {
+          await axios.delete(`${process.env.REACT_APP_URL}/api/users/${userId}`);
+          const updatedUsers = userRecords.filter(user => user._id !== userId);
+          setUserRecords(updatedUsers);
+          setAllUserRecords(updatedUsers); // Also update the backup
+          return { success: true };
+        } catch (error) {
+          return { success: false, message: error.message };
+        }
+      };
 
 
-  const[userRecords, setUserRecords] = useState(data);
-
+// handle search query
   const handleChange = (e) => {
-    let query = e.target.value;  
-    const newRecords = data.filter(item => item.name.toLocaleLowerCase().includes(query.toLocaleLowerCase()))
-    setUserRecords(newRecords);
-  }
+    let query = e.target.value;
+
+    if (query === '') {
+      // If query is empty, reset to all user records
+      setUserRecords(allUserRecords);
+    } else {
+      // Filter the user records based on query
+      const filteredRecords = allUserRecords.filter(item =>
+        item.username.toLocaleLowerCase().includes(query.toLocaleLowerCase())
+      );
+      setUserRecords(filteredRecords);
+    }
+  };
+
 
 
   const navigate = useNavigate();
@@ -43,6 +84,7 @@ export default function UserPage() {
         <PageTitle title={'Users'}/>
 
         {/* content */}
+        {isLoading? <List/> :
         <UserPageContent>
           <ListHeader 
             title={'Add User'} 
@@ -53,9 +95,9 @@ export default function UserPage() {
           />
           
           {/* User Table */}
-            <UserTable data={userRecords}/>
+            <UserTable data={userRecords} onDeleteUser={deleteUser}/>
         </UserPageContent>
-
+}
         
     </UserPageWrapper>
   )

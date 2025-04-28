@@ -12,9 +12,20 @@ export const SelectInputWrapper = styled.div`
 `
 
 export const SelectInputLabel = styled.label`
-    color: #171717;;
+     color: #171717;
     font-size: 10px;
+    display: flex;
+    align-items: center; 
+    display: flex;
+    flex-direction: row;
+    gap: 3px;
     font-weight: bold;
+
+    span{
+        /* padding-top: 5px; */
+        font-size: 8px;
+        color:red;
+    }
 `
 
 export const SelectInputStyle = styled.select`

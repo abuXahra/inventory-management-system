@@ -12,6 +12,9 @@ import { FaLocationDot } from 'react-icons/fa6'
 import ButtonLoader from '../../../../components/clicks/button/button_loader/ButtonLoader'
 import { AiFillPicture } from 'react-icons/ai'
 import { AddTaxContent, AddTaxWrapper } from './addTax.style'
+import axios from 'axios'
+import { toast } from 'react-toastify'
+import ToastComponents from '../../../../components/toast_message/toast_component/ToastComponents'
 
 export default function AddTax() {
 
@@ -62,7 +65,9 @@ const taxStatusItems =  [
     const [taxName, setTaxName] = useState('');
     const [taxNameError, setTaxNameError] = useState(false);
 
-
+// tax name
+const [taxValue, setTaxValue] = useState('');
+const [taxValueError, setTaxValueError] = useState(false);
   
 // tax status
     const [taxStatus, setTaxStatus] = useState('')
@@ -73,13 +78,16 @@ const taxStatusItems =  [
         if(type === 'taxName'){
             setTaxName(e.target.value);
             setTaxNameError(false);
+        }else if(type === 'taxValue'){
+            setTaxValue(e.target.value);
+            setTaxValueError(false);
         }else if(type === 'taxStatus'){
             setTaxStatus(e.target.value);
             setTaxStatusError(false);
         }
     }
 
-    const submitHandler = (e) => {
+    const submitHandler = async (e) => {
         e.preventDefault();
         let isValid = true;
 
@@ -87,15 +95,40 @@ const taxStatusItems =  [
             setTaxNameError(true);
             isValid = false;
         }
-
+        if(!taxValue){
+            setTaxValueError(true);
+            isValid = false;
+        }
         if(!taxStatus){
             setTaxStatusError(true);
             isValid = false;
         }
 
         if(isValid){
+           
+            const newTax = {
+                name: taxName,
+                taxPercentage: taxValue,
+                status: taxStatus,
+            }
+
             setIsLoading(true)
-            navigate(`/tax`)
+            try {
+                const res = await axios.post(process.env.REACT_APP_URL + '/api/tax/create', newTax);
+                 toast.success(res.data.message);
+                 console.log(res.data);
+                 setIsLoading(false)
+                navigate('/tax')
+            } catch (err) {
+                console.log(err)
+                setIsLoading(false)
+                    // If email already exists, show the error toast
+                    if (err.response && err.response.data && err.response.data.message) {
+                    toast.error(err.response.data.message); // Show the email already exists message
+                } else {
+                toast.error('An error occurred while registering');
+            }
+            }
         }
     }
 
@@ -115,6 +148,15 @@ const taxStatusItems =  [
                                 value={taxName}
                                 label={'Tax Name'}
                                 title={'Tax Name'}    
+                            />
+
+                       {/* Tax Value */}
+                       <Input 
+                                onChange={(e)=>handleChange('taxValue', e)} 
+                                error={taxValueError} 
+                                value={taxValue}
+                                label={'Tax Value'}
+                                title={'Tax Value'}    
                             />
 
 
@@ -146,6 +188,7 @@ const taxStatusItems =  [
                     </ItemContainer>
                 </form>
         </AddTaxContent>
+        <ToastComponents/>
     </AddTaxWrapper>
   )
 }

@@ -151,6 +151,7 @@ const handMobilHbOnclick = () => {
   };
 
   const handleLogout = async () => {
+    
     try {
       const res = await axios.get(process.env.REACT_APP_URL + '/api/auth/logout', { withCredentials: true });
       setUser(null);
@@ -181,6 +182,7 @@ const handMobilHbOnclick = () => {
                   isActive={activeDropdown === i}  // Pass active state to the SidebarItem
                   handleClick={() => hideSidebar(item.url)}
                   onToggleDropdown={() => handleDropdownToggle(i)}  // Pass the function to toggle dropdown visibility
+                  setDisplayShowSidebar={setDisplayShowSidebar}
                 />
               ))
             }

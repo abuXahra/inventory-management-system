@@ -15,6 +15,16 @@ export const InputLabel = styled.label`
   font-size: 10px;
   display: flex;
   align-items: center;
+  display: flex;
+  flex-direction: row;
+  gap: 3px;
+  font-weight: bold;
+
+  span {
+    /* padding-top: 5px; */
+    font-size: 8px;
+    color: red;
+  }
 `;
 
 export const InputStyle = styled.textarea`

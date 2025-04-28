@@ -35,5 +35,6 @@ export const ItemTitleWrapper = styled.div`
 export const ItemButtonWrapper = styled.div`
   width: 100%;
   display: flex;
+  gap: 10px;
   justify-content: ${({ btnAlign }) => btnAlign || "flex-start"};
 `;

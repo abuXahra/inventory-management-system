@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import PageTitle from '../../../../components/page_title/PageTitle'
 import ItemContainer from '../../../../components/item_container/ItemContainer'
 import Input from '../../../../components/input/Input'
@@ -13,6 +13,7 @@ import ButtonLoader from '../../../../components/clicks/button/button_loader/But
 import { AiFillPicture } from 'react-icons/ai'
 import { AddExpenseContent, AddExpenseWrapper } from './addExpense.style'
 import { FaTrash } from 'react-icons/fa'
+import axios from 'axios';
 
 
 export default function AddExpenses() {
@@ -41,9 +42,35 @@ const [itemList, setItemList] = useState([])
 
     // note
     const [note, setNote] = useState('')
-       
     
+    // Fetch expense initial
+    const [expenseInitial, setExpenseInitial] = useState('')
+    useEffect(()=>{
+      const fetchAllCompany = async() =>{
+        setIsLoading(true)
+          try {
+              const res = await axios.get(`${process.env.REACT_APP_URL}/api/company`);
+            
+              
+              const prefix = res.data[0].prefixes?.[0];
 
+                
+              if (prefix) {
+                  setExpenseInitial(prefix.expense);
+              }
+
+              setIsLoading(false);
+          } catch (error) {
+              console.log(error);
+              setIsLoading(false);
+          }
+    
+      }
+      fetchAllCompany();
+    },[])
+    
+    
+// handle input change
     const handleChange = (type, e) =>{
         if(type === 'date'){
             setDate(e.target.value);
@@ -59,28 +86,11 @@ const [itemList, setItemList] = useState([])
         }
     }
 
-    // add item to list
-    const addToList = ()=>{
-        const newItem = {date, expenseFor, amount, note};
-        setItemList((prevItems)=>[...prevItems, newItem]);
-    
-        // clear form after adding
-        setDate(todayDate);
-        setExpenseFor('')
-        setAmount('')
-        setNote('')
-    
-    }
+    // add item to itemList
+    const addToList = (e)=>{
 
+        e.preventDefault();
 
-      // delete item from list
-      const deleteItem = (index) => {
-        const updatedList =  itemList.filter((_, i) => i !== index);
-        setItemList(updatedList)
-      }
-
-
-    const submitHandler = (e) => {
         e.preventDefault();
         let isValid = true;
 
@@ -101,45 +111,61 @@ const [itemList, setItemList] = useState([])
 
         
         if(isValid){
-            setIsLoading(true)
-            addToList()
-            setIsLoading(false);
+        const newItem = {date, expenseFor, amount, note};
+        setItemList((prevItems)=>[...prevItems, newItem]);
         }
+
+        // clear form after adding
+        setDate(todayDate);
+        setExpenseFor('')
+        setAmount('')
+        setNote('')
+    
     }
 
 
-// POST TO DB
-    // const postItemsToAPI = async () => {
-    //     try {
-    //       setIsLoading(true);
-    //       // Replace with your API endpoint
-    //       const response = await fetch('/api/expenses', {
-    //         method: 'POST',
-    //         headers: { 'Content-Type': 'application/json' },
-    //         body: JSON.stringify({ items: itemList }),
-    //       });
-    //       if (response.ok) {
-    //         // Handle successful API response
-    //         console.log('Items added successfully!');
-    //         // Optionally redirect or reset
-    //         navigate('/expenses'); // Example redirect
-    //       } else {
-    //         // Handle API error
-    //         console.error('Error posting items');
-    //       }
-    //     } catch (error) {
-    //       console.error('Error posting items to API:', error);
-    //     } finally {
-    //       setIsLoading(false);
-    //     }
-    //   };
+      // delete item from list
+      const deleteItem = (index) => {
+        const updatedList =  itemList.filter((_, i) => i !== index);
+        setItemList(updatedList)
+      }
+
+     
+    
+      const submitHandler = async (e) => {
+        e.preventDefault();
+        setIsLoading(true);
+      
+        try {
+            const newExpenses = itemList.map((item) => ({
+                expenseDate: item.date,
+                expenseFor: item.expenseFor,
+                amount: parseFloat(item.amount),
+                note: item.note
+              }));
+              
+              const res =await axios.post(`${process.env.REACT_APP_URL}/api/expense/create`, {
+                items: newExpenses,
+                prefix: expenseInitial  // e.g., "EXP"
+              });
+      
+          setIsLoading(false)
+          console.log(res.data);
+          navigate('/expenses');
+        } catch (error) {
+          console.error(error);
+        } 
+      };
+      
+
+
   return (
     <AddExpenseWrapper>
     {/* Page title */}
         <PageTitle title={'Expense'} subTitle={'/ Add'}/>
 
         <AddExpenseContent>
-            <form action="" onSubmit={submitHandler}>
+            <form action="">
                     <ItemContainer title={'New Expense'}>
                         <AnyItemContainer justifyContent={'space-between'}>
                             {/* date */}
@@ -195,7 +221,7 @@ const [itemList, setItemList] = useState([])
                                 btnColor={'grey'}
                                 btnTxtClr={'white'}
                                 btnAlign={'flex-end'}
-                                btnOnClick={()=>{}}
+                                btnOnClick={addToList}
                             />
                             </div>
                         </ItemButtonWrapper>
@@ -239,6 +265,7 @@ const [itemList, setItemList] = useState([])
                                     btnColor={'green'}
                                     btnTxtClr={'white'}
                                     btnAlign={'flex-end'}
+                                    btnOnClick={submitHandler}
                                 />
                                 </div>
  

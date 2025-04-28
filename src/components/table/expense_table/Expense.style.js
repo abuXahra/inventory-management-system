@@ -30,3 +30,23 @@ export const ActionButton = styled.button`
     opacity: 0.8;
   }
 `;
+
+export const SlideUpButton = styled.div`
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  animation: slideUp 0.4s ease;
+  z-index: 1000;
+
+  @keyframes slideUp {
+    from {
+      transform: translate(-50%, 100%);
+      opacity: 0;
+    }
+    to {
+      transform: translate(-50%, 0);
+      opacity: 1;
+    }
+  }
+`;

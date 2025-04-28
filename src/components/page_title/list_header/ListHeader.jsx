@@ -14,7 +14,7 @@ function ListHeader({ title, btnOnClick, searQuery, onChange, type, dataLength, 
         <p>{dataLength}</p> 
         <p>{entries || 'Entries'}</p> 
 
-        <div style={{marginLeft: "20px"}}>
+        <div style={{marginLeft: "10px"}}>
       <Input
             bdColor={'white'}
             placeholder={`Search by ${searQuery}`}

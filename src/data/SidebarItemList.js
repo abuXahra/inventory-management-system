@@ -6,6 +6,8 @@ import { BsFillCartDashFill } from "react-icons/bs";
 import { BsCartX } from "react-icons/bs";
 import { TbTax } from "react-icons/tb";
 import { IoMicOffCircle } from "react-icons/io5";
+import { useContext } from "react";
+import { UserContext } from "../components/context/UserContext";
 
 export const SidebarItemLists = [
   {

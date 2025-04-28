@@ -60,6 +60,12 @@ import UserPage from "./pages/user/UserPage";
 import AddUser from "./pages/user/Add/AddUser";
 import UserDetail from "./pages/user/detail/UserDetail";
 import EditUser from "./pages/user/edit/EditUser";
+import AddCompany from "./pages/admin/company_profile/add_company/AddCompany";
+import CompanyDetail from "./pages/admin/company_profile/company_detail/CompanyDetail";
+import EditCompany from "./pages/admin/company_profile/edit_company/EditCompany";
+import ProtectedRoute from "./components/protected_route/ProtectedRoute";
+import UserHome from "./pages/system_user/home/UserHome";
+import Unauthorized from "./components/unauthorized/Unauthorized";
 
 function App() {
   const [displayShowSidebar, setDisplayShowSidebar] = useState("none");
@@ -68,6 +74,8 @@ function App() {
   const [deskDisplaySidebar, setDeskDisplaySidebar] = useState("flex");
 
   const { user, setUser } = useContext(UserContext); // Get user and setUser from context
+
+  console.log("=======", user, "========");
 
   const location = useLocation(); // Get the current location (path)
 
@@ -120,6 +128,42 @@ function App() {
             {/* Redirect to Dashboard if logged in */}
             <Route path="/" element={<Login />} />
             <Route path="/dashboard" element={<DashboardHome />} />
+
+            {/* // Admin-only route */}
+            {/* <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute
+                  element={<DashboardHome />}
+                  allowedRoles={["admin"]}
+                />
+              }
+            /> */}
+
+            {/* User-only route */}
+            {/* <Route
+              path="/user-dashboard"
+              element={
+                <ProtectedRoute
+                  element={<UserHome />}
+                  allowedRoles={["user"]}
+                />
+              }
+            /> */}
+
+            {/* Admin and user allowed */}
+            {/* <Route
+              path="/sales"
+              element={
+                <ProtectedRoute
+                  element={<SalePage />}
+                  allowedRoles={["admin", "user"]}
+                />
+              }
+            /> */}
+
+            {/* Unauthorized Page */}
+            {/* <Route path="/unauthorized" element={<Unauthorized />} /> */}
 
             {/* CATEGORY */}
             <Route path="/categories" element={<CategoryPage />} />
@@ -202,13 +246,22 @@ function App() {
             {/* UNITS */}
             <Route path="/units" element={<UnitsPage />} />
             <Route path="/add-units" element={<AddUnits />} />
-            <Route path="/edit-units/:unitsId" element={<EditUnits />} />
+            <Route path="/edit-units/:unitId" element={<EditUnits />} />
 
             {/* USERS */}
             <Route path="/users" element={<UserPage />} />
             <Route path="/add-user" element={<AddUser />} />
             <Route path="/edit-user/:userId" element={<EditUser />} />
             <Route path="/users/:userId" element={<UserDetail />} />
+
+            {/* COMPANY PROFILE */}
+            <Route path="/add-company" element={<AddCompany />} />
+            <Route path="/company-profile" element={<CompanyDetail />} />
+            <Route
+              path="/company-profile/:companyId"
+              element={<CompanyDetail />}
+            />
+            <Route path="/edit-company/:companyId" element={<EditCompany />} />
           </Routes>
         </MainContent>
       </Content>

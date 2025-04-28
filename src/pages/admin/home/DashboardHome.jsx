@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { AuthorContainer, ChartContainer, ChartContent, ChartWrapper, Container, CustomerListContent, CustomerListWrapper, DateTimeWrapper, GreetingCard, GreetingWrapper, HomeWrapper, PostItems, PostItemWrapper, ProductContainer, ProfileDp, RecentPostWrapper, SpaceBtnContainer, TopCard, TopCardContent, TopCardContentWrapper, TopCardIcon, TotalPostContainer, UserContainer, UserWrapper } from './Home.style'
 import {MdOutlineAdd, MdOutlineDateRange} from 'react-icons/md'
 import { useNavigate } from 'react-router-dom'
@@ -8,6 +8,8 @@ import QuickLinks from '../../../components/quick_links/QuickLinks'
 import AlertContent from '../../../components/table/alert_content_table/AlertContent'
 import HomePurchaseList from '../../../components/table/purchase_table/home_purchase_list/HomePurchaseList'
 import HomeSaleList from '../../../components/table/sale_table/home_salelist/HomeSaleList'
+import { UserContext } from '../../../components/context/UserContext'
+
 
 
 
@@ -18,6 +20,10 @@ function DashboardHome() {
 
   const navigate = useNavigate();
   const [recentPost, setRecentPost] = useState([])
+
+  //  const {user } = useContext(UserContext) // user context
+   
+  
 
   // const fetchRecentPost = async () =>{
   //   try {
@@ -62,6 +68,9 @@ function DashboardHome() {
       paymentStatus: 'Paid',
     },
   ];
+
+
+
 
   return (
     <HomeWrapper>

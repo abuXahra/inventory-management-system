@@ -19,15 +19,15 @@ export default function Overlay({children, contentHight, contentWidth, overlayBu
             <Button 
               btnColor={'green'}
               btnText={btnText1 ? btnText1 : 'Yes'}
-              // btnPd={'10px 20px'}
-              btnPd={'15px 30px'}
+              btnPd={'6px 10px'}
+              btnFontSize={'12px'}
               btnOnClick={overlayButtonClick}
             />
             <Button 
               btnColor={'black'}
+              btnFontSize={'10px'}
               btnText={btnText2 ? btnText2 : 'No'}
-              // btnPd={'10px 20px'}
-              btnPd={'15px 30px'}
+              btnPd={'6px 12px'}
               btnOnClick={alternatFunc? alternatFunc: closeOverlayOnClick}
               btnDisplay={btnDisplayNo}
             />
