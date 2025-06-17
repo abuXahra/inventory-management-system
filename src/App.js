@@ -66,6 +66,7 @@ import EditCompany from "./pages/admin/company_profile/edit_company/EditCompany"
 import ProtectedRoute from "./components/protected_route/ProtectedRoute";
 import UserHome from "./pages/system_user/home/UserHome";
 import Unauthorized from "./components/unauthorized/Unauthorized";
+import MyCalender from "./pages/MyCalender";
 
 function App() {
   const [displayShowSidebar, setDisplayShowSidebar] = useState("none");
@@ -73,7 +74,7 @@ function App() {
   const [showHbg, setShowHbg] = useState("none");
   const [deskDisplaySidebar, setDeskDisplaySidebar] = useState("flex");
 
-  const { user, setUser } = useContext(UserContext); // Get user and setUser from context
+  const { user } = useContext(UserContext); // Get user and setUser from context
 
   console.log("=======", user, "========");
 
@@ -226,10 +227,10 @@ function App() {
             <Route path="/add-payments" element={<AddPayment />} />
             <Route path="/edit-payment/:paymentId" element={<EditPayment />} />
 
-            {/* PAYMENTS */}
+            {/* Expenses */}
             <Route path="/expenses" element={<ExpensePage />} />
             <Route path="/add-expense" element={<AddExpenses />} />
-            <Route path="/edit-expense/:paymentId" element={<EditExpenses />} />
+            <Route path="/edit-expense/:expenseId" element={<EditExpenses />} />
 
             {/* REPORTS */}
             <Route path="/reports" element={<ReportsPage />} />
@@ -262,6 +263,7 @@ function App() {
               element={<CompanyDetail />}
             />
             <Route path="/edit-company/:companyId" element={<EditCompany />} />
+            <Route path="/company-calender" element={<MyCalender />} />
           </Routes>
         </MainContent>
       </Content>

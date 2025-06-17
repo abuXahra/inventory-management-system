@@ -15,8 +15,8 @@ import { List } from 'react-content-loader'
 
 export default function ExpensePage() {
   
-   const[expenseRecords, setExpenseRecords] = useState([]);
-       const [allExpenseRecords, setAllExpenseRecords] = useState([]);
+        const[expenseRecords, setExpenseRecords] = useState([]);
+        const [allExpenseRecords, setAllExpenseRecords] = useState([]);
         const [isLoading, setIsLoading] = useState(false);
   
 

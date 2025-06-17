@@ -13,7 +13,7 @@ import ButtonLoader from '../../../../components/clicks/button/button_loader/But
 import { AiFillPicture } from 'react-icons/ai'
 import { AddCompanyContent, AddCompanyWrapper, ImageWrapper, InputPicture, NameAndFileInput } from './AddCompany.style'
 import axios from 'axios'
-import { toast, ToastContainer } from 'react-toastify'
+import { toast } from 'react-toastify'
 import ToastComponents from '../../../../components/toast_message/toast_component/ToastComponents'
 
 export default function AddCompany() {
@@ -329,7 +329,7 @@ export default function AddCompany() {
                            setIsLoading(false);
                            navigate(`/company-profile`);
                            // toast success message
-                           toast.success('User Registration Successful')
+                           toast.success('Company Registration Successful')
            
                            setCompanyName('');
                            setTagLine('');
@@ -614,7 +614,6 @@ export default function AddCompany() {
                         <ItemButtonWrapper btnAlign={'space-between'}>
                             <div>
                             <Button
-                                title={'Select Items'}
                                 btnText={isLoading? <ButtonLoader text={'Adding...'}/> : 'Add Company'}
                                 btnFontSize={'12px'}
                                 btnColor={'Green'}

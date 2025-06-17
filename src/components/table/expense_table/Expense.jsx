@@ -126,7 +126,7 @@ const ExpensesTable = ({ data, onDeleteExpense }) => {
     {
       name: 'Code',
       selector: (row) => row.code,
-      width: '15%',
+      width: '10%',
     },
     {
       name: 'Payment For',

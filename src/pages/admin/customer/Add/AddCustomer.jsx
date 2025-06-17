@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import PageTitle from '../../../../components/page_title/PageTitle'
 import ItemContainer from '../../../../components/item_container/ItemContainer'
 import Input from '../../../../components/input/Input'
@@ -12,11 +12,15 @@ import { AnyItemContainer } from '../../sale/Add/addSale.style'
 import { FaLocationDot } from 'react-icons/fa6'
 import ButtonLoader from '../../../../components/clicks/button/button_loader/ButtonLoader'
 import { AiFillPicture } from 'react-icons/ai'
+import { toast } from 'react-toastify'
+import { UserContext } from '../../../../components/context/UserContext'
+import axios from 'axios'
+import ToastComponents from '../../../../components/toast_message/toast_component/ToastComponents'
 
 export default function AddCustomer() {
 
     const navigate = useNavigate();
-
+    const {user} = useContext(UserContext);
     const [isLoading, setIsLoading] = useState(false);
 
     // name
@@ -24,6 +28,7 @@ export default function AddCustomer() {
     const [nameError, setNameError] = useState(false);
 
 // phone
+
     const [phone, setPhone] = useState('');
     const [phoneError, setPhoneError] = useState(false);
 
@@ -59,7 +64,7 @@ export default function AddCustomer() {
         }
     }
 
-    const submitHandler = (e) => {
+    const submitHandler = async (e) => {
         e.preventDefault();
         let isValid = true;
 
@@ -85,7 +90,63 @@ export default function AddCustomer() {
         }
         if(isValid){
             setIsLoading(true)
-            navigate(`/customers`)
+ 
+
+            const newCustomer ={
+                    name: name,
+                    email: email,
+                    phoneNumber: phone,
+                    taxNumber: tax,
+                    address: address,
+                    userId: user._id,
+                            // imgUrl
+            }
+                        
+                        if (file) {
+                            const data = new FormData()
+                            const filename = file.name
+                            data.append('img', filename)
+                            data.append('file', file)
+                            newCustomer.imgUrl = filename
+            
+                            // img upload
+                            try {
+                                const imgUpload = await axios.post('http://localhost:5000/api/upload', data)
+                                console.log(imgUpload.data)
+                            } catch (err) {
+                                console.log(err)
+                            }
+                        }
+            
+                        setIsLoading(true)
+                        try {
+                            const res = await axios.post(`http://localhost:5000/api/customers/register`, newCustomer)
+                            console.log(res.data);
+                            setIsLoading(false);
+                           
+                            // toast success message
+                            toast.success(res.data.message || 'Customer Registration Successful');
+            
+                            setName('');
+                            setEmail('');
+                            setPhone('');
+                            setTax('');
+                            setAddress('');
+                            setFile('');
+                            setPhoto('');
+            
+
+                            navigate('/customers')
+                        } catch (err) {
+                            setIsLoading(false);  
+            
+                            // If email already exists, show the error toast
+                        if (err.response && err.response.data && err.response.data.message) {
+                            toast.error(err.response.data.message); // Show the email already exists message
+                        } else {
+                            toast.error('An error occurred while registering');
+                        }
+                        }
         }
     }
 
@@ -108,6 +169,17 @@ export default function AddCustomer() {
                                 label={'Name'} 
                             />
 
+                        {/* Email */}
+                           <Input 
+                                value={email} 
+                                title={'Email'}
+                                onChange={(e)=>handleChange('email', e)} 
+                                error={emailError} 
+                                type={'email'} 
+                                label={'Email'} 
+                            />
+                        </AnyItemContainer>
+                        <AnyItemContainer justifyContent={'space-between'}>
                             {/* Phone number */}
                             <Input 
                                 value={phone} 
@@ -117,22 +189,11 @@ export default function AddCustomer() {
                                 type={'text'} 
                                 label={'Phone No.'} 
                             />
-                        </AnyItemContainer>
-                        <AnyItemContainer justifyContent={'space-between'}>
-                           {/* Email */}
-                           <Input 
-                                value={email} 
-                                title={'Email'}
-                                onChange={(e)=>handleChange('email', e)} 
-                                error={emailError} 
-                                type={'email'} 
-                                label={'Email'} 
-                            />
     
                             {/* Tax Number*/}
                             <Input 
                                 value={tax} 
-                                onChange={(e)=>{}} 
+                                onChange={(e)=> handleChange('tax', e)} 
                                 type={'text'} 
                                 label={'Tax No.'} 
                             />
@@ -165,7 +226,6 @@ export default function AddCustomer() {
 
                             <div>
                             <Button
-                                title={'Select Items'}
                                 btnText={isLoading? <ButtonLoader text={'Adding...'}/> : 'Add Customer'}
                                 btnFontSize={'12px'}
                                 btnColor={'Green'}
@@ -177,6 +237,8 @@ export default function AddCustomer() {
                     </ItemContainer>
                 </form>
         </CustomerContent>
+                {/* ===================Toast Message ================= */}
+                <ToastComponents/>
     </CustomerWrapper>
   )
 }

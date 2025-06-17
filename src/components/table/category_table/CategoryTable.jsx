@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import DataTable from 'react-data-table-component';
 import styled from 'styled-components';
 import { FaEdit, FaEnvelope, FaEye, FaFileInvoice, FaTrash } from 'react-icons/fa';
@@ -7,28 +7,86 @@ import { useNavigate } from 'react-router-dom';
 import { ActionButton, ActionButtons, TableWrapper } from './categoryTable.style';
 import { Container } from '@mui/material';
 import { customStyles } from '../TableCustomStyle.style';
+import catPiture from '../../../images/product_placeholder.jpg'
+import { toast } from 'react-toastify';
+import Overlay from '../../overlay/Overlay';
+import ButtonLoader from '../../clicks/button/button_loader/ButtonLoader';
+import ToastComponents from '../../toast_message/toast_component/ToastComponents';
 
 
 
-const CategoryTable = ({data}) => {
+const CategoryTable = ({data, onDeleteCat}) => {
   
-  const navigate = useNavigate();
+        const navigate = useNavigate();
+
+        const [showDeleteCard, setShowDeleteCard] = useState(false);
+        const [grabId, setGrabId] = useState('');
+        const [grabCategoryName, setGrabCategoryName] = useState('');
+        const [isLoading, setIsLoading] = useState(false);
+  
+        const handleGrabId = (categoryId, categoryName)=>{
+          setShowDeleteCard(true);
+          setGrabId(categoryId);
+          setGrabCategoryName(categoryName);
+      
+      }
+  
+
+      const handleDelete = async (categoryId) => {
+              setIsLoading(true);
+              try {
+                const response = await onDeleteCat(categoryId); // call parent function
+            
+                if (response.success) {
+                  toast.success('Tax deleted successfully');
+                  setShowDeleteCard(false); // Close modal
+                } else {
+                  toast.error('Error deleting message: ' + response.message);
+                }
+              } catch (error) {
+                console.error(error);
+                toast.error('Unexpected error occurred');
+              } finally {
+                setIsLoading(false);
+              }
+            };
+
+
+
+            
 
   const columns = [
 
     {
-      name: '#',
-      selector: (row) => row.id,
-      sortable: true,
+      name: 'S/N',
+      selector: (row, i) => i + 1,
+      width: '100px',
+      center: true,
     },
-    {
-        name: 'Code',
-        selector: (row) => row.code,
-        sortable: true,
-      },
+    // {
+    //     name: 'Code',
+    //     selector: (row) => row.code,
+    //     sortable: true,
+    //   },
+     {
+          name: 'Photo',
+          selector: (row) => <img
+          src={row.imgUrl ? process.env.REACT_APP_URL+'/images/'+ row.imgUrl : catPiture}
+          alt={row.username}
+          style={{
+            width: '20px',
+            height: '20px',
+            borderRadius: '100%',
+            objectFit: 'cover'
+          }}
+        />,
+          // cell: (row) => <img src={`${process.env.REACT_APP_URL}/images/${row.imgUrl}` || pix} alt={row.name} style={{ width: '20px', borderRadius: '100%', height: '20px', objectFit: 'cover' }} />,
+          width: '100px',
+        },
+
     {
         name: 'Name',
-        selector: (row) => row.name,
+        selector: (row) => row.title,
         sortable: true,
       },
     {
@@ -42,24 +100,21 @@ const CategoryTable = ({data}) => {
       sortable: true,
     },
     {
+      name: 'Products',
+      selector: (row) => row.totalProducts,
+    },
+    {
       name: 'Actions',
       cell: (row) => (
         <ActionButtons>
-          <ActionButton clr='green' onClick={() => navigate(`/category-detail/${row.id}`)}><FaEye/></ActionButton>
-          <ActionButton clr='blue' onClick={() => navigate(`/edit-category/${row.id}`)}><FaEdit/></ActionButton>
-          <ActionButton clr="red" onClick={() => handleDelete(row.id)}><FaTrash/></ActionButton>
+          <ActionButton clr='green' onClick={() => navigate(`/category-detail/${row._id}`)}><FaEye/></ActionButton>
+          <ActionButton clr='blue' onClick={() => navigate(`/edit-category/${row._id}`)}><FaEdit/></ActionButton>
+          <ActionButton clr="red" onClick={() =>handleGrabId(row._id, row.title)}><FaTrash/></ActionButton>
         </ActionButtons>
       ),
     },
   ];
 
-  const handleEdit = (rowData) => {
-    alert(`Editing row with ID: ${rowData.id}`);
-  };
-
-  const handleDelete = (id) => {
-    alert(`Deleting row with ID: ${id}`);
-  };
 
   return (
     <Container>
@@ -74,6 +129,23 @@ const CategoryTable = ({data}) => {
           customStyles={customStyles}
         />
       </TableWrapper>
+
+      {/* Delete Card */}
+       {showDeleteCard &&
+        <Overlay 
+          contentWidth={'30%'}
+          overlayButtonClick={()=>handleDelete(grabId)}
+          closeOverlayOnClick={()=>setShowDeleteCard(false)}
+          btnText1={isLoading ? <ButtonLoader text={'Deleting...'}/> : 'Yes'}
+          >
+            <p style={{margin: "40px", textAlign:"center", fontSize:"12px", lineHeight: "25px"}}>
+              Are you sure You want to delete the Category <b>{grabCategoryName} </b> 
+            </p>
+        </Overlay>
+                        }
+                  
+        {/* Toast message user component */}
+        <ToastComponents/>
     </Container>
   );
 };

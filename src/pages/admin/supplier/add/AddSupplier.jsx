@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import PageTitle from '../../../../components/page_title/PageTitle'
 import ItemContainer from '../../../../components/item_container/ItemContainer'
 import Input from '../../../../components/input/Input'
@@ -12,11 +12,14 @@ import { FaLocationDot } from 'react-icons/fa6'
 import ButtonLoader from '../../../../components/clicks/button/button_loader/ButtonLoader'
 import { AiFillPicture } from 'react-icons/ai'
 import { ImageWrapper, InputPicture, NameAndFileInput, SupplierContent, SupplierWrapper } from './addSupplier.style'
+import { UserContext } from '../../../../components/context/UserContext'
+import axios from 'axios'
+import { toast } from 'react-toastify'
 
 export default function AddSupplier() {
 
     const navigate = useNavigate();
-
+    const {user} = useContext(UserContext);
     const [isLoading, setIsLoading] = useState(false);
 
     // name
@@ -39,6 +42,34 @@ export default function AddSupplier() {
     const [address, setAddress] = useState('')
     const [addressError, setAddressError] = useState(false);
 
+
+    // Fetch supplier initial
+        const [supplierInitial, setSupplierInitial] = useState('')
+        useEffect(()=>{
+          const fetchAllCompany = async() =>{
+            // setIsLoading(true)
+              try {
+                  const res = await axios.get(`${process.env.REACT_APP_URL}/api/company`);
+                                  
+                  const prefix = res.data[0].prefixes?.[0];
+    
+                    
+                  if (prefix) {
+                      setSupplierInitial(prefix.supply);
+                  }
+    
+                //   setIsLoading(false);
+              } catch (error) {
+                  console.log(error);
+                  setIsLoading(false);
+              }
+        
+          }
+          fetchAllCompany();
+        },[])
+
+
+
     const handleChange = (type, e) =>{
         if(type === 'name'){
             setName(e.target.value);
@@ -59,7 +90,7 @@ export default function AddSupplier() {
         }
     }
 
-    const submitHandler = (e) => {
+    const submitHandler = async (e) => {
         e.preventDefault();
         let isValid = true;
 
@@ -68,16 +99,15 @@ export default function AddSupplier() {
             isValid = false;
         }
 
-        if(!phone){
-            setPhoneError(true);
-            isValid = false;
-        }
-
         if(!email){
             setEmailError(true);
             isValid = false;
         }
 
+        if(!phone){
+            setPhoneError(true);
+            isValid = false;
+        }
         
         if(!address){
             setAddressError(true);
@@ -85,7 +115,62 @@ export default function AddSupplier() {
         }
         if(isValid){
             setIsLoading(true)
-            navigate(`/suppliers`)
+            const newSupplier ={
+                name: name,
+                email: email,
+                phoneNumber: phone,
+                taxNumber: tax,
+                address: address,
+                prefix: supplierInitial,
+                userId: user._id,
+                // imgUrl
+            }
+
+            if (file) {
+                const data = new FormData()
+                const filename = file.name 
+                data.append('img', filename)
+                data.append('file', file)
+                newSupplier.imgUrl = filename
+
+                // img upload
+                try {
+                    const imgUpload = await axios.post(`${process.env.REACT_APP_URL}/api/upload'}`, data)
+                    console.log(imgUpload.data)
+                    } catch (err) {
+                        console.log(err)
+                    }
+                }
+
+                setIsLoading(true)
+                        try {
+                            const res = await axios.post(`${process.env.REACT_APP_URL}/api/suppliers/register`, newSupplier)
+                            console.log(res.data);
+                            setIsLoading(false);
+                           
+                            // toast success message
+                            toast.success(res.data.message || 'Supplier Registration Successful');
+            
+                            setName('');
+                            setEmail('');
+                            setPhone('');
+                            setTax('');
+                            setAddress('');
+                            setFile('');
+                            setPhoto('');
+            
+
+                            navigate('/suppliers')
+                        } catch (err) {
+                            setIsLoading(false);  
+            
+                            // If email already exists, show the error toast
+                        if (err.response && err.response.data && err.response.data.message) {
+                            toast.error(err.response.data.message); // Show the email already exists message
+                        } else {
+                            toast.error('An error occurred while registering');
+                        }
+                        }
         }
     }
 
@@ -108,6 +193,18 @@ export default function AddSupplier() {
                                 label={'Name'} 
                             />
 
+                          {/* Email */}
+                           <Input 
+                                value={email} 
+                                title={'Email'}
+                                onChange={(e)=>handleChange('email', e)} 
+                                error={emailError} 
+                                type={'email'} 
+                                label={'Email'} 
+                            />
+                            
+                        </AnyItemContainer>
+                        <AnyItemContainer justifyContent={'space-between'}>
                             {/* Phone number */}
                             <Input 
                                 value={phone} 
@@ -117,22 +214,11 @@ export default function AddSupplier() {
                                 type={'text'} 
                                 label={'Phone No.'} 
                             />
-                        </AnyItemContainer>
-                        <AnyItemContainer justifyContent={'space-between'}>
-                           {/* Email */}
-                           <Input 
-                                value={email} 
-                                title={'Email'}
-                                onChange={(e)=>handleChange('email', e)} 
-                                error={emailError} 
-                                type={'email'} 
-                                label={'Email'} 
-                            />
     
                             {/* Tax Number*/}
                             <Input 
                                 value={tax} 
-                                onChange={(e)=>{}} 
+                                onChange={(e)=>handleChange('tax', e)} 
                                 type={'text'} 
                                 label={'Tax No.'} 
                             />

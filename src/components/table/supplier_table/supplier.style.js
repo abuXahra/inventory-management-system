@@ -15,7 +15,7 @@ export const TableWrapper = styled.div`
 
 export const ActionButtons = styled.div`
   display: flex;
-  gap: 10px;
+  gap: 5px;
 `;
 
 export const ActionButton = styled.button`

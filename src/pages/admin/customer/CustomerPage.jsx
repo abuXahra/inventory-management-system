@@ -1,10 +1,12 @@
 
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import PageTitle from '../../../components/page_title/PageTitle'
 import { useNavigate } from 'react-router-dom'
 import { CustomerPageContent, CustomerPageWrapper } from './customerPage.style'
 import ListHeader from '../../../components/page_title/list_header/ListHeader'
 import CustomerTable from '../../../components/table/customer_table/CustomerTable'
+import axios from 'axios'
+import { List } from 'react-content-loader'
 
 
 
@@ -13,69 +15,95 @@ import CustomerTable from '../../../components/table/customer_table/CustomerTabl
 
 
 export default function CustomerPage() {
+
+
   
-  const data = [
-    {
-      id: 1,
-      code: 'CU1001',
-      name: 'Mack Tyson',
-      mobile: '09055001663',
-      email: 'abdulmuminisah79@gmail.com',
-      taxNumber: "54545545",
-      address: "No 22, Back of Apostolic, Ajegule, Mpape, Abuja",
-      status: "ON"
-    },      {
-        id: 2,
-        code: 'CU1001',
-        name: 'Mack Tyson',
-        mobile: '09055001663',
-        email: 'abdulmuminisah79@gmail.com',
-        taxNumber: "54545545",
-        address: "No 22, Back of Apostolic, Ajegule, Mpape, Abuja",
-        status: "ON"
-      }, 
-      {
-        id: 3,
-        code: 'CU1001',
-        name: 'Mack Tyson',
-        mobile: '09055001663',
-        email: 'abdulmuminisah79@gmail.com',
-        taxNumber: "54545545",
-        address: "No 22, Back of Apostolic, Ajegule, Mpape, Abuja",
-        status: "ON"
-      }, 
-  ];
-
-
-  const[customerRecords, setCustomerRecords] = useState(data);
-
-  const handleChange = (e) => {
-    let query = e.target.value;  
-    const newRecords = data.filter(item => item.name.toLocaleLowerCase().includes(query.toLocaleLowerCase()))
-    setCustomerRecords(newRecords);
-  }
-
-
+  const [customer, setCustomer] = useState([]);
+  const [allCustomer, setAllCustomer] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+      
+    
+   // fetch customer handler 
+       useEffect(() => {
+          const getCustomer = async () => { 
+          setIsLoading(true)  
+          try {
+              const res = await axios.get(process.env.REACT_APP_URL + "/api/customers")
+              setCustomer(res.data)
+              setAllCustomer(res.data);
+              setIsLoading(false)
+              
+              console.log(res.data)
+          } catch (err) {
+              console.log(err)
+              setIsLoading(false)
+              }
+            }
+            
+          getCustomer();
+          
+        }, [])
+    
+               // handle customer delete
+              const deleteCustomer = async (customerId,  updatedList = null) => {
+                
+                if (updatedList) {
+                  setCustomer(updatedList);
+                  return { success: true };
+                }
+                
+                try {
+                  await axios.delete(`${process.env.REACT_APP_URL}/api/customers/${customerId}`);
+                  const updatedCustomer = customer.filter(customer => customer._id !== customerId);
+                  setCustomer(updatedCustomer);
+                  return { success: true };
+                } catch (error) {
+                  return { success: false, message: error.message };
+                }
+              };
+            
+    
+                // handle search query
+                const handleSearchQueryOnChange = (e) => {
+                  let query = e.target.value;
+                  //  if query is empty, reset to all record
+                  if(query === ''){
+                    setCustomer(allCustomer);
+                  }else{
+                    // Filter records based on query
+                    const filterRecords = allCustomer.filter(item =>
+                      item.name.toLocaleLowerCase().includes(query.toLocaleLowerCase())
+                    );
+                    setCustomer(filterRecords)
+                  }
+                }
+      
+  
   const navigate = useNavigate();
   return (
     <CustomerPageWrapper>
         <PageTitle title={'Customer'}/>
 
-        {/* content */}
+         {/* content */}
+        {isLoading? <List/> :
         <CustomerPageContent>
           <ListHeader 
             title={'Add Customer'} 
             btnOnClick={()=>navigate('/add-customer')}
             searQuery={'Name'}
-            onChange={handleChange}
+            onChange={handleSearchQueryOnChange}
             type={'text'}
+            dataLength={customer.length}
           />
           
           {/* Sales Table */}
-            <CustomerTable data={customerRecords}/>
+            <CustomerTable 
+              data={customer} 
+              onDeleteCus={deleteCustomer} 
+            />
         </CustomerPageContent>
 
-        
+}
     </CustomerPageWrapper>
   )
 }

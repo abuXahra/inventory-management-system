@@ -9,6 +9,7 @@ import { UserContext } from '../../components/context/UserContext';
 import { useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import "react-toastify/ReactToastify.css"
+import ButtonLoader from '../../components/clicks/button/button_loader/ButtonLoader';
 
 export default function Login() {
 
@@ -21,7 +22,7 @@ export default function Login() {
     const [loginError, setLoginError] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 
-    const {user, setUser } = useContext(UserContext) // user context
+    const {setUser } = useContext(UserContext) // user context
 
     const navigate = useNavigate()
 
@@ -52,15 +53,13 @@ export default function Login() {
             try {
             
                 const res = await axios.post(`${process.env.REACT_APP_URL}/api/auth/login`, { email, password });
-                
-                console.log(res.data);
-                
+            
+                const {token, user: userData} = res.data;
+                localStorage.setItem("token", token);  // ✅ Save JWT to localStorage
                 setUser(res.data);
-                
                 toast.success('Login successfully')
                 setIsLoading(false);
-                 navigate('/dashboard')
-               
+                navigate('/dashboard')
             } catch (err) {
                 // setLoginError(true);
                 setIsLoading(false)
@@ -122,7 +121,7 @@ export default function Login() {
                 bdColor={'white'}
                      />
                 
-            <div><Button btnPd={'15px 20px'} btnText={isLoading? <>{'Processing'}</>   : 'Login'}/></div>
+            <div><Button btnColor={'green'} btnPd={'15px 20px'} btnText={isLoading? <ButtonLoader text="Processing..." />  : 'Login'}/></div>
                 {loginError && 'Incorrect password or email'}
         </form>
         

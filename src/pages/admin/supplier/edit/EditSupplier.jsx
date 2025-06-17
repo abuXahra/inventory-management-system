@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import PageTitle from '../../../../components/page_title/PageTitle'
 import ItemContainer from '../../../../components/item_container/ItemContainer'
 import Input from '../../../../components/input/Input'
@@ -6,39 +6,47 @@ import SelectInput from '../../../../components/input/selectInput/SelectInput'
 import TextArea from '../../../../components/input/textArea/TextArea'
 import { ItemButtonWrapper } from '../../../../components/item_container/itemContainer.style'
 import Button from '../../../../components/clicks/button/Button'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { AnyItemContainer } from '../../sale/Add/addSale.style'
 import { FaLocationDot } from 'react-icons/fa6'
 import ButtonLoader from '../../../../components/clicks/button/button_loader/ButtonLoader'
 import { AiFillPicture } from 'react-icons/ai'
-import profilPiture from '../../../../images/professional_passport.png'
+import profilPiture from '../../../../images/placeholder_image.png'
 import { EditSupplierContent, EditSupplierWrapper, ImageWrapper, InputPicture, NameAndFileInput } from './editSupplier.style'
+import { UserContext } from '../../../../components/context/UserContext'
+import axios from 'axios'
+import { toast } from 'react-toastify'
+import ToastComponents from '../../../../components/toast_message/toast_component/ToastComponents'
+import { List } from 'react-content-loader'
 
-export default function EditCustomer() {
+export default function EditSupplier() {
 
     const navigate = useNavigate();
+        const { supplierId } = useParams();
+        const {user} = useContext(UserContext);
 
     const [isLoading, setIsLoading] = useState(false);
+    const [isBtnLoading, setIsBtnLoading] = useState(false);
     const [showPicture, setShowPicture] = useState(true);
 
     // name
-    const [name, setName] = useState('Isah Abdulmumin');
+    const [name, setName] = useState('John Doe');
     const [nameError, setNameError] = useState(false);
 
 // phone
-    const [phone, setPhone] = useState('0905001663');
+    const [phone, setPhone] = useState('+234900000000');
     const [phoneError, setPhoneError] = useState(false);
 
     const [file, setFile] = useState('');
     let [photo, setPhoto] = useState('');
 
 // email
-    const [email, setEmail] = useState('abdulmuminisah79@gmail.com');
+    const [email, setEmail] = useState('johndoe@mail.com');
     const [emailError, setEmailError] = useState(false);
 // tax
     const [tax, setTax] = useState('5567777');
 // address
-    const [address, setAddress] = useState('Back of Apostolic, Ajegul Mpape, Abuja')
+    const [address, setAddress] = useState('living address')
     const [addressError, setAddressError] = useState(false);
 
     const handleChange = (type, e) =>{
@@ -62,7 +70,35 @@ export default function EditCustomer() {
         }
     }
 
-    const submitHandler = (e) => {
+
+    // fetch customer detail
+            useEffect(()=>{
+                const fetchCustomer = async() =>{
+                    setIsLoading(true)
+                    try {
+                        const res = await axios.get(`${process.env.REACT_APP_URL}/api/suppliers/${supplierId}`);
+                       
+                        console.log(res.data);
+            
+                        setName(res.data.name);
+                        setEmail(res.data.email);
+                        setPhone(res.data.phoneNumber);
+                        setTax(res.data.taxNumber);
+                        setAddress(res.data.address);
+                        setFile(res.data.imgUrl);
+                        setIsLoading(false);
+    
+                    } catch (error) {
+                        console.log(error)
+                        setIsLoading(false);
+                    }
+            
+                }
+                fetchCustomer();
+            },[supplierId])
+
+
+    const submitHandler = async (e) => {
         e.preventDefault();
         let isValid = true;
 
@@ -71,24 +107,66 @@ export default function EditCustomer() {
             isValid = false;
         }
 
-        if(!phone){
-            setPhoneError(true);
-            isValid = false;
-        }
-
         if(!email){
             setEmailError(true);
             isValid = false;
         }
-
+        if(!phone){
+            setPhoneError(true);
+            isValid = false;
+        }
         
         if(!address){
             setAddressError(true);
             isValid = false;
         }
         if(isValid){
-            setIsLoading(true)
-            // navigate(`/invoice/${1}`)
+            const updateSupplier ={
+                               name: name,
+                               email: email,
+                               phoneNumber: phone,
+                               taxNumber: tax,
+                               address: address,
+                               userId: user._id,
+                         }
+                                                   
+                       if (file) {
+                           const data = new FormData()
+                           const filename = file.name
+                           data.append('img', filename)
+                           data.append('file', file)
+                           updateSupplier.imgUrl = filename
+                           
+                           // img upload
+                           try {
+                                   const imgUpload = await axios.post(`${process.env.REACT_APP_URL}/api/upload`, data)
+                                   console.log(imgUpload.data)
+                                   } catch (err) {
+                                       console.log(err)
+                                       }
+                           }
+                           setIsBtnLoading(true)
+                                   
+                           try {
+                               const res = await axios.put(`${process.env.REACT_APP_URL}/api/suppliers/${supplierId}`, updateSupplier)
+                               console.log(res.data);
+                               setIsLoading(false);
+                                                          
+                               // toast success message
+                               toast.success('Supplier Updated Successfully')
+                               setIsBtnLoading(false)
+                               // navigate(`/customers`)
+                               
+                           } catch (err) {
+                               setIsLoading(false);  
+                               
+                               // If title already exists, show the error toast
+                               if (err.response && err.response.data && err.response.data.message) {
+                                   toast.error(err.response.data.message); // Show the title already exists message
+                               } else {
+                                   toast.error('An error occurred while updating');
+                               }
+                           }
         }
     }
 
@@ -97,6 +175,8 @@ export default function EditCustomer() {
     {/* Page title */}
         <PageTitle title={'Supplier'} subTitle={'/ Edit'}/>
 
+        <>
+        {isLoading? <List/> :
         <EditSupplierContent>
             <form action="" onSubmit={submitHandler}>
                     <ItemContainer title={'Update Supplier'}>
@@ -111,17 +191,6 @@ export default function EditCustomer() {
                                 label={'Name'} 
                             />
 
-                            {/* Phone number */}
-                            <Input 
-                                value={phone} 
-                                title={'Phone'}
-                                onChange={(e)=>handleChange('phone', e)} 
-                                error={phoneError} 
-                                type={'text'} 
-                                label={'Phone No.'} 
-                            />
-                        </AnyItemContainer>
-                        <AnyItemContainer justifyContent={'space-between'}>
                            {/* Email */}
                            <Input 
                                 value={email} 
@@ -131,11 +200,23 @@ export default function EditCustomer() {
                                 type={'email'} 
                                 label={'Email'} 
                             />
+                        </AnyItemContainer>
+                        <AnyItemContainer justifyContent={'space-between'}>
+
+                            {/* Phone number */}
+                            <Input 
+                                value={phone} 
+                                title={'Phone'}
+                                onChange={(e)=>handleChange('phone', e)} 
+                                error={phoneError} 
+                                type={'text'} 
+                                label={'Phone No.'} 
+                            />
     
                             {/* Tax Number*/}
                             <Input 
                                 value={tax} 
-                                onChange={(e)=>{}} 
+                                onChange={(e)=> handleChange('tax', e)} 
                                 type={'text'} 
                                 label={'Tax No.'} 
                             />
@@ -153,7 +234,7 @@ export default function EditCustomer() {
                         <NameAndFileInput>
                             <label htmlFor="fileInput">
                             <span>Picture</span> 
-                            {showPicture ? (  <ImageWrapper bg={profilPiture}>
+                            {showPicture ? (  <ImageWrapper bg={file ? `${process.env.REACT_APP_URL}/images/${file}` : profilPiture}>
                                         {/* {file && <img src={URL.createObjectURL(file)} alt="" srcset="" />} */}
                                 </ImageWrapper>) :      
                          (<>  { 
@@ -175,7 +256,7 @@ export default function EditCustomer() {
                             <div>
                             <Button
                                 title={'Select Items'}
-                                btnText={isLoading? <ButtonLoader text={'Updating...'}/> : 'Update'}
+                                btnText={isBtnLoading? <ButtonLoader text={'Updating...'}/> : 'Update'}
                                 btnFontSize={'12px'}
                                 btnColor={'Green'}
                                 btnTxtClr={'white'}
@@ -186,6 +267,10 @@ export default function EditCustomer() {
                     </ItemContainer>
                 </form>
         </EditSupplierContent>
+        }</>
+
+            {/* Toast message user component */}
+            <ToastComponents/>
     </EditSupplierWrapper>
   )
 }

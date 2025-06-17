@@ -122,7 +122,7 @@ export default function Siderbar({
 }) {
   const location = useLocation();
   const navigate = useNavigate();
-  const { user, setUser } = useContext(UserContext);
+  const {setUser } = useContext(UserContext);
 
     // Track which dropdown is active
   const [activeDropdown, setActiveDropdown] = useState(null); // Track the active dropdown index
@@ -151,10 +151,10 @@ const handMobilHbOnclick = () => {
   };
 
   const handleLogout = async () => {
-    
     try {
       const res = await axios.get(process.env.REACT_APP_URL + '/api/auth/logout', { withCredentials: true });
       setUser(null);
+      localStorage.removeItem("user"); // ✅ Clear storage
       navigate('/');
     } catch (err) {
       console.log(err);

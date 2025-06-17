@@ -16,6 +16,7 @@ import { EditExpenseContent, EditExpenseWrapper } from './editExpense.style'
 import axios from 'axios'
 import { toast } from 'react-toastify'
 import { List } from 'react-content-loader'
+import ToastComponents from '../../../../components/toast_message/toast_component/ToastComponents'
 
 
 export default function EditExpenses() {
@@ -34,11 +35,11 @@ const [itemList, setItemList] = useState([])
     const todayDate = new Date().toISOString().split('T')[0]; // Format: YYYY-MM-DD (2025-02-29)
 
     // date
-    const [date, setDate] = useState('2025-04-25');
+    const [expenseDate, setExpenseDate] = useState('');
     const [dateError, setDateError] = useState(false);
 
 // payment for
-    const [expenseFor, setExpenseFor] = useState('Laptop');
+    const [expenseFor, setExpenseFor] = useState('');
     const [expenseForError, setExpenseForError] = useState(false);
 
 
@@ -47,13 +48,13 @@ const [itemList, setItemList] = useState([])
     const [amountError, setAmountError] = useState(false);
 
     // note
-    const [note, setNote] = useState('50 pieces')
+    const [note, setNote] = useState('')
        
     
 
     const handleChange = (type, e) =>{
         if(type === 'date'){
-            setDate(e.target.value);
+            setExpenseDate(e.target.value);
             setDateError(false);
         }else if(type === 'expense'){
             setExpenseFor(e.target.value);
@@ -74,7 +75,9 @@ const [itemList, setItemList] = useState([])
             try {
                 const res = await axios.get(process.env.REACT_APP_URL+'/api/expense/'+ expenseId);
                 console.log(res.data);
-                setDate(res.data.expenseDate)
+                
+                const formattedDate = new Date(res.data.expenseDate).toISOString().split('T')[0];
+                setExpenseDate(formattedDate);
                 setExpenseFor(res.data.expenseFor)
                 setAmount(res.data.amount)
                 setNote(res.data.note)
@@ -94,7 +97,7 @@ const [itemList, setItemList] = useState([])
         e.preventDefault();
         let isValid = true;
 
-        if(!date){
+        if(!expenseDate){
             setDateError(true);
             isValid = false;
         }
@@ -113,22 +116,25 @@ const [itemList, setItemList] = useState([])
         if(isValid){
 
           const updatedExpense = {
-              expenseDate: date,  
+              expenseDate: expenseDate,  
               expenseFor: expenseFor, 
               amount: amount,
               note: note
             }
 
-            setIsLoading(true)
+            setIsBtnLoading(true)
     
             try {
 
                 const res= await axios.put(process.env.REACT_APP_URL+"/api/expense/"+expenseId, updatedExpense);
                 console.log(res.data)
-                if(res.success){
-                    toast.success(res.data.message)
-                }
                 
+                    toast.success('updated successfully')
+        
+                
+                setIsBtnLoading(false)
+
+                navigate('/expenses')
             } catch (error) {
                 toast.error(error.data.message)
             }
@@ -150,7 +156,7 @@ const [itemList, setItemList] = useState([])
                         <AnyItemContainer justifyContent={'space-between'}>
                             {/* date */}
                             <Input 
-                                value={date} 
+                                value={expenseDate} 
                                 title={'Date'}
                                 onChange={(e)=>handleChange('date', e)} 
                                 error={dateError} 
@@ -168,7 +174,9 @@ const [itemList, setItemList] = useState([])
                                 type={'text'} 
                                 error={expenseForError}
                                 label={'Expenses For'} 
-                            />     
+                            />   
+
+
                         {/* Due Amount */}
                             <Input 
                                 value={amount} 
@@ -187,7 +195,8 @@ const [itemList, setItemList] = useState([])
                                 title={'Note'}
                                 onChange={(e)=> handleChange('note', e)}
                                 value={note}
-                            ></TextArea>                             {/* profile picture */}
+                            ></TextArea>                             
+                            {/* profile picture */}
                         </AnyItemContainer>
                  
 
@@ -196,12 +205,11 @@ const [itemList, setItemList] = useState([])
                             <div>
                             <Button
                                 title={'Select Items'}
-                                btnText={'Add List'}
+                                btnText={isBtnLoading? <ButtonLoader text={'Updating...'}/> : 'Update Expense'}
                                 btnFontSize={'12px'}
                                 btnColor={'green'}
                                 btnTxtClr={'white'}
                                 btnAlign={'flex-end'}
-                                btnOnClick={()=>{}}
                             />
                             </div>
                         </ItemButtonWrapper>
@@ -211,6 +219,8 @@ const [itemList, setItemList] = useState([])
                 </form>
 
         </EditExpenseContent>}</>
+            {/* Toast message user component */}
+              <ToastComponents/>
     </EditExpenseWrapper>
   )
 }

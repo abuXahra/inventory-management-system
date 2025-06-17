@@ -1,45 +1,81 @@
 
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import PageTitle from '../../../components/page_title/PageTitle'
 import ListHeader from '../../../components/page_title/list_header/ListHeader'
 import { useNavigate } from 'react-router-dom'
 import { SupplierPageContent, SupplierPageWrapper } from './supplierPage.style'
 import SupplierTable from '../../../components/table/supplier_table/Supplier'
+import axios from 'axios'
+import { List } from 'react-content-loader'
 
 
 
 export default function SupplierPage() {
+   
+  const [supplier, setSupplier] = useState([]);
+  const [allSuppliers, setAllSuppliers] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+// fetch handler 
+       useEffect(() => {
+          const getSupplier = async () => { 
+          setIsLoading(true)  
+          try {
+              const res = await axios.get(process.env.REACT_APP_URL + "/api/suppliers")
+              setSupplier(res.data)
+              setAllSuppliers(res.data);
+              setIsLoading(false)
+              
+              console.log(res.data)
+          } catch (err) {
+              console.log(err)
+              setIsLoading(false)
+              }
+            }
+            
+          getSupplier();
+          
+        }, [])
+    
+
+
+ // handle  delete
+              const deleteSupplier = async (supplierId,  updatedList = null) => {
+                
+                if (updatedList) {
+                  setSupplier(updatedList);
+                  return { success: true };
+                }
+                
+                try {
+                  await axios.delete(`${process.env.REACT_APP_URL}/api/suppliers/${supplierId}`);
+                  const updatedSupplier = supplier.filter(supplier => supplier._id !== supplierId);
+                  setSupplier(updatedSupplier);
+                  return { success: true };
+                } catch (error) {
+                  return { success: false, message: error.message };
+                }
+              };
+
+
+
+                // handle search query
+                const handleSearchQueryOnChange = (e) => {
+                  let query = e.target.value;
+                  //  if query is empty, reset to all record
+                  if(query === ''){
+                    setSupplier(allSuppliers);
+                  }else{
+                    // Filter records based on query
+                    const filterRecords = allSuppliers.filter(item =>
+                      item.name.toLocaleLowerCase().includes(query.toLocaleLowerCase())
+                    );
+                    setSupplier(filterRecords)
+                  }
+                }
+                    
   
-  const data = [
-    {
-      id: 1,
-      date: '02-01-2021',
-      code: 'SU1001',
-      name: 'Himeel Raw',
-      mobile: '+2349055001663',
-      email: 'himeelraw@gmail.com',
-      taxNo: '15648618541',
-      address: 'Dikhusa, CTG, BD',
-    }, 
-    {
-        id: 2,
-        date: '02-01-2021',
-        code: 'SU1002',
-        name: 'Hawawu Rabi',
-        mobile: '+2349055001663',
-        email: 'hawar@gmail.com',
-        taxNo: '15648618541',
-        address: 'Dutse, Alhaji, Abuja',
-      }, 
-  ];
-
-  const[records, setRecords] = useState(data);
-  const handleChange = (e) => {
-    let query = e.target.value;  
-    const newRecords = data.filter(item => item.name.toLocaleLowerCase().includes(query.toLocaleLowerCase()))
-    setRecords(newRecords);
-  }
-
+  
 
   const navigate = useNavigate();
   return (
@@ -47,20 +83,24 @@ export default function SupplierPage() {
         <PageTitle title={'Supplier'}/>
 
         {/* content */}
+         {isLoading? <List/> :
         <SupplierPageContent>
           <ListHeader 
             title={'Add Supplier'} 
             btnOnClick={()=>navigate('/add-supplier')}
             searQuery={'Name'}
-            onChange={handleChange}
+            onChange={handleSearchQueryOnChange}
             type={'text'}
-            dataLength={records.length}
+            dataLength={supplier.length}
           />
           
           {/* Supplier Table */}
-            <SupplierTable data={records}/>
+            <SupplierTable 
+              data={supplier}
+              onDeleteSup = {deleteSupplier}
+              />
         </SupplierPageContent>
-
+}
         
     </SupplierPageWrapper>
   )
