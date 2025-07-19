@@ -154,11 +154,11 @@ const paymentType =  [
                 <TotalChargesWrapper>            
                    {/* Total quantities */}
                     <AnyItemContainer justifyContent={'space-between'}>
-                        <InnerWrapper>
+                        <InnerWrapper bgColor={"white"} pd="none">
                             <span><b>Total Quatities</b></span>
                             <span>2</span>
                         </InnerWrapper>
-                        <InnerWrapper>
+                        <InnerWrapper bgColor={"white"} pd="none">
                             <span><b>Sub Total</b></span>
                             <span>N306</span>
                         </InnerWrapper>
@@ -166,7 +166,7 @@ const paymentType =  [
                    
                    {/* Other Charges */}
                     <AnyItemContainer justifyContent={'space-between'}>
-                            <InnerWrapper>
+                            <InnerWrapper bgColor={"white"} pd="none">
                                 <span><b> Other Charges</b></span>
                                 <span>
                                     <Input
@@ -174,7 +174,7 @@ const paymentType =  [
                                     />
                                 </span>
                             </InnerWrapper>
-                            <InnerWrapper>
+                            <InnerWrapper bgColor={"white"} pd="none">
                                 <span><b> Other Charges</b></span>
                                 <span>N0</span>
                             </InnerWrapper>
@@ -183,7 +183,7 @@ const paymentType =  [
 
                           {/* Discount */}
                           <AnyItemContainer justifyContent={'space-between'}>
-                            <InnerWrapper>
+                            <InnerWrapper bgColor={"white"} pd="none">
                                 <span><b>Discount</b></span>
                                 <span>
                                     <Input
@@ -191,7 +191,7 @@ const paymentType =  [
                                     />
                                 </span>
                             </InnerWrapper>
-                            <InnerWrapper>
+                            <InnerWrapper bgColor={"white"} pd="none">
                                 <span><b> Other Charges</b></span>
                                 <span>N0</span>
                             </InnerWrapper>
@@ -199,7 +199,7 @@ const paymentType =  [
 
                      {/* Grand Total */}
                      <AnyItemContainer justifyContent={'space-between'}>
-                            <InnerWrapper>
+                            <InnerWrapper bgColor={"white"} pd="none">
                                 <span><b>Note</b></span>
                                 <span>
                                     <TextArea
@@ -208,7 +208,7 @@ const paymentType =  [
                                     ></TextArea>
                                 </span>
                             </InnerWrapper>
-                            <InnerWrapper>
+                            <InnerWrapper bgColor={"white"} pd="none">
                                 <span><b> Grand Total</b></span>
                                 <span>N300</span>
                             </InnerWrapper>

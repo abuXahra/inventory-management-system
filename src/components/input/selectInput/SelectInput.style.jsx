@@ -30,12 +30,12 @@ export const SelectInputLabel = styled.label`
 
 export const SelectInputStyle = styled.select`
     border: 1px solid #0d398420; 
-    border-radius: 2px;
+     border-radius: 10px;
     padding: 5px;
     width: 100%;
     color: grey;
     font-size: 10px;
-
+    background-color: ${({inputBg}) => inputBg || 'transparent'};
     option{
         font-size: 10px;
     }

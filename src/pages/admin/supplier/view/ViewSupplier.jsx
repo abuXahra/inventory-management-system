@@ -63,7 +63,7 @@ export default function SupplierDetail() {
                       setIsBtnLoading(true);
                       try {
                          
-                        await axios.delete(`${process.env.REACT_APP_URL}/api/customers/${supplierId}`);
+                        await axios.delete(`${process.env.REACT_APP_URL}/api/suppliers/${supplierId}`);
                        
                           toast.success('Supplier deleted successfully');
                           setShowDeleteCard(false); // Close modal

@@ -108,7 +108,7 @@ const [taxValueError, setTaxValueError] = useState(false);
            
             const newTax = {
                 name: taxName,
-                taxPercentage: taxValue,
+                taxPercentage:parseInt(taxValue),
                 status: taxStatus,
             }
 
@@ -156,7 +156,8 @@ const [taxValueError, setTaxValueError] = useState(false);
                                 error={taxValueError} 
                                 value={taxValue}
                                 label={'Tax Value'}
-                                title={'Tax Value'}    
+                                title={'Tax Value'}
+                                type={'text'}    
                             />
 
 

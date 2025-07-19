@@ -90,8 +90,6 @@ const [itemList, setItemList] = useState([])
     const addToList = (e)=>{
 
         e.preventDefault();
-
-        e.preventDefault();
         let isValid = true;
 
         if(!date){

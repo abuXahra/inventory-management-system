@@ -7,12 +7,11 @@ import { customStyles } from "../../TableCustomStyle.style";
 import { Container, TableWrapper } from "./expenseReportTable";
 
 const ExpenseReportTable = ({ data }) => {
+  
   // Calculate the total amounts and other sums as needed
   const paidAmount = data.reduce((sum, row) => sum + row.paidAmount, 0);
 
-          
-  
-          
+        
   const columns = [
     {
       name: "#",

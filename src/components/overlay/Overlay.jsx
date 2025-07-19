@@ -4,7 +4,7 @@ import { CloseIcon, OverlayButton, OverlayCard, OverlayWrapper } from './Overlay
 import { FaTimes } from 'react-icons/fa'
 import Button from '../clicks/button/Button'
 
-export default function Overlay({children, contentHight, contentWidth, overlayButtonClick, closeOverlayOnClick, btnText1, btnText2, btnDisplayNo, alternatFunc, contentAlignment}) {
+export default function Overlay({children, contentHight, contentWidth, overlayButtonClick, closeOverlayOnClick, btnText1, btnText2, btnDisplayYes, btnDisplayNo, alternatFunc, contentAlignment}) {
   return (
     <OverlayWrapper>
       <OverlayCard contentHight={contentHight} contentWidth={contentWidth} contentAlignment={contentAlignment}>
@@ -22,6 +22,7 @@ export default function Overlay({children, contentHight, contentWidth, overlayBu
               btnPd={'6px 10px'}
               btnFontSize={'12px'}
               btnOnClick={overlayButtonClick}
+              btnDisplay={btnDisplayYes}
             />
             <Button 
               btnColor={'black'}

@@ -1,205 +1,413 @@
-import React, { useState } from 'react'
-import PageTitle from '../../../../components/page_title/PageTitle'
-import ItemContainer from '../../../../components/item_container/ItemContainer'
-import Input from '../../../../components/input/Input'
-import SelectInput from '../../../../components/input/selectInput/SelectInput'
-import TextArea from '../../../../components/input/textArea/TextArea'
-import { ItemButtonWrapper } from '../../../../components/item_container/itemContainer.style'
-import Button from '../../../../components/clicks/button/Button'
-import { useNavigate } from 'react-router-dom'
-import { AnyItemContainer } from '../../sale/Add/addSale.style'
-import { FaLocationDot } from 'react-icons/fa6'
-import ButtonLoader from '../../../../components/clicks/button/button_loader/ButtonLoader'
-import { AiFillPicture } from 'react-icons/ai'
-import { EditProductContent, EditProductWrapper, ImageWrapper, InputPicture, NameAndFileInput } from './EditProduct.style'
-import productPicture from '../../../../images/necklace.jpeg'
-
-export default function EditProduct() {
 
 
-// customers name
-const categoryItem =  [
-    {
-        title: 'Necklace',
-        value: 'necklace'
-    },
-    {
-        title: 'Bungles',
-        value: 'bungles'
-    },
-]
-    // customers name
-const unitItem =  [
-    {
-        title: 'Piece',
-        value: 'piece'
-    },
-    {
-        title: 'M',
-        value: 'm'
-    },
-]
+import React, { useContext, useEffect, useState } from 'react';
+import PageTitle from '../../../../components/page_title/PageTitle';
+import ItemContainer from '../../../../components/item_container/ItemContainer';
+import Input from '../../../../components/input/Input';
+import SelectInput from '../../../../components/input/selectInput/SelectInput';
+import TextArea from '../../../../components/input/textArea/TextArea';
+import { ItemButtonWrapper } from '../../../../components/item_container/itemContainer.style';
+import Button from '../../../../components/clicks/button/Button';
+import { useNavigate, useParams } from 'react-router-dom';
+import { AnyItemContainer } from '../../sale/Add/addSale.style';
+import { FaLocationDot } from 'react-icons/fa6';
+import ButtonLoader from '../../../../components/clicks/button/button_loader/ButtonLoader';
+import { AiFillPicture } from 'react-icons/ai';
+import { EditProductWrapper, EditProductContent, ImageWrapper, InputPicture, NameAndFileInput } from './EditProduct.style';
+import axios from 'axios';
+import { UserContext } from '../../../../components/context/UserContext';
+import { toast } from 'react-toastify';
+import productPicture from '../../../../images/product_placeholder.jpg'
+import { List } from 'react-content-loader';
+
+export default function AddProduct() {
+  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
+  const [isBtnLoading, setIsBtnLoading] = useState(false);
+  const {productId} = useParams();
+  const {user} = useContext(UserContext);
+  const [showPicture, setShowPicture] = useState(true);
+
+  const [title, setTitle] = useState('');
+  const [titleError, setTitleError] = useState(false);
+  const [category, setCategory] = useState('');
+  const [categoryError, setCategoryError] = useState(false);
+  const [unit, setUnit] = useState('');
+  const [unitError, setUnitError] = useState(false);
+  const [tax, setTax] = useState('');
+  const [taxError, setTaxError] = useState(false);
+  const [taxType, setTaxType] = useState('');
+  const [taxTypeError, setTaxTypeError] = useState(false);
+  const [sku, setSku] = useState('');
+  const [skuError, setSkuError] = useState(false);
+  const [quantityAlert, setQuantityAlert] = useState('');
+  const [alertQntError, setAlertQntError] = useState(false);
+  const [description, setDescription] = useState('');
+  const [descriptionError, setDescriptionError] = useState(false);
+  const [file, setFile] = useState('');
+  const [fileError, setFileError] = useState(false);
+  const [price, setPrice] = useState('');
+  const [priceError, setPriceError] = useState(false);
+  const [purchasePrice, setPurchasePrice] = useState('');
+  const [purchasePriceError, setPurchasePriceError] = useState(false);
+  const [profitMargin, setProfitMargin] = useState('');
+  const [profitMarginError, setProfitMarginError] = useState(false);
+  const [salesPrice, setSalesPrice] = useState('');
+  const [salesPriceError, setSalesPriceError] = useState(false);
+  
+
+
+  const [categoryItem, setCategoryItem] = useState([]);
+
+  const [unitItem, setUnitItem] = useState([]);
+
+  const [taxItem, setTaxItem] = useState([]);
 
 
 
-    // customers name
-    const taxItem =  [
-        {
-            title: 'None',
-            value: 0
-        },
-        {
-            title: 'TAX(5%)',
-            value: 0.05
-        },
-        {
-            title: 'TAX(7%)',
-            value: 0.07
-        },
-    ]
-    const navigate = useNavigate();
+  const taxTypeItem = [
+    { title: 'Select', value: '' },
+    { title: 'Inclusive', value: 'Inclusive' },
+    { title: 'Non Inclusive', value: 'Non Inclusive' }
+  ];
 
-    const [isLoading, setIsLoading] = useState(false);
-    const [showPicture, setShowPicture] = useState(true);
 
-    // name
-    const [name, setName] = useState('Zirconia Necklace');
-    const [nameError, setNameError] = useState(false);
+  useEffect(()=>{
 
-// phone
-    const [phone, setPhone] = useState('');
-    const [phoneError, setPhoneError] = useState(false);
+              const fetchProducts = async() =>{
+                    setIsLoading(true)
+                    try {
+                        const res = await axios.get(`${process.env.REACT_APP_URL}/api/products/${productId}`);
+                       
+                        console.log(res.data);
+            
+                        setTitle(res.data.title);
+                        setCategory(res.data.category?._id);
+                        setUnit(res.data.unit?._id);
+                        setTax(res.data.tax);
+                        setTaxType(res.data.taxType);
+                        setSku(res.data.sku);
+                        setQuantityAlert(res.data.quantityAlert);
+                        setDescription(res.data.description);
+                        setFile(res.data.imgUrl);
+                        setPrice(res.data.price);
+                        setPurchasePrice(res.data.purchasePrice);
+                        setProfitMargin(res.data.profitMargin);
+                        setSalesPrice(res.data.salePrice);
+                        setIsLoading(false);
+    
+                    } catch (error) {
+                        console.log(error)
+                        setIsLoading(false);
+                    }
+            
+                }    
 
-    const [file, setFile] = useState('');
-    let [photo, setPhoto] = useState('');
+    // fetch cat
+    const fetCategoryItem = async() => {
+      try {
+         const res = await axios.get(`${process.env.REACT_APP_URL}/api/category`)
+         setCategoryItem([
+          { title: 'Select', value: '' }, 
+          ...res.data.map(cat => ({
+            title: cat.title,
+            value: cat._id
+          }))
+         ]);
+      } catch (error) {
+        console.log(error.message)
+      }
+    };
 
-// email
-    const [email, setEmail] = useState('');
-    const [emailError, setEmailError] = useState(false);
-// tax
-    const [tax, setTax] = useState('');
-// address
-    const [address, setAddress] = useState('')
-    const [addressError, setAddressError] = useState(false);
+        // fetch unit
+    const fetchUnitItem = async() => {
+      try {
+         const res = await axios.get(`${process.env.REACT_APP_URL}/api/units`)
+         setUnitItem([
+          { title: 'Select', value: '' }, 
+             ...res.data.map(unit => ({
+              title: unit.title,
+              value: unit._id
+            }))
+         ]);
+      } catch (error) {
+        console.log(error.message)
+      }
+    };
 
-    const handleChange = (type, e) =>{
-        if(type === 'name'){
-            setName(e.target.value);
-            setNameError(false);
-        }else if(type === 'phone'){
-            setPhone(e.target.value);
-            setPhoneError(false);
-        }else if(type === 'file'){
-            setFile(e.target.files[0])
-            setShowPicture(false);
-        }else if(type === 'email'){
-            setEmail(e.target.value);
-            setEmailError(false);
-        }else if(type === 'tax'){
-            setTax(e.target.value);
-        }else if(type === 'address'){
-            setAddress(e.target.value);
-            setAddressError(false);
-        }
+            // fetch tax
+    const fetchTaxItem = async() => {
+      try {
+         const res = await axios.get(`${process.env.REACT_APP_URL}/api/tax`)
+         setTaxItem([
+          { title: 'Select', value: '' }, 
+          ...res.data.map(tax => ({
+            title: tax.name,
+            value: tax.taxPercentage
+          }))
+    ]);
+      } catch (error) {
+        console.log(error.message)
+      }
+    };
+    fetchProducts();
+    fetCategoryItem();
+    fetchUnitItem();
+    fetchTaxItem();
+  }, [productId])
+
+
+  const calculatePurchasePrice = (price, tax) => {
+    const p = parseFloat(price) || 0;
+    const t = parseFloat(tax) || 0;
+    const result = p + (p * t / 100);
+    setPurchasePrice(result.toFixed(2));
+    if (profitMargin && taxType) {
+      calculateSellingPrice(result, profitMargin, taxType, tax);
     }
+  };
 
-    const submitHandler = (e) => {
-        e.preventDefault();
-        let isValid = true;
+  const calculateSellingPrice = (purchasePrice, profitMargin, taxType, tax) => {
+    const base = parseFloat(purchasePrice) || 0;
+    const margin = parseFloat(profitMargin) || 0;
+    let selling;
+    if (taxType === 'Inclusive') {
+      selling = base + (base * margin / 100);
+    } else {
+      const priceWithoutTax = base / (1 + (tax / 100));
+      selling = priceWithoutTax + (priceWithoutTax * margin / 100);
+    }
+    setSalesPrice(selling.toFixed(2));
+  };
 
-        if(!name){
-            setNameError(true);
-            isValid = false;
+  const handleChange = (type, e) => {
+
+    if (type === 'title') {
+      setTitle(e.target.value); 
+      setTitleError(false)
+    }
+    else if (type === 'category') {
+      setCategory(e.target.value); 
+      setCategoryError(false)
+    }
+    else if (type === 'unit') {
+      setUnit(e.target.value); 
+      setUnitError(false)
+    }
+    else if (type === 'sku') {
+      setSku(e.target.value); setSkuError(false)
+    }
+    else if (type === 'alertQnt') {
+      setQuantityAlert(e.target.value); 
+      setAlertQntError(false)
+    }
+    else if (type === 'description') {
+      setDescription(e.target.value); 
+      setDescriptionError(false);
+    }
+    else if (type === 'file') {
+      setFile(e.target.files[0]);
+      setShowPicture(false);
+    }
+    else if (type === 'price') {
+      setPrice(e.target.value);
+      calculatePurchasePrice(e.target.value, tax);
+      setPriceError(false);
+    }
+    else if (type === 'tax') {
+      setTax(e.target.value);
+      calculatePurchasePrice(price, e.target.value);
+      setTaxError(false);
+    }
+    else if (type === 'tax-type') {
+      setTaxType(e.target.value);
+      calculateSellingPrice(purchasePrice, profitMargin, e.target.value, tax);
+      setTaxTypeError(false);
+    }
+    else if (type === 'profit-margin') {
+      setProfitMargin(e.target.value);
+      calculateSellingPrice(purchasePrice, e.target.value, taxType, tax);
+      setProfitMarginError(false);
+    }
+    else if (type === 'salePrice') {
+      setSalesPrice(e.target.value);
+      setSalesPriceError(false);
+    }
+  };
+
+
+  // Fetch expense initial
+      const [productInitial, setProductInitial] = useState('')
+      useEffect(()=>{
+        const fetchCompany = async() =>{
+          setIsLoading(true)
+            try {
+                const res = await axios.get(`${process.env.REACT_APP_URL}/api/company`);
+              
+                const prefix = res.data[0].prefixes?.[0];
+  
+                if (prefix) {
+                    setProductInitial(prefix.product);
+                }
+  
+                setIsLoading(false);
+            } catch (error) {
+                console.log(error);
+                setIsLoading(false);
+            }
+      
         }
+        fetchCompany();
+      },[])
 
-        if(!phone){
-            setPhoneError(true);
-            isValid = false;
-        }
 
-        if(!email){
-            setEmailError(true);
-            isValid = false;
-        }
+  const submitHandler = async (e) => {
+    e.preventDefault();
+    console.log('Submit handler triggered')
+    let valid = true;
+    
+    if (!title) {
+      setTitleError(true);  
+      valid = false;
+    }
+    if (!category) {
+      setCategoryError(true); 
+      valid = false;
+    }
+    if (!unit) {
+      setUnitError(true); 
+      valid = false;
+    }
+    if (tax === '' || tax === null) {
+        setTaxError(true); 
+        valid = false;
+      }
+    if (!taxType){ 
+        setTaxTypeError(true); 
+        valid = false;
+      }
+    if (!quantityAlert) {
+        setAlertQntError(true); 
+        valid = false;
+      }
+    if (!description) {
+        setDescriptionError(true); 
+        valid = false;
+      }
+    // if (!file) {
+    //     setFileError(true); 
+    //     valid = false;
+    //   }
+    if (!price) {
+        setPriceError(true); 
+        valid = false;
+      }
+    if (!purchasePrice) {
+        setPurchasePriceError(true); 
+        valid = false;
+      }
+    if (!salesPrice) {
+      setSalesPriceError(true); 
+      valid = false;
+    }
+    
+    if (valid) {
+     console.log('form validated triggered')
+      const updateProduct = {
+        title: title,
+        category: category,
+        unit: unit,
+        sku:  sku,
+        quantityAlert: quantityAlert,
+        description: description,
+        price:  price,
+        tax: tax,
+        purchasePrice: purchasePrice,
+        taxType: taxType,
+        profitMargin: profitMargin,
+        salePrice: salesPrice,
+        userId: user._id,
+      }
 
+      console.log(updateProduct)
+
+      if (file) {
+          const data = new FormData()
+          const filename = file.name
+          data.append('img', filename)
+          data.append('file', file)
+          updateProduct.imgUrl = filename;
+          
+          // img upload
+          try {
+              const imgUpload = await axios.post(`${process.env.REACT_APP_URL}/api/upload`, data)
+              console.log(imgUpload.data)
+              } catch (err) {
+                console.log(err)
+              }
+          }
+                  
+      setIsBtnLoading(true);
+
+      try {
+        const res = await axios.put(`${process.env.REACT_APP_URL}/api/products/${productId}`, updateProduct);
         
-        if(!address){
-            setAddressError(true);
-            isValid = false;
-        }
-        if(isValid){
-            setIsLoading(true)
-            navigate(`/suppliers`)
-        }
+        navigate('/products');
+          // toast success message
+           toast.success('Product added Successfully')
+      } catch (err) {
+        console.error(err);
+        setIsBtnLoading(false);
+      }
     }
+  };
 
   return (
     <EditProductWrapper>
-    {/* Page title */}
-        <PageTitle title={'Product'} subTitle={'/ Edit'}/>
+      <PageTitle title={'Product'} subTitle={'/ Edit'} />
+      <>
+      {isLoading? <List/> :
+      <EditProductContent>
+        <form onSubmit={submitHandler}>
+          <ItemContainer title={'Edit Product'}>
+            <AnyItemContainer justifyContent={'space-between'}>
+              <Input 
+                value={title} 
+                title={'Title'} 
+                onChange={(e) => handleChange('title', e)} 
+                error={titleError} 
+                type={'text'} 
+                label={'Title'} 
+            />
+              <SelectInput 
+                    value={category} 
+                    onChange={(e) => handleChange('category', e)} 
+                    options={categoryItem} 
+                    label={'Category'} 
+                    error={categoryError}
+                    title={'Category'}
+                />
+              <SelectInput 
+                value={unit} 
+                onChange={(e) => handleChange('unit', e)} 
+                options={unitItem} 
+                label={'Units'}
+                error={unitError} 
+                title={'Unit'}
+            />
+            </AnyItemContainer>
+            <AnyItemContainer justifyContent={'space-between'}>
+              <Input value={sku} title={'SKU'} onChange={(e) => handleChange('sku', e)} error={skuError} type={'text'} label={'SKU'} />
+              <Input value={quantityAlert} title={'Alert Quantity'} onChange={(e) => handleChange('alertQnt', e)} error={alertQntError} type={'text'} label={'Alert Quantity'} />
+            </AnyItemContainer>
+            <AnyItemContainer justifyContent={'space-between'}>
+              <TextArea label={'Description'} title={'Description'} onChange={(e) => handleChange('description', e)} value={description} error={descriptionError} />
 
-        <EditProductContent>
-            <form action="" onSubmit={submitHandler}>
-                    <ItemContainer title={'Update Product'}>
-                        <AnyItemContainer justifyContent={'space-between'}>
-                            {/* name */}
-                            <Input 
-                                value={name} 
-                                title={'Name'}
-                                onChange={(e)=>handleChange('name', e)} 
-                                error={nameError} 
-                                type={'text'} 
-                                label={'Name'} 
-                            />
 
-                            {/* Category */}
-                            <SelectInput options={categoryItem} label={'Category'}/>
-
-                            {/* Unit */}
-                            <SelectInput options={unitItem} label={'Units'}/>
-                        </AnyItemContainer>
-
-                        <AnyItemContainer justifyContent={'space-between'}>
-                            
-                            {/* SKU */}
-                            <Input 
-                                value={phone} 
-                                title={'SKU'}
-                                onChange={(e)=>handleChange('phone', e)} 
-                                error={phoneError} 
-                                type={'text'} 
-                                label={'SKU'} 
-                            />
-
-
-                           {/* Alert Quantity */}
-                           <Input 
-                                value={email} 
-                                title={'Alert Quantity'}
-                                onChange={(e)=>handleChange('email', e)} 
-                                error={emailError} 
-                                type={'email'} 
-                                label={'Alert Quantity'} 
-                            />
-      
-                        </AnyItemContainer>
-                       
-                        <AnyItemContainer justifyContent={'space-between'}>
-                                       {/* description */}
-                            <TextArea  
-                                label={'Description'}
-                                title={'Description'}
-                                onChange={(e)=> handleChange('address', e)}
-                                value={address}
-                                error={addressError}
-                                Icon={<FaLocationDot/>}
-                            ></TextArea>
-
-                            {/* picture */}
-                            <NameAndFileInput>
+                        <NameAndFileInput>
                             <label htmlFor="fileInput">
                             <span>Picture</span> 
-                            {showPicture ? (  <ImageWrapper bg={productPicture}>
+                            {showPicture ? (  <ImageWrapper bg={file ? `${process.env.REACT_APP_URL}/images/${file}` : productPicture}>
                                         {/* {file && <img src={URL.createObjectURL(file)} alt="" srcset="" />} */}
                                 </ImageWrapper>) :      
                          (<>  { 
@@ -213,87 +421,87 @@ const unitItem =  [
                             )} 
                         </label>
                             <InputPicture onChange={(e)=>handleChange('file', e)} type="file" id="fileInput" />
-                         </NameAndFileInput>                             {/* profile picture */}
-                        </AnyItemContainer>
-                    </ItemContainer>
+                         </NameAndFileInput>
+            </AnyItemContainer>
+          </ItemContainer>
 
-                    {/* Purchase Info */}
-                    <ItemContainer title={'Purchase Info'}>
-                        <AnyItemContainer justifyContent={'space-between'}>
-                                                        
-                            {/* Price */}
-                            <Input 
-                                value={phone} 
-                                title={'Price'}
-                                onChange={(e)=>handleChange('phone', e)} 
-                                error={phoneError} 
-                                type={'number'} 
-                                label={'Price'} 
-                            />  
-                            
-                            
-                              {/* Tax */}
-                              <SelectInput title={'Tax'} options={taxItem} label={'Tax'}/>
+          <ItemContainer title={'Purchase Info'}>
+            <AnyItemContainer justifyContent={'space-between'}>
+              <Input 
+                  value={price} 
+                  title={'Price'} 
+                  onChange={(e) => handleChange('price', e)} 
+                  error={priceError} 
+                  type={'number'} 
+                  label={'Price'} 
+                />
+              
+              <SelectInput 
+                value={tax} 
+                onChange={(e) => handleChange('tax', e)} 
+                title={'Tax'} 
+                options={taxItem} 
+                label={'Tax'} 
+                error={taxError}
+                requiredSymbol={"*"}
+                />
 
-                                {/*Purchase Price  */}
-                                                         {/* Price */}
-                            <Input 
-                                value={phone + phone} 
-                                title={'Purchase Price'}
-                                onChange={(e)=>handleChange('phone', e)} 
-                                error={phoneError} 
-                                type={'number'} 
-                                label={'Purchase Price'} 
-                            />  
-                        </AnyItemContainer>
-                    </ItemContainer>
+              <Input 
+                value={purchasePrice} 
+                title={'Purchase Price'} 
+                type={'number'} 
+                label={'Purchase Price'} 
+                readOnly 
+                onChange={() => {}} 
+              />
+            </AnyItemContainer>
+          </ItemContainer>
 
-                    {/* Sales Info */}
-                    <ItemContainer title={'Sale Info'}>
-                        <AnyItemContainer justifyContent={'space-between'}>
-                                                        
-                            {/* Price */}
-                            <Input 
-                                value={phone} 
-                                title={'Price'}
-                                onChange={(e)=>handleChange('phone', e)} 
-                                error={phoneError} 
-                                type={'number'} 
-                                label={'Price'} 
-                            />  
-                            
-                            
-                            {/* Tax */}
-                            <SelectInput title={'Tax'} options={taxItem} label={'Tax'}/>
+          <ItemContainer title={'Sale Info'}>
+            <AnyItemContainer justifyContent={'space-between'}>
+              <SelectInput 
+                    error={taxTypeError} 
+                    value={taxType} 
+                    title={'Tax Type'} 
+                    options={taxTypeItem} 
+                    label={'Tax Type'} 
+                    onChange={(e) => handleChange('tax-type', e)} 
+                />
+              <Input value={profitMargin} title={'Profit Margin'} onChange={(e) => handleChange('profit-margin', e)} error={profitMarginError} type={'number'} label={'Profit Margin (%)'} requiredSymbol={'*'} />
+              <Input 
+                value={salesPrice} 
+                title={'Selling Price'} 
+                type={'number'} 
+                label={'Selling Price'} 
+                // readOnly 
+                onChange={(e) =>handleChange('salePrice', e)} 
+                error={salesPriceError} 
+              />
+            </AnyItemContainer>
+            <ItemButtonWrapper btnAlign={'space-between'}>
+              <div>
+                <Button
+                  title={'Select Items'}
+                  btnText={isBtnLoading ? <ButtonLoader text={'Updating...'} /> : 'Update Product'}
+                  btnFontSize={'12px'}
+                  btnColor={'Green'}
+                  btnTxtClr={'white'}
+                  btnAlign={'flex-end'}
+                  type={'submit'}
+                />
+              </div>
+            </ItemButtonWrapper>
+          </ItemContainer>
+        </form>
+      </EditProductContent>}
+      </>
 
-                            {/*Sale Price  */}
-                            <Input 
-                                value={phone + phone} 
-                                title={'Sale Price'}
-                                onChange={(e)=>handleChange('phone', e)} 
-                                error={phoneError} 
-                                type={'number'} 
-                                label={'Sale Price'} 
-                            />  
-                        </AnyItemContainer>
-
-                        {/* button */}
-                        <ItemButtonWrapper btnAlign={'space-between'}>
-                            <div>
-                            <Button
-                                title={'Select Items'}
-                                btnText={isLoading? <ButtonLoader text={'Updating...'}/> : 'Update Product'}
-                                btnFontSize={'12px'}
-                                btnColor={'Green'}
-                                btnTxtClr={'white'}
-                                btnAlign={'flex-end'}
-                                />
-                            </div>
-                        </ItemButtonWrapper>
-                    </ItemContainer>
-                </form>
-        </EditProductContent>
     </EditProductWrapper>
-  )
+  );
 }
 
+
+
+
+ 
+  

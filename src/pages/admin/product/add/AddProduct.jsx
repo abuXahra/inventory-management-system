@@ -1,296 +1,534 @@
 
-
-
-
-
-
-import React, { useState } from 'react'
-import PageTitle from '../../../../components/page_title/PageTitle'
-import ItemContainer from '../../../../components/item_container/ItemContainer'
-import Input from '../../../../components/input/Input'
-import SelectInput from '../../../../components/input/selectInput/SelectInput'
-import TextArea from '../../../../components/input/textArea/TextArea'
-import { ItemButtonWrapper } from '../../../../components/item_container/itemContainer.style'
-import Button from '../../../../components/clicks/button/Button'
-import { useNavigate } from 'react-router-dom'
-import { AnyItemContainer } from '../../sale/Add/addSale.style'
-import { AiFillPicture } from 'react-icons/ai'
-import ButtonLoader from '../../../../components/clicks/button/button_loader/ButtonLoader'
-import { AddProductContent, AddProductWrapper, ImageWrapper, InputPicture, NameAndFileInput } from './AddProduct.style'
+import React, { useContext, useEffect, useState } from 'react';
+import PageTitle from '../../../../components/page_title/PageTitle';
+import ItemContainer from '../../../../components/item_container/ItemContainer';
+import Input from '../../../../components/input/Input';
+import SelectInput from '../../../../components/input/selectInput/SelectInput';
+import TextArea from '../../../../components/input/textArea/TextArea';
+import { ItemButtonWrapper } from '../../../../components/item_container/itemContainer.style';
+import Button from '../../../../components/clicks/button/Button';
+import { useNavigate } from 'react-router-dom';
+import { AnyItemContainer } from '../../sale/Add/addSale.style';
+import { FaLocationDot } from 'react-icons/fa6';
+import ButtonLoader from '../../../../components/clicks/button/button_loader/ButtonLoader';
+import { AiFillPicture } from 'react-icons/ai';
+import { AddProductContent, AddProductWrapper, ImageWrapper, InputPicture, NameAndFileInput } from './AddProduct.style';
+import axios from 'axios';
+import { UserContext } from '../../../../components/context/UserContext';
+import { toast } from 'react-toastify';
 
 export default function AddProduct() {
-    const navigate = useNavigate();
-    const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
+  const [isBtnLoading, setIsBtnLoading] = useState(false);
+  const {user} = useContext(UserContext);
 
-    const [title, setTitle] = useState('');
-    const [category, setCategory] = useState('');
-    const [unit, setUnit] = useState('');
-    const [sku, setSku] = useState('');
-    const [alertQnt, setAlertQnt] = useState('');
-    const [description, setDescription] = useState('');
-    const [file, setFile] = useState(null);
+  const [title, setTitle] = useState('');
+  const [titleError, setTitleError] = useState(false);
+  const [category, setCategory] = useState('');
+  const [categoryError, setCategoryError] = useState(false);
+  const [unit, setUnit] = useState('');
+  const [unitError, setUnitError] = useState(false);
+  const [tax, setTax] = useState('');
+  const [taxError, setTaxError] = useState(false);
+  const [taxType, setTaxType] = useState('');
+  const [taxTypeError, setTaxTypeError] = useState(false);
+  const [sku, setSku] = useState('');
+  const [skuError, setSkuError] = useState(false);
+  const [quantityAlert, setQuantityAlert] = useState('');
+  const [alertQntError, setAlertQntError] = useState(false);
+  const [description, setDescription] = useState('');
+  const [descriptionError, setDescriptionError] = useState(false);
+  const [file, setFile] = useState('');
+  const [fileError, setFileError] = useState(false);
+  const [price, setPrice] = useState('');
+  const [priceError, setPriceError] = useState(false);
+  const [purchasePrice, setPurchasePrice] = useState('');
+  const [purchasePriceError, setPurchasePriceError] = useState(false);
+  const [profitMargin, setProfitMargin] = useState('');
+  const [profitMarginError, setProfitMarginError] = useState(false);
+  const [salesPrice, setSalesPrice] = useState('');
+  const [salesPriceError, setSalesPriceError] = useState(false);
+  const [quantity, setQuantity] = useState(1);
+  const [quantityError, setQuantityError] = useState(false);
+  
+  const [taxAmount, setTaxAmount] = useState('');
+  const [taxAmountError, setTaxAmountError] = useState(false);
+  
+  const [unitCost, setUnitCost] = useState('');
+  const [unitCostError, setUnitCostError] = useState(false);
 
-    const [purchasePrice, setPurchasePrice] = useState('');
-    const [tax, setTax] = useState(0);
-    const [taxType, setTaxType] = useState('');
-    const [purchasePriceTax, setPurchasePriceTax] = useState('');
-    const [profitMargin, setProfitMargin] = useState('');
-    const [salesPrice, setSalesPrice] = useState('');
-    const [openingStock, setOpeningStock] = useState('');
 
-    // Error states
-    const [titleError, setTitleError] = useState(false);
-    const [categoryError, setCategoryError] = useState(false);
-    const [unitError, setUnitError] = useState(false);
-    const [skuError, setSkuError] = useState(false);
-    const [alertQntError, setAlertQntError] = useState(false);
-    const [descriptionError, setDescriptionError] = useState(false);
-    const [fileError, setFileError] = useState(false);
-    const [purchasePriceError, setPurchasePriceError] = useState(false);
-    const [purchasePriceTaxError, setPurchasePriceTaxError] = useState(false);
-    const [profitMarginError, setProfitMarginError] = useState(false);
-    const [salesPriceError, setSalesPriceError] = useState(false);
-    const [openingStockError, setOpeningStockError] = useState(false);
-    const [taxError, setTaxError] = useState(false);
-    const [taxTypeError, setTaxTypeError] = useState(false);
+  const [categoryItem, setCategoryItem] = useState([]);
 
-    const categoryItem = [
-        { title: 'Necklace', value: 'necklace' },
-        { title: 'Bungles', value: 'bungles' }
-    ];
+  const [unitItem, setUnitItem] = useState([]);
 
-    const unitItem = [
-        { title: 'Piece', value: 'piece' },
-        { title: 'M', value: 'm' }
-    ];
+  const [taxItem, setTaxItem] = useState([]);
 
-    const taxItem = [
-        { title: 'None', value: 0 },
-        { title: 'TAX(5%)', value: 5 },
-        { title: 'TAX(7%)', value: 7 }
-    ];
 
-    const taxItem2 = [
-        { title: 'Inclusive', value: 'Inclusive' },
-        { title: 'Non-Inclusive', value: 'Non-Inclusive' }
-    ];
 
-    // const updatePurchasePriceTax = (price, taxTypeVal, taxRate) => {
-    //     price = parseFloat(price);
-    //     taxRate = parseFloat(taxRate);
+  const taxTypeItem = [
+    { title: 'Select', value: '' },
+    { title: 'Inclusive', value: 'Inclusive' },
+    { title: 'Non Inclusive', value: 'Non Inclusive' }
+  ];
 
-    //     if (isNaN(price) || isNaN(taxRate)) {
-    //         setPurchasePriceTax('');
-    //         return;
-    //     }
 
-    //     let result = 0;
+  useEffect(()=>{
 
-    //     if (taxTypeVal === 'Inclusive') {
-    //         result = price / (1 + taxRate / 100);
-    //     } else {
-    //         result = price + (price * taxRate / 100);
-    //     }
+    // fetch cat
+    const fetCategoryItem = async() => {
+      try {
+         const res = await axios.get(`${process.env.REACT_APP_URL}/api/category`)
+         setCategoryItem([
+          { title: 'Select', value: '' }, 
+          ...res.data.map(cat => ({
+            title: cat.title,
+            value: cat._id
+          }))
+         ]);
+      } catch (error) {
+        console.log(error.message)
+        setIsLoading(false)
+      }
+    };
 
-    //     setPurchasePriceTax(result.toFixed(2));
-    //     updateSalesPrice(result, profitMargin);
-    // };
+        // fetch unit
+    const fetchUnitItem = async() => {
+      try {
+         const res = await axios.get(`${process.env.REACT_APP_URL}/api/units`)
+         setUnitItem([
+          { title: 'Select', value: '' }, 
+             ...res.data.map(unit => ({
+              title: unit.title,
+              value: unit._id
+            }))
+         ]);
+      } catch (error) {
+        console.log(error.message)
+        setIsLoading(false)
+      }
+    };
 
-    const updatePurchasePriceTax = (price, taxTypeVal, taxRate) => {
-    const parsedPrice = parseFloat(price);
-    const parsedTax = parseFloat(taxRate);
+            // fetch tax
+    const fetchTaxItem = async() => {
+      try {
+         const res = await axios.get(`${process.env.REACT_APP_URL}/api/tax`)
+         setTaxItem([
+          { title: 'Select', value: '' }, 
+          ...res.data.map(tax => ({
+            title: tax.name,
+            value: tax.taxPercentage
+          }))
+    ]);
+      } catch (error) {
+        console.log(error.message)
+        setIsLoading(false)
+      }
+    };
 
-    if (isNaN(parsedPrice) || isNaN(parsedTax) || !taxTypeVal) {
-        setPurchasePriceTax('');
-        return;
-    }
+    fetCategoryItem();
+    fetchUnitItem();
+    fetchTaxItem();
+  }, [])
 
-    let baseCost;
 
-    if (taxTypeVal === 'Inclusive') {
-        baseCost = parsedPrice / (1 + parsedTax / 100);
-    } else {
-        baseCost = parsedPrice;
-    }
+const calculatePurchasePrice = (price, tax, quantity) => {
+  const p = parseFloat(price) || 0;
+  const t = parseFloat(tax) || 0;
+  const q = parseFloat(quantity) || 1;
 
-    const finalPurchaseWithTax = baseCost + (parsedTax / 100 * baseCost);
-    setPurchasePriceTax(finalPurchaseWithTax.toFixed(2));
-    updateSalesPrice(finalPurchaseWithTax, profitMargin);
+  const taxAmountPerUnit = p * (t / 100);
+  const unitPriceWithTax = p + taxAmountPerUnit;
+  const totalPurchase = unitPriceWithTax * q;
+  const totalTaxAmount = taxAmountPerUnit * q;
+
+  setTaxAmount(totalTaxAmount.toFixed(2));
+  setUnitCost(unitPriceWithTax.toFixed(2));
+  setPurchasePrice(totalPurchase.toFixed(2));
+  
+
+  if (profitMargin && taxType) {
+    calculateSellingPrice(totalPurchase, profitMargin, taxType, tax);
+  }
+
 };
 
 
+  const calculateSellingPrice = (purchasePrice, profitMargin, taxType, tax) => {
+    const base = parseFloat(purchasePrice) || 0;
+    const margin = parseFloat(profitMargin) || 0;
+    let selling;
+    if (taxType === 'Inclusive') {
+      selling = base + (base * margin / 100);
+    } else {
+      const priceWithoutTax = base / (1 + (tax / 100));
+      selling = priceWithoutTax + (priceWithoutTax * margin / 100);
+    }
+    setSalesPrice(selling.toFixed(2));
+  };
 
-    const updateSalesPrice = (purchaseWithTax, margin) => {
-        const cost = parseFloat(purchaseWithTax);
-        const profit = parseFloat(margin);
+  const handleChange = (type, e) => {
 
-        if (isNaN(cost) || isNaN(profit)) {
-            setSalesPrice('');
-            return;
+    if (type === 'title') {
+      setTitle(e.target.value); 
+      setTitleError(false)
+    }
+    else if (type === 'category') {
+      setCategory(e.target.value); 
+      setCategoryError(false)
+    }
+    else if (type === 'unit') {
+      setUnit(e.target.value); 
+      setUnitError(false)
+    }
+    else if (type === 'sku') {
+      setSku(e.target.value); setSkuError(false)
+    }
+    else if (type === 'alertQnt') {
+      setQuantityAlert(e.target.value); 
+      setAlertQntError(false)
+    }
+    else if (type === 'description') {
+      setDescription(e.target.value); 
+      setDescriptionError(false);
+    }
+    else if (type === 'file') {
+      setFile(e.target.files[0]);
+    }
+    else if (type === 'price') {
+      setPrice(e.target.value);
+      calculatePurchasePrice(e.target.value, tax, quantity);
+      setPriceError(false);
+    }
+    else if (type === 'tax') {
+      setTax(e.target.value);
+      calculatePurchasePrice(price, e.target.value, quantity);
+      setTaxError(false);
+    }
+    else if (type === 'tax-type') {
+      setTaxType(e.target.value);
+      calculateSellingPrice(purchasePrice, profitMargin, e.target.value, tax);
+      setTaxTypeError(false);
+    }
+    else if (type === 'profit-margin') {
+      setProfitMargin(e.target.value);
+      calculateSellingPrice(purchasePrice, e.target.value, taxType, tax);
+      setProfitMarginError(false);
+    }
+    else if (type === 'salePrice') {
+      setSalesPrice(e.target.value);
+      setSalesPriceError(false);
+    }
+    else if (type === 'opening-stock'){
+      setQuantity(e.target.value); 
+      calculatePurchasePrice(price, tax, e.target.value);
+      setQuantityError(false);
+    } 
+  };
+
+
+  // Fetch expense initial
+      const [productInitial, setProductInitial] = useState('')
+      useEffect(()=>{
+        const fetchCompany = async() =>{
+          setIsLoading(true)
+            try {
+                const res = await axios.get(`${process.env.REACT_APP_URL}/api/company`);
+              
+                const prefix = res.data[0].prefixes?.[0];
+  
+                if (prefix) {
+                    setProductInitial(prefix.product);
+                }
+  
+                setIsLoading(false);
+            } catch (error) {
+                console.log(error);
+                setIsLoading(false);
+            }
+      
         }
-
-        const selling = cost + (cost * profit / 100);
-        setSalesPrice(selling.toFixed(2));
-    };
+        fetchCompany();
+      },[])
 
 
- 
+  const submitHandler = async (e) => {
+    e.preventDefault();
+    console.log('Submit handler triggered')
+    let valid = true;
+    
+    if (!title) {
+      setTitleError(true);  
+      valid = false;
+    }
+    if (!category) {
+      setCategoryError(true); 
+      valid = false;
+    }
+    if (!unit) {
+      setUnitError(true); 
+      valid = false;
+    }
+    if (!tax) {
+        setTaxError(true); 
+        valid = false;
+      }
+    if (!taxType){ 
+        setTaxTypeError(true); 
+        valid = false;
+      }
+    if (!quantityAlert) {
+        setAlertQntError(true); 
+        valid = false;
+      }
+    if (!description) {
+        setDescriptionError(true); 
+        valid = false;
+      }
+    // if (!file) {
+    //     setFileError(true); 
+    //     valid = false;
+    //   }
+    if (!price) {
+        setPriceError(true); 
+        valid = false;
+      }
+    if (!purchasePrice) {
+        setPurchasePriceError(true); 
+        valid = false;
+      }
+    if (!salesPrice) {
+      setSalesPriceError(true); 
+      valid = false;
+    }
+    if (!quantity) {
+      setQuantityError(true); 
+      valid = false;
+    }
+    
+    if (valid) {
+     console.log('form validated triggered')
+      const newProduct = {
+        title: title,
+        category: category,
+        unit: unit,
+        sku:  sku,
+        quantityAlert: quantityAlert,
+        description: description,
+        price:  price,
+        tax: tax,
+        taxAmount: taxAmount,
+        unitCost: unitCost,
+        purchasePrice: purchasePrice,
+        taxType: taxType,
+        profitMargin: profitMargin,
+        salePrice: salesPrice,
+        quantity: quantity,
+        prefix: productInitial,
+        userId: user._id,
+      }
 
+      console.log(newProduct)
 
-    const handleChange = (type, e) => {
-        const value = e.target.value;
+      if (file) {
+          const data = new FormData()
+          const filename = file.name
+          data.append('img', filename)
+          data.append('file', file)
+          newProduct.imgUrl = filename;
+          
+          // img upload
+          try {
+              const imgUpload = await axios.post(`${process.env.REACT_APP_URL}/api/upload`, data)
+              console.log(imgUpload.data)
+              } catch (err) {
+                console.log(err)
+              }
+          }
+                  
+      setIsBtnLoading(true);
 
-        switch (type) {
-            case 'title':
-                setTitle(value); setTitleError(false); break;
-            case 'category':
-                setCategory(value); setCategoryError(false); break;
-            case 'unit':
-                setUnit(value); setUnitError(false); break;
-            case 'sku':
-                setSku(value); setSkuError(false); break;
-            case 'alertQnt':
-                setAlertQnt(value); setAlertQntError(false); break;
-            case 'description':
-                setDescription(value); setDescriptionError(false); break;
-            case 'file':
-                setFile(e.target.files[0]); setFileError(false); break;
-            case 'purchasePrice':
-                setPurchasePrice(value);
-                updatePurchasePriceTax(value, taxType, tax);
-                setPurchasePriceError(false);
-                break;
-            case 'tax':
-                setTax(value);
-                updatePurchasePriceTax(purchasePrice, taxType, value);
-                setTaxError(false);
-                break;
-            case 'tax-type':
-                setTaxType(value);
-                updatePurchasePriceTax(purchasePrice, value, tax);
-                setTaxTypeError(false);
-                break;
-            case 'profit-margin':
-                setProfitMargin(value);
-                updateSalesPrice(purchasePriceTax, value);
-                setProfitMarginError(false);
-                break;
-            case 'opening-stock':
-                setOpeningStock(value);
-                setOpeningStockError(false);
-                break;
-            default:
-                break;
-        }
-    };
+      try {
+        const res = await axios.post(`${process.env.REACT_APP_URL}/api/products/create`, newProduct);
+        
+        navigate('/products');
+          // toast success message
+           toast.success('Product added Successfully')
+      } catch (err) {
+        console.error(err);
+        setIsBtnLoading(false);
+      }
+    }
+  };
 
-    const submitHandler = (e) => {
-        e.preventDefault();
-        let isValid = true;
+  return (
+    <AddProductWrapper>
+      <PageTitle title={'Product'} subTitle={'/ Add'} />
+      <AddProductContent>
+        <form onSubmit={submitHandler}>
+          <ItemContainer title={'New Product'}>
+           <AnyItemContainer justifyContent={'space-between'}>
+              <Input 
+                value={title} 
+                title={'Title'} 
+                onChange={(e) => handleChange('title', e)} 
+                error={titleError} 
+                type={'text'} 
+                label={'Title'} 
+            />
+              <SelectInput 
+                    value={category} 
+                    onChange={(e) => handleChange('category', e)} 
+                    options={categoryItem} 
+                    label={'Category'} 
+                    error={categoryError}
+                    title={'Category'}
+                />
+              <SelectInput 
+                value={unit} 
+                onChange={(e) => handleChange('unit', e)} 
+                options={unitItem} 
+                label={'Units'}
+                error={unitError} 
+                title={'Unit'}
+            />
+            </AnyItemContainer>
+            <AnyItemContainer justifyContent={'space-between'}>
+              <Input 
+                  value={sku} 
+                  title={'SKU'} 
+                  onChange={(e) => handleChange('sku', e)} 
+                  error={skuError} type={'text'} 
+                  label={'SKU'} />
+              <Input 
+                  value={quantityAlert} 
+                  title={'Alert Quantity'} 
+                  onChange={(e) => handleChange('alertQnt', e)} 
+                  error={alertQntError} 
+                  type={'text'} 
+                  label={'Alert Quantity'} 
+              />
+            </AnyItemContainer>
+            <AnyItemContainer justifyContent={'space-between'}>
+              <TextArea 
+                  label={'Description'} 
+                  title={'Description'} 
+                  onChange={(e) => handleChange('description', e)} 
+                  value={description} 
+                  error={descriptionError} />
+              <NameAndFileInput>
+                <label htmlFor="fileInput">
+                  <span>Picture</span>
+                  {file ? (<ImageWrapper bg={URL.createObjectURL(file)} />) : <AiFillPicture />}
+                </label>
+                <InputPicture onChange={(e) => setFile(e.target.files[0])} type="file" id="fileInput" />
+              </NameAndFileInput>
+            </AnyItemContainer>
+          </ItemContainer>
 
-        if (!title) { setTitleError(true); isValid = false; }
-        if (!category) { setCategoryError(true); isValid = false; }
-        if (!unit) { setUnitError(true); isValid = false; }
-        if (!sku) { setSkuError(true); isValid = false; }
-        if (!alertQnt) { setAlertQntError(true); isValid = false; }
-        if (!description) { setDescriptionError(true); isValid = false; }
-        if (!file) { setFileError(true); isValid = false; }
-        if (!purchasePrice) { setPurchasePriceError(true); isValid = false; }
-        if (!tax) { setTaxError(true); isValid = false; }
-        if (!taxType) { setTaxTypeError(true); isValid = false; }
-        if (!purchasePriceTax) { setPurchasePriceTaxError(true); isValid = false; }
-        if (!profitMargin) { setProfitMarginError(true); isValid = false; }
-        if (!salesPrice) { setSalesPriceError(true); isValid = false; }
-        if (!openingStock) { setOpeningStockError(true); isValid = false; }
+          <ItemContainer title={'Purchase Info'}>
+            <AnyItemContainer justifyContent={'space-between'}>
+              <Input 
+                  value={price} 
+                  title={'Price'} 
+                  onChange={(e) => handleChange('price', e)} 
+                  error={priceError} 
+                  type={'number'} 
+                  label={'Price'} 
+                />
+              {/* <Input 
+                  value={quantity} 
+                  title={'Quantity'} 
+                  onChange={(e) => handleChange('opening-stock', e)} 
+                  error={quantityError} 
+                  type={'number'} 
+                  label={'Quantity'} requiredSymbol={'*'} /> */}
+              <SelectInput 
+                value={tax} 
+                onChange={(e) => handleChange('tax', e)} 
+                title={'Tax'} 
+                options={taxItem} 
+                label={'Tax'} 
+                error={taxError}
+                />
 
-        if (isValid) {
-            setIsLoading(true);
-            // Save data to backend here
-            navigate('/suppliers');
-        }
-    };
+              <Input 
+                value={purchasePrice} 
+                title={'Purchase Price'} 
+                type={'number'} 
+                label={'Purchase Price'} 
+                readOnly 
+                onChange={() => {}} 
+              />
+            </AnyItemContainer>
+          </ItemContainer>
 
-    return (
-        <AddProductWrapper>
-            <PageTitle title={'Product'} subTitle={'/ Add'} />
-            <AddProductContent>
-                <form onSubmit={submitHandler}>
-                    <ItemContainer title={'New Product'}>
-                        <AnyItemContainer justifyContent={'space-between'}>
-                            <Input value={title} title={'Title'} onChange={(e) => handleChange('title', e)} error={titleError} type={'text'} label={'Title'} />
-                            <SelectInput value={category} onChange={(e) => handleChange('category', e)} options={categoryItem} label={'Category'} />
-                            <SelectInput value={unit} onChange={(e) => handleChange('unit', e)} options={unitItem} label={'Units'} />
-                        </AnyItemContainer>
-
-                        <AnyItemContainer justifyContent={'space-between'}>
-                            <Input value={sku} title={'SKU'} onChange={(e) => handleChange('sku', e)} error={skuError} type={'text'} label={'SKU'} />
-                            <Input value={alertQnt} title={'Alert Quantity'} onChange={(e) => handleChange('alertQnt', e)} error={alertQntError} type={'number'} label={'Alert Quantity'} />
-                        </AnyItemContainer>
-
-                        <AnyItemContainer justifyContent={'space-between'}>
-                            <TextArea label={'Description'} title={'Description'} onChange={(e) => handleChange('description', e)} value={description} error={descriptionError} />
-                            <NameAndFileInput>
-                                <label htmlFor="fileInput"><span>Picture</span>
-                                    {file ?
-                                        (<ImageWrapper bg={URL.createObjectURL(file)} />)
-                                        : <AiFillPicture />}
-                                </label>
-                                <InputPicture onChange={(e) => handleChange('file', e)} type="file" id="fileInput" />
-                            </NameAndFileInput>
-                        </AnyItemContainer>
-                    </ItemContainer>
-
-                    <ItemContainer title={'Purchase Info'}>
-                        <AnyItemContainer justifyContent={'space-between'}>
-                            <Input value={purchasePrice} title={'Price'} onChange={(e) => handleChange('purchasePrice', e)} error={purchasePriceError} type={'number'} label={'Price'} />
-                            <SelectInput value={tax} onChange={(e) => handleChange('tax', e)} title={'Tax'} options={taxItem} label={'Tax'} />
-                            <Input value={purchasePriceTax} title={'Purchase Price'} onChange={() => { }} error={purchasePriceTaxError} type={'number'} label={'Purchase Price'} disabled />
-                        </AnyItemContainer>
-                    </ItemContainer>
-
-                    <ItemContainer title={'Sale Info'}>
-                        <AnyItemContainer justifyContent={'space-between'}>
-                            <SelectInput error={taxTypeError} value={taxType} title={'Tax Type'} options={taxItem2} label={'Tax Type'} onChange={(e) => handleChange('tax-type', e)} />
-                            <Input value={profitMargin} title={'Profit Margin'} onChange={(e) => handleChange('profit-margin', e)} error={profitMarginError} type={'number'} label={'Profit Margin (%)'} requiredSymbol="*" />
-                            <Input value={salesPrice} title={'Selling Price'} onChange={() => { }} error={salesPriceError} type={'number'} label={'Selling Price'} requiredSymbol="*" disabled />
-                            <Input value={openingStock} title={'Opening Stock'} onChange={(e) => handleChange('opening-stock', e)} error={openingStockError} type={'number'} label={'Open Stock'} requiredSymbol="*" />
-                        </AnyItemContainer>
-
-                        <ItemButtonWrapper btnAlign={'space-between'}>
-                            <Button
-                                title={'Select Items'}
-                                btnText={isLoading ? <ButtonLoader text={'Adding...'} /> : 'Add Product'}
-                                btnFontSize={'12px'}
-                                btnColor={'Green'}
-                                btnTxtClr={'white'}
-                                btnAlign={'flex-end'}
-                            />
-                        </ItemButtonWrapper>
-                    </ItemContainer>
-                </form>
-            </AddProductContent>
-        </AddProductWrapper>
-    )
+          <ItemContainer title={'Sale Info'}>
+            <AnyItemContainer justifyContent={'space-between'}>
+              <SelectInput 
+                    error={taxTypeError} 
+                    value={taxType} 
+                    title={'Tax Type'} 
+                    options={taxTypeItem} 
+                    label={'Tax Type'} 
+                    onChange={(e) => handleChange('tax-type', e)} 
+                />
+              <Input value={profitMargin} title={'Profit Margin'} onChange={(e) => handleChange('profit-margin', e)} error={profitMarginError} type={'number'} label={'Profit Margin (%)'} requiredSymbol={'*'} />
+              <Input 
+                value={salesPrice} 
+                title={'Selling Price'} 
+                type={'number'} 
+                label={'Selling Price'} 
+                // readOnly 
+                onChange={(e) =>handleChange('salePrice', e)} 
+                error={salesPriceError} 
+              />
+              
+            </AnyItemContainer>
+            <ItemButtonWrapper btnAlign={'space-between'}>
+              <div>
+                <Button
+                  title={'Select Items'}
+                  btnText={isBtnLoading ? <ButtonLoader text={'Adding...'} /> : 'Add Product'}
+                  btnFontSize={'12px'}
+                  btnColor={'Green'}
+                  btnTxtClr={'white'}
+                  btnAlign={'flex-end'}
+                  type={'submit'}
+                />
+              </div>
+            </ItemButtonWrapper>
+          </ItemContainer>
+        </form>
+      </AddProductContent>
+    </AddProductWrapper>
+  );
 }
 
 
+  // const [categoryItem, setCategoryItem] = useState([
+  //   // { title: 'Necklace', value: 'necklace' },
+  //   // { title: 'Bungles', value: 'bungles' }
+  // ]);
 
+  // const [unitItem, setUnitItem] = useState([
+  //   // { title: 'Piece', value: 'piece' },
+  //   // { title: 'M', value: 'm' }
+  // ]);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  // const [taxItem, setTaxItem] = useState([
+    // { 
+    //   title: 'None', 
+    //   value: 0 
+    // },
+    // { title: 
+    //   'TAX(5%)', 
+    //   value: 5 
+    // },
+    // { 
+    //   title: 'TAX(7%)', 
+    //   value: 7 
+    // }
+  // ]);
+  

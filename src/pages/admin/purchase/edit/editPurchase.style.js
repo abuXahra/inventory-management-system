@@ -69,6 +69,8 @@ export const ItemListContent = styled.div`
 export const AnyItemContainer = styled.div`
   width: 100%;
   display: flex;
+  position: relative;
+  flex-direction: ${({ flxDirection }) => flxDirection || "row"};
   justify-content: ${({ justifyContent }) => justifyContent || ""};
   gap: ${({ gap }) => gap || "20px"};
   font-size: 10px;
@@ -78,9 +80,17 @@ export const AnyItemContainer = styled.div`
   }
 `;
 
+export const TableResponsiveWrapper = styled.div`
+  width: 100%;
+  overflow-x: auto;
+
+  @media (max-width: 768px) {
+    -webkit-overflow-scrolling: touch;
+  }
+`;
 export const TableStyled = styled.table`
   width: 100%;
-  padding: ${({ pd }) => pd || "20px"};
+  /* padding: ${({ pd }) => pd || "20px"}; */
   font-size: 11px;
   color: rgb(27, 27, 27);
 
@@ -101,6 +111,7 @@ export const TdStyled = styled.td`
 `;
 
 export const HrStyled = styled.div`
+  margin-top: 30px;
   border-top: 1px solid #0d398420;
 `;
 
@@ -118,5 +129,31 @@ export const InnerWrapper = styled.div`
 
   @media (max-width: 768px) {
     width: 100%;
+  }
+`;
+
+export const DropdownWrapper = styled.div`
+  background-color: white;
+  position: absolute;
+  top: 50px;
+  width: 100%;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  z-index: 999;
+`;
+
+export const DropdownItems = styled.div`
+  width: 100%;
+  border-bottom: 1px solid #80808016;
+  padding: 5px;
+  font-size: 10px;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #80808016;
   }
 `;

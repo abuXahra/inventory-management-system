@@ -11,6 +11,7 @@ export const ItemContainerS = styled.div`
 
 export const ItemContent = styled.div`
   border: 1px solid #cccccc;
+  border-radius: 10px;
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -30,6 +31,7 @@ export const ItemTitleWrapper = styled.div`
   top: -12px;
   left: 3px;
   background-color: white;
+  border-radius: 10px;
 `;
 
 export const ItemButtonWrapper = styled.div`

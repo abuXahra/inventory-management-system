@@ -39,11 +39,12 @@ export const UserDetailPicture = styled.div`
 
 export const PictureWrapper = styled.div`
   width: 100%;
-  height: 200px;
+  height: ${({ heights }) => heights || "200px"};
   background-image: url(${({ imgUrl }) => imgUrl});
   background-position: center;
   background-size: cover;
   background-repeat: no-repeat;
+  cursor: pointer;
 `;
 
 export const UserDetailData = styled.div`

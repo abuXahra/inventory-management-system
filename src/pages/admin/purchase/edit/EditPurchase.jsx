@@ -1,114 +1,708 @@
 
-import React, { useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import ItemContainer from '../../../../components/item_container/ItemContainer'
 import Input from '../../../../components/input/Input'
 import SelectInput from '../../../../components/input/selectInput/SelectInput'
-import { ProductItemList } from '../../../../data/productItems'
+// import { ProductItemList } from '../../../../data/productItems'
 import Button from '../../../../components/clicks/button/Button'
 import { ItemButtonWrapper } from '../../../../components/item_container/itemContainer.style'
 import TextArea from '../../../../components/input/textArea/TextArea'
 import { FaTrash } from 'react-icons/fa'
 import PageTitle from '../../../../components/page_title/PageTitle'
-import { useNavigate } from 'react-router-dom'
-import { AnyItemContainer, EditPurchaseContent, EditPurchaseWrapper, HrStyled, InnerWrapper, ItemListContent, ItemsWrapper, SelectItemContent, SupplierInfoWrapper, TableStyled, TdStyled, TotalChargesWrapper } from './editPurchase.style'
+import { useNavigate, useParams } from 'react-router-dom'
+import { EditPurchaseContent, EditPurchaseWrapper, AnyItemContainer, DropdownItems, DropdownWrapper, HrStyled, InnerWrapper, ItemListContent, ItemsWrapper, SelectItemContent, SupplierInfoWrapper, TableResponsiveWrapper, TableStyled, TdStyled, TotalChargesWrapper } from './editPurchase.style'
+import axios from 'axios'
+import { UserContext } from '../../../../components/context/UserContext'
+import { toast } from 'react-toastify'
+import ButtonLoader from '../../../../components/clicks/button/button_loader/ButtonLoader'
+import ToastComponents from '../../../../components/toast_message/toast_component/ToastComponents'
+import { List } from 'react-content-loader'
 
 export default function EditPurchase() {
 
-const [itemList, setItemList] = useState(ProductItemList);
-const navigate = useNavigate()
+// const [productItemList, setProductItemList] = useState(ProductItemList);
+const {purchaseId} = useParams();
+  
+const navigate = useNavigate();
+const [isLoading, setIsLoading] = useState(false);
+const [isBtnLoading, setIsBtnLoading] = useState(false);
+const {user} = useContext(UserContext);
+
+const [itemList, setItemList] = useState([]);
+const [productId, setProductId] = useState('');
+
+const todayDate = new Date().toISOString().split('T')[0]; // Format: YYYY-MM-DD (2025-02-29)
+
+const [searchTitle, setSearchTitle] = useState('');
+const [searchTitleError, setSearchTitleError] = useState(false);
+
+const [title, setTitle] = useState('');
+const [titleError, setTitleError] = useState(false);
+
+const [quantity, setQuantity] = useState('');
+const [quantityError, setQuantityError] = useState(false);
+
+const [price, setPrice] = useState('');
+const [priceError, setPriceError] = useState(false);
+
+const [tax, setTax] = useState('');
+const [taxError, setTaxError] = useState(false);
+
+const [taxAmount, setTaxAmount] = useState('');
+const [taxAmountError, setTaxAmountError] = useState(false);
+
+const [unitCost, setUnitCost] = useState('');
+const [unitCostError, setUnitCostError] = useState(false);
+
+const [amount, setAmount] = useState('');
+const [amountError, setAmountError] = useState(false);
+
+{/* Supply info */}
+const [purchaseDate, setPurchaseDate] = useState(todayDate);
+const [purchaseDateError, setPurchaseDateError] = useState(false);
+
+// const [purchaseQuantity, setPurchaseQuantity] = useState(null)
+
+const [supplier, setSupplier] = useState('');
+const [supplierNameError, setSupplierNameError] = useState(false);
+console.log(supplier)
+
+const [purchaseStatus, setPurchaseStatus] = useState('');
+const [purchaseStatusError, setPurchaseStatusError] = useState(false);
+
+const [reference, setReference] = useState('');
+
+const [purchaseAmount, setPurchaseAmount] = useState('');
+const [purchaseAmountError, setPurchaseAmountError] = useState(false);
+
+const [paymentType, setPaymentType] = useState('');
+const [paymentTypeError, setPaymentTypeError] = useState(false);
+
+const [paymentStatus, setPaymentStatus] = useState('');
+const [paymentStatusError, setPaymentStatusError] = useState(false);
+
+const [note, setNote] = useState('');
+
+const [showDropdwon, setShowDropdwon] = useState(false);
+
+const [totalQuantity, setTotalQuantity] = useState(0);
+const [subTotal, setSubTotal] = useState(0);
+const [otherCharges, setOtherCharges] = useState('');
+const [discount, setDiscount] = useState('');
+const [discountValue, setDiscountValue] = useState(null);
+const [shipping, setShipping] = useState('');
+const [grandTotal, setGrandTotal] = useState(0);
+
+
+const [products, setProducts] = useState([]);
+
+const [supplierItems, setSupplierItems] = useState([])
+
+// onchange handler
+const handleChange = (type, e)=>{
+        if (type === 'searchTitle'){
+            setSearchTitle(e.target.value);
+            setTitle(e.target.value);
+            setTitleError(false);
+
+            e.target.value.length > 0 ? 
+            setShowDropdwon(true):
+            setShowDropdwon(false)
+
+            
+                setTitle('')
+                setQuantity('');
+                setPrice('')
+                setTax('')
+                setTaxAmount('')
+                setUnitCost('')
+                setAmount('')
+                setProductId('')
+
+        }else if(type === 'quantity'){
+            setQuantity(e.target.value);
+            calculatePurchasePrice(price, tax, e.target.value);
+            setQuantityError(false);
+        }else if(type === 'price'){
+            setPrice(e.target.value);
+            calculatePurchasePrice(e.target.value, tax, quantity);
+            setPriceError(false);
+        }else if(type === 'tax'){
+            setTax(e.target.value);
+            calculatePurchasePrice(price, e.target.value, quantity);
+            setTaxError(false);
+        }else if(type === 'price'){
+            setTaxAmount(e.target.value);
+        }else if(type === 'unit-cost'){
+            setUnitCost(e.target.value);
+        }else if(type === 'amount'){
+            setUnitCost(e.target.value);
+        }
+        // calculations:
+        else if(type === 'otherCharges'){
+            setOtherCharges(e.target.value);
+        }else if(type === 'discount'){
+            setDiscount(e.target.value);
+        }else if(type === 'shipping'){
+            setShipping(e.target.value);
+        }
+        // supply info
+        else if(type === 'purchase-date'){
+            setPurchaseDate(e.target.value);
+            setPurchaseDateError(false);
+        }else if(type === 'supply-name'){
+            setSupplier(e.target.value);
+             console.log(e.target.value);
+            setSupplierNameError(false);
+        }else if(type === 'purchase-status'){
+            setPurchaseStatus(e.target.value);
+            setPurchaseStatusError(false);
+        }else if(type === 'references'){
+            setReference(e.target.value);
+        }else if(type === 'purchase-amount'){
+            setPurchaseAmount(e.target.value);
+            setPurchaseAmountError(false);
+        }else if(type === 'payment-type'){
+            setPaymentType(e.target.value);
+            setPaymentTypeError(false);
+        }else if(type === 'payment-status'){
+            setPaymentStatus(e.target.value);
+            setPaymentStatusError(false);
+        }else if(type === 'note'){
+            setNote(e.target.value);
+        }
+}
+
 
 // TextITe
 const TaxItem = [
     {
-        title: 'none',
-        value: '0'
+        title: 'Select',
+        value: ''
     },
     {
-        title: '5',
-        value: 0.05
+        title: 'none',
+        value: 0
+    },
+    {
+        title: 'Tax (5%)',
+        value: 5
     },
     
     {
-        title: '7',
-        value: 0.07
+        title: 'Vat + Tax (7%)',
+        value: 7
     },
 
 ] 
 
-// customers name
-const customersName =  [
-    {
-        title: 'Isah Abdulmumin',
-        value: 'Isah Abdulmumin'
-    },
-    {
-        title: 'Fatima Idris',
-        value: 'Isah Abdulmumin'
-    },
-]
 
-
-// customers name
-const saleStatus =  [
+// purchase status item name
+const purchaseStatusItem =  [
+    {
+        title: 'Select',
+        value: ''
+    },
     {
         title: 'received',
         value: 'received'
     },
     {
-        title: 'Not Recieved',
-        value: 'Isah Abdulmumin'
+        title: 'pending',
+        value: 'pending'
+    },
+        {
+        title: 'ordered',
+        value: 'ordered'
     },
 ]
 
 
 // customers name
-const paymentType =  [
+const paymentTypeItems =  [
+        {
+        title: 'Select',
+        value: ''
+    },
     {
         title: 'Cash',
         value: 'Cash'
     },
     {
-        title: 'Online Transfer',
-        value: 'Bank Transfer'
+        title: 'Check',
+        value: 'Check'
     },
     {
-        title: 'Bank Transfer',
-        value: 'Bank Transfer'
+        title: 'Transfer',
+        value: 'Transfer'
     },
 ]
 
+const paymentStatusItems = [
+    {
+        title: 'Select',
+        value: ''
+    },
+    {
+        title: 'paid',
+        value: 'paid'
+    },
+    {
+        title: 'Partial',
+        value: 'Partial'
+    },
+]
 
+useEffect(()=>{
+    // fetch purchase data
+        const getPurchaseData = async () => {
+            setIsLoading(true) 
+             try {
+                     const res = await axios.get(process.env.REACT_APP_URL + "/api/purchase/" + purchaseId);
+                     
+                     const formattedPurchaseDate = new Date(res.data.purchaseDate).toISOString().split('T')[0];
+                     setPurchaseDate(formattedPurchaseDate);
+                     setSupplier(res.data.supplier)
+                     setPurchaseStatus(res.data.purchaseStatus)
+                     setReference(res.data.reference)
+                     setPurchaseAmount(res.data.purchaseAmount)
+                     setPaymentType(res.data.paymentType)
+                     setPaymentStatus(res.data.paymentStatus)
+                     setNote(res.data.note);
+                     setSubTotal(res.data.subTotal);
+                     setOtherCharges(res.data.otherCharges)
+                     setDiscount(res.data.discount)
+                     setDiscountValue(res.data.discountValue)
+                     setShipping(res.data.shipping)
+                     setItemList(res.data.purchaseItems)
+                     setIsLoading(false)
+                     
+                     console.log(res.data)
+                 } catch (err) {
+                     console.log(err)
+                     setIsLoading(false)
+                     }
+                   }
+                 getPurchaseData()
+
+},[purchaseId])
+
+  // Fetch expense initial
+    const [prefix, setPrefix] = useState('')
+
+useEffect(() => {
+
+     const fetchCompany = async() =>{
+        //   setIsLoading(true)
+            try {
+                const res = await axios.get(`${process.env.REACT_APP_URL}/api/company`);
+              
+                const prefixData = res.data[0].prefixes?.[0];
+  
+                if (prefixData) {
+                    setPrefix(prefixData.purchase);
+                }
+                // setIsLoading(false);
+            } catch (error) {
+                console.log(error);
+                // setIsLoading(false);
+            }
+        }
+        fetchCompany();
+
+            // fetch products data
+            const getProducts = async () => { 
+                //  setIsLoading(true)  
+                 try {
+                     const res = await axios.get(process.env.REACT_APP_URL + "/api/products")
+                     console.log(res.data)
+                     setProducts(res.data)
+                    //  setIsLoading(false)
+                     
+                     console.log(res.data)
+                 } catch (err) {
+                     console.log(err)
+                    //  setIsLoading(false)
+                     }
+                   }
+                 getProducts();
+ 
+            // fetch supplier data
+            const getSuppliers = async () => { 
+                //  setIsLoading(true)  
+                 try {
+            
+                     const res = await axios.get(process.env.REACT_APP_URL + "/api/suppliers/")
+               
+                     
+                     setSupplierItems([
+                        { title: 'Select', value: '' }, 
+                        ...res.data.map(supplier => ({
+                            title: supplier.name,
+                            value: supplier._id,
+                        }))
+                    ]);
+                    //  setIsLoading(false)
+                     
+                 } catch (err) {
+                     console.log(err)
+                    //  setIsLoading(false)
+                     }
+                   }
+                   
+                 getSuppliers();
+
+// for grand total calculation
+    const totalQty = itemList.reduce((sum, item) => sum + parseFloat(item.quantity || 0), 0);
+    const subtotal = itemList.reduce((sum, item) => sum + parseFloat(item.amount || 0), 0);
+    
+    const charges = parseFloat(otherCharges) || 0;
+    const disc = parseFloat(discount) || 0;
+    const ship = parseFloat(shipping) || 0;
+    
+    const discValue = (disc / 100) * subTotal
+    const grand = subtotal + charges + ship - discValue;
+
+    
+    setTotalQuantity(totalQty);
+    setSubTotal(subtotal.toFixed(2));
+    setDiscountValue(discValue.toFixed(2))
+    setGrandTotal(grand.toFixed(2));
+    // Total Amount
+    setPurchaseAmount(grand.toFixed(2));
+    // setPurchaseAmountError(false)
+
+}, [price, quantity, tax, itemList, otherCharges, discount, shipping]);
+
+
+
+
+// calculating purchase price
+  const calculatePurchasePrice = (priceInput, taxInput, quantityInput) => {
+  const p = parseFloat(priceInput) || 0;
+  const t = parseFloat(taxInput) || 0;
+  const q = parseFloat(quantityInput) || 1;
+
+  const taxAmountPerUnit = p * (t / 100);
+  const unitPriceWithTax = p + taxAmountPerUnit;
+  const totalPurchase = unitPriceWithTax * q;
+  const totalTaxAmount = taxAmountPerUnit * q;
+
+  setTaxAmount(totalTaxAmount.toFixed(2));
+  setUnitCost(unitPriceWithTax.toFixed(2));
+  setAmount(totalPurchase.toFixed(2));
+
+};
+
+// search dropdownd handler
+const dropdownHandler = (product) => {
+    setShowDropdwon(false)
+    setProductId(product._id)
+    setSearchTitle('');
+    setTitle(product.title)
+    setQuantity(product.openingStock);
+    setPrice(product.price)
+    setTax(product.tax)
+    setTaxAmount(product.tax*product.price)
+    setUnitCost(product.price + (product.price * product.tax))
+    setAmount(product.purchasePrice)
+}
+
+// add to array list
+const addToList = (e) =>{
+
+    e.preventDefault();
+
+    let isValid = true;
+
+    if(!title){
+        setTitleError(true)
+        isValid = false;
+    }
+    if(!quantity){
+        setQuantityError(true)
+        isValid = false;
+    }
+    if(!price){
+        setPriceError(true)
+        isValid = false;
+    }
+    if(isValid){
+       
+        const newItem = {productId, title, quantity, price, tax, taxAmount, unitCost, amount };
+        setItemList((prevItems)=>[...prevItems, newItem]);
+
+        console.log(itemList);
+
+    setSearchTitle('');
+    setTitle('')
+    setQuantity('');
+    setPrice('')
+    setTax('')
+    setTaxAmount('')
+    setUnitCost('')
+    setAmount('')
+    setProductId('')
+    }
+
+}
+
+
+      // delete item from list
+      const deleteItem = (index) => {
+        const updatedList =  itemList.filter((_, i) => i !== index);
+        setItemList(updatedList)
+      }
+
+
+// increment or decreement product quantity  in the list
+ const updateQuantity = (index, delta) => {
+  setItemList((prevList) => {
+    return prevList.map((item, i) => {
+      if (i === index) {
+        const newQty = Math.max(1, parseInt(item.quantity) + delta); // ensures qty doesn't go below 1
+        const price = parseFloat(item.price) || 0;
+        const taxRate = parseFloat(item.tax) || 0;
+
+        const taxAmountPerUnit = price * (taxRate / 100);
+        const unitCost = price + taxAmountPerUnit;
+        const totalTaxAmount = taxAmountPerUnit * newQty;
+        const totalAmount = unitCost * newQty;
+
+        return {
+          ...item,
+          quantity: newQty,
+          taxAmount: totalTaxAmount.toFixed(2),
+          unitCost: unitCost.toFixed(2),
+          amount: totalAmount.toFixed(2),
+        };
+      }
+      return item;
+    });
+  });
+};
+
+
+
+//submit handler
+const hanldeSumbit = async (e) =>{
+
+    e.preventDefault();
+
+    let isValid = true;
+
+    if(!purchaseDate){
+        setPurchaseDateError(true)
+        isValid = false;
+    }
+    if(!supplier){
+        setSupplierNameError(true)
+        isValid = false;
+    }
+    if(!purchaseStatus){
+        setPurchaseStatusError(true)
+        isValid = false;
+    }
+        if(!purchaseAmount){
+        setPurchaseAmountError(true)
+        isValid = false;
+    }
+    if(!paymentType){
+        setPaymentTypeError(true)
+        isValid = false;
+    }
+    if(!paymentStatus){
+        setPaymentStatusError(true)
+        isValid = false;
+    }
+         
+    
+    if(isValid){
+      
+      const updatePurchase = {
+      purchaseDate: new Date(purchaseDate),
+      supplier: supplier._id || supplier,
+      purchaseStatus,
+      reference,
+      purchaseAmount: Number(purchaseAmount),
+      paymentType,
+      paymentStatus,
+      note,
+      subTotal: Number(subTotal),
+      otherCharges: Number(otherCharges),
+      discount: Number(discount),
+      discountValue: Number(discountValue),
+      shipping: Number(shipping),
+      purchaseItems:
+        itemList.length > 0
+            ? itemList.map((item) => ({
+                productId: item.productId,
+                title: item.title,
+                quantity: Number(item.quantity),
+                price: Number(item.price),
+                tax: Number(item.tax),
+                taxAmount: Number(item.taxAmount),
+                unitCost: Number(item.unitCost),
+                amount: Number(item.amount),
+            }))
+            : [],
+      prefix: prefix,
+      userId: user._id
+    };
+      setIsBtnLoading(true);
+      console.log('======new purchase data==========\n', updatePurchase)
+            alert('form validated triggered')
+            try {
+          
+              const res = await axios.put(`${process.env.REACT_APP_URL}/api/purchase/${purchaseId}`, updatePurchase);
+              
+              navigate(`/purchase-invoice/${res.data._id}`);
+                // toast success message
+                 toast.success('Purchase updated Successfully')
+                   setIsBtnLoading(false);
+                } catch (err) {
+                console.error(err);
+                setIsBtnLoading(false);
+            }
+    }
+}
 
   return (
     <EditPurchaseWrapper>
-                {/* Page title */}
-                <PageTitle title={'Purchase'} subTitle={'/ Edit'}/>
+     {/* Page title */}
+        <PageTitle title={'Purchase'} subTitle={'/Edit'}/>
+        <>
+        {isLoading? <List/> : 
         <EditPurchaseContent>
         <ItemsWrapper>
             {/* SelectItem */}
             <SelectItemContent>
-                    <form action="">
+                    <form>
                     <ItemContainer title={'Select Items'}> 
+                        <AnyItemContainer flxDirection="column">
+                             <Input 
+                                value={searchTitle} 
+                                title={'Search name'}
+                                onChange={(e)=>handleChange('searchTitle', e)} 
+                                error={searchTitleError} 
+                                type={'text'} 
+                                label={'Barcode/Item Code/name'} 
+                                placeholder={'search...'}
+                                requiredSymbol={'*'}
+                            />  
+                           { showDropdwon && 
+                          
+                            <DropdownWrapper>
+                                 {/* {
+                                 products && products.map((data, i)=>(
+                                    <DropdownItems key={i} onClick={()=>dropdownHandler(data)}>{data.title}</DropdownItems>
+                                 ))}   */}
+                        {products &&
+                        products
+                            .filter((product) => {
+                            const search = searchTitle.toLowerCase();
+                            return (
+                                product.title.toLowerCase().includes(search) ||
+                                product.barcode?.toLowerCase().includes(search)
+                            );
+                            })
+                            // .slice(0, 10)
+                            .map((data, i) => (
+                            <DropdownItems key={i} onClick={() => dropdownHandler(data)}>
+                                {data.title}
+                            </DropdownItems>
+                            ))}
+                        </DropdownWrapper>
+                        
+                        }
+                        </AnyItemContainer>
                         <AnyItemContainer>
-                            <SelectInput options={itemList} label={'Item Name'}/>
-                            <Input label={'Quantity'} />
-                            <Input label={'Price'} />
-                            <SelectInput options={TaxItem} label={'Tax(%)'}/>
-                            <Input label={'Tax Amount'} />
-                            <Input label={'Unit Cost'} />
-                            <Input label={'Amount'} />
+                            <Input 
+                                value={title} 
+                                title={'Item Name'}
+                                onChange={(e)=>handleChange('title', e)} 
+                                error={titleError} 
+                                type={'text'} 
+                                label={'Name'} 
+                                requiredSymbol={'*'}
+                            /> 
+                             <Input 
+                                value={quantity} 
+                                title={'Quantity'}
+                                onChange={(e)=>handleChange('quantity', e)} 
+                                error={quantityError} 
+                                type={'text'} 
+                                label={'Quantity'} 
+                                requiredSymbol={'*'}
+                            />                  
+                            
+                            <Input 
+                                value={price} 
+                                title={'Price'}
+                                onChange={()=>{}} 
+                                error={priceError} 
+                                type={'text'} 
+                                label={'Price'} 
+                                requiredSymbol={'*'}
+                                readOnly
+                                inputBg='#c4c4c449'
+                            />                  
+                            
+                            <SelectInput 
+                                options={TaxItem} 
+                                label={'Tax(%)'}
+                                value={tax}
+                                error={taxError}
+                                requiredSymbol={'*'}
+                                title={'Tax'}
+                                readOnly 
+                                onChange={(e)=>handleChange('tax', e)}
+                            />
+
+                            <Input 
+                                value={taxAmount} 
+                                title={'Tax Amount'}
+                                onChange={()=>{}} 
+                                error={taxAmountError} 
+                                type={'number'} 
+                                label={'Tax Amount'} 
+                                requiredSymbol={'*'}
+                                readOnly 
+                                inputBg='#c4c4c449'
+                            /> 
+                            <Input 
+                                value={unitCost} 
+                                title={'Unit Cost'}
+                                onChange={()=>{}} 
+                                type={'number'} 
+                                label={'Unit Cost'} 
+                                requiredSymbol={'*'}
+                                readOnly 
+                                inputBg='#c4c4c449'
+                            /> 
+                            <Input 
+                                value={amount} 
+                                title={'Amount'}
+                                onChange={()=>{}} 
+                                type={'number'} 
+                                label={'Amount'} 
+                                requiredSymbol={'*'}
+                                readOnly 
+                                inputBg='#c4c4c449'
+                            /> 
                         </AnyItemContainer>    
                             
                     
-                            <ItemButtonWrapper btnAlign={'flex-end'}>
-                                <Button
+                        <ItemButtonWrapper btnAlign={'flex-end'}>
+                            <Button
                                 title={'Select Items'}
                                 btnText={'Add to list'}
                                 btnFontSize={'12px'}
                                 btnColor={'orange'}
                                 btnTxtClr={'white'}
                                 btnAlign={'flex-end'}
-                                />
+                                btnOnClick={addToList}                               
+                            />
                         </ItemButtonWrapper>
                     </ItemContainer>              
                         </form>
@@ -118,11 +712,14 @@ const paymentType =  [
             {/* ItemList */}
             <ItemListContent>
                 <ItemContainer title={'Item List'}>
+                <TableResponsiveWrapper>
+               {itemList.length > 0 ?
                 <TableStyled>
                     <thead>
                         <TdStyled><b>#</b></TdStyled>
                         <TdStyled><b>Item Name</b></TdStyled>
                         <TdStyled><b>Price</b></TdStyled>
+                        <TdStyled><b>Qty</b></TdStyled>
                         <TdStyled><b>Tax(%)</b></TdStyled>
                         <TdStyled><b>Tax Amount</b></TdStyled>
                         <TdStyled><b>Unit Cost</b></TdStyled>
@@ -130,21 +727,47 @@ const paymentType =  [
                         <TdStyled><b>Action</b></TdStyled>
                     </thead>
                     <tbody>
-                    {itemList.map((data, i)=>(
+                    {/* // {productItemList.length > 0 ? productItemList.map((data, i)=>( */}
+               {       itemList.map((data, i)=>( 
+                    
                         <tr key={i}>
                             <TdStyled>{i+1}</TdStyled>
                             <TdStyled>{data.title}</TdStyled>
                             <TdStyled>{data.price}</TdStyled>
-                            <TdStyled>None</TdStyled>
-                            <TdStyled>0.00</TdStyled>
-                            <TdStyled>{data.price}</TdStyled>
-                            <TdStyled>{data.qty + data.price }</TdStyled>
-                            <TdStyled><span><FaTrash/></span></TdStyled>
+                            {/* <TdStyled>{data.qty}</TdStyled> */}
+                             <TdStyled>
+                                <button
+                                style={{borderRadius: "100%", marginRight: '5px', border: "none", cursor: 'pointer' }}
+                                onClick={() => updateQuantity(i, -1)}
+                                disabled={parseInt(data.quantity) <= 1}
+                                >-</button>
+                                {data.quantity}
+                                <button
+                                 style={{borderRadius: "100%", marginLeft: '5px', border: "none",  cursor: 'pointer'}}
+                                onClick={() => updateQuantity(i, 1)}>+</button>
+                            </TdStyled>
+                            <TdStyled>{data.tax}</TdStyled>
+                            <TdStyled>{data.taxAmount}</TdStyled>
+                            <TdStyled>{data.unitCost}</TdStyled>
+                            <TdStyled>{data.amount}</TdStyled>
+                            {/* <TdStyled>{data.qty + data.price }</TdStyled> */}
+                            <TdStyled><span onClick={()=>deleteItem(i)}><FaTrash/></span></TdStyled>
                         </tr>
-                    ))
-                }
+                    ))}
+               
                     </tbody>
                 </TableStyled>
+                     :(<div style={{
+                                    alignItems: "center", 
+                                    display: 'flex', 
+                                    flexDirection: 'column', 
+                                    gap: '20px'
+                                }}>
+                                   <h3>Purchase Item</h3> 
+                                   <p>Not Item on the List</p>
+                                </div>)
+                }
+                </TableResponsiveWrapper>
 
                 <HrStyled />
                 
@@ -153,12 +776,12 @@ const paymentType =  [
                    {/* Total quantities */}
                     <AnyItemContainer justifyContent={'space-between'}>
                         <InnerWrapper>
-                            <span><b>Total Quatities</b></span>
-                            <span>2</span>
+                            <span><b>Total Quantities</b></span>
+                            <span>{totalQuantity}</span>
                         </InnerWrapper>
                         <InnerWrapper>
                             <span><b>Sub Total</b></span>
-                            <span>N306</span>
+                            <span>N{Number(subTotal).toLocaleString()}</span>
                         </InnerWrapper>
                     </AnyItemContainer>
                    
@@ -167,48 +790,66 @@ const paymentType =  [
                             <InnerWrapper>
                                 <span><b> Other Charges</b></span>
                                 <span>
-                                    <Input
-                                        placeholder={'Other Charges'}  
-                                    />
+                                    <Input 
+                                        value={otherCharges} 
+                                        placeholder={'Other Charges'}
+                                        onChange={(e)=>handleChange('otherCharges', e)} 
+                                        type={'text'}  
+                                    /> 
                                 </span>
                             </InnerWrapper>
                             <InnerWrapper>
                                 <span><b> Other Charges</b></span>
-                                <span>N0</span>
+                                <span>N{otherCharges? otherCharges: 0}</span>
                             </InnerWrapper>
                     </AnyItemContainer>
-
 
                           {/* Discount */}
                           <AnyItemContainer justifyContent={'space-between'}>
                             <InnerWrapper>
                                 <span><b>Discount</b></span>
                                 <span>
-                                    <Input
-                                        placeholder={'Discount'}  
-                                    />
+                                    <Input 
+                                        value={discount} 
+                                        placeholder={'Discount'}
+                                        onChange={(e)=>handleChange('discount', e)} 
+                                        type={'text'}  
+                                    /> 
                                 </span>
                             </InnerWrapper>
                             <InnerWrapper>
-                                <span><b> Other Charges</b></span>
-                                <span>N0</span>
+                                <span><b> Discount {discount && '('+ discount + '%)'}</b></span>
+                                <span>N{discountValue? Number(discountValue).toLocaleString():0}</span>
                             </InnerWrapper>
                     </AnyItemContainer>
 
                      {/* Grand Total */}
                      <AnyItemContainer justifyContent={'space-between'}>
                             <InnerWrapper>
-                                <span><b>Note</b></span>
+                                <span><b>Shipping</b></span>
                                 <span>
-                                    <TextArea
-                                        placeholder={'Note'}  
-                                        inputPadding={'5px'}
-                                    ></TextArea>
+                                     <Input 
+                                        value={shipping} 
+                                        placeholder={'Shipping'}
+                                        onChange={(e)=>handleChange('shipping', e)} 
+                                        type={'text'}  
+                                    /> 
                                 </span>
                             </InnerWrapper>
                             <InnerWrapper>
+                                <span><b>Shipping</b></span>
+                                <span>N{shipping? shipping: 0}</span>
+                            </InnerWrapper>
+                    </AnyItemContainer>
+
+                                         {/* Grand Total */}
+                     <AnyItemContainer justifyContent={'space-between'}>
+                            <InnerWrapper>
+                               
+                            </InnerWrapper>
+                            <InnerWrapper>
                                 <span><b> Grand Total</b></span>
-                                <span>N300</span>
+                                <span><b>N{grandTotal? grandTotal : 0}</b></span>
                             </InnerWrapper>
                     </AnyItemContainer>
                 </TotalChargesWrapper>
@@ -216,24 +857,94 @@ const paymentType =  [
             </ItemListContent>
         </ItemsWrapper>
 
-{/* Supply info */}
+    {/* Supply info */}
         <SupplierInfoWrapper>
-            <form action="" onSubmit={()=>navigate(`/purchase-invoice/${1}`)}>
+            <form action="" onSubmit={(e)=>hanldeSumbit(e)}>
                 <ItemContainer title={'Supply Info'}>
-                    <Input type={'date'} label={'Date'} />
-                    <SelectInput options={customersName} label={'Supply Name'}/>
-                    <SelectInput options={saleStatus} label={'Status'}/>
-                    <Input type={'text'} label={'Reference'} />
+                    <Input 
+                                value={purchaseDate} 
+                                title={'Date'}
+                                onChange={(e)=>handleChange('purchase-date', e)} 
+                                type={'date'} 
+                                label={'Date'} 
+                                error={purchaseDateError}
+                                requiredSymbol={'*'}
+                            /> 
+
+                    <SelectInput 
+                                options={supplierItems} 
+                                label={'Supply Name'}
+                                value={supplier}
+                                error={supplierNameError}
+                                requiredSymbol={'*'}
+                                title={'Supply Name'}
+                                onChange={(e)=>handleChange('supply-name', e)}
+                            />
+
+                    <SelectInput 
+                                options={purchaseStatusItem} 
+                                label={'Purchase Status'}
+                                value={purchaseStatus}
+                                error={purchaseStatusError}
+                                requiredSymbol={'*'}
+                                title={'Purchase Status'}
+                                onChange={(e)=>handleChange('purchase-status', e)}
+                            />
+
+                    <Input 
+                                value={reference} 
+                                title={'References'}
+                                onChange={(e)=>handleChange('references', e)} 
+                                type={'text'} 
+                                label={'References'} 
+                                // error={purchaseDateError}
+                            /> 
+
                 </ItemContainer>
                 <ItemContainer title={'Payment Info'}>
-                    <Input type={'text'} label={'Amount'} />
-                    <SelectInput options={paymentType} label={'Payment Type'}/>
-                    <TextArea label={'Note'}/>
-                    {/* Add to sale button */}
+                    <Input 
+                                value={purchaseAmount} 
+                                title={'Purchase Amount'}
+                                onChange={(e)=>handleChange('purchase-amount', e)} 
+                                type={'text'} 
+                                label={'Purchase Amount'} 
+                                requiredSymbol={'*'}
+                                readOnly 
+                                inputBg='#c4c4c449'
+                                error={purchaseAmountError}
+                            /> 
+                    
+                    <SelectInput 
+                                options={paymentTypeItems} 
+                                label={'Payment Type'}
+                                value={paymentType}
+                                error={paymentTypeError}
+                                requiredSymbol={'*'}
+                                title={'Payment Type'}
+                                onChange={(e)=>handleChange('payment-type', e)}
+                            />
+                      
+                    <SelectInput 
+                                options={paymentStatusItems} 
+                                label={'Payment Status'}
+                                value={paymentStatus}
+                                error={paymentStatusError}
+                                requiredSymbol={'*'}
+                                title={'Payment Status'}
+                                onChange={(e)=>handleChange('payment-status', e)}
+                            />
+
+                    <TextArea 
+                                label={'Note'} 
+                                title={'Note'} 
+                                onChange={(e) => handleChange('note', e)} 
+                                value={note} 
+                            />
+
+                    {/* Add to Purchase button */}
                     <ItemButtonWrapper btnAlign={'flex-start'}>
                                 <Button
-                                    title={'Select Items'}
-                                    btnText={'Update Purchase'}
+                                    btnText={isBtnLoading ? <ButtonLoader text={'Updating...'} /> : 'Update Purchase'}
                                     btnFontSize={'12px'}
                                     btnColor={'green'}
                                     btnTxtClr={'white'}
@@ -244,6 +955,9 @@ const paymentType =  [
             </form>
         </SupplierInfoWrapper>
         </EditPurchaseContent>
+         }</>
+        {/* Toast messages */}
+        <ToastComponents/>
     </EditPurchaseWrapper>
   )
 }

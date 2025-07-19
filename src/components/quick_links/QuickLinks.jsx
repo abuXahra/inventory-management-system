@@ -12,7 +12,7 @@ export default function QuickLinks() {
     const navigate = useNavigate();
 
     const dsp = (url)=>{
-        if(url === '/dashboard' || url ==="/users" || url==="/payment" || url ==="/expenses"){
+        if(url === '/dashboard' || url ==="/users" || url==="/payment" || url ==="/expenses" || url === "#"){
             return 'none'
         }
 
@@ -25,12 +25,20 @@ export default function QuickLinks() {
             QuickLinks
         </QuickLinkHeader>
         <QuickLinkContent>
-        { quickLinkItems.map((data, i)=>(
+        { quickLinkItems.map((data, i)=>(<>
                 <QuickLinkItems key={i} qds={dsp(data.url)} onClick={()=>navigate(data.url)}>
                     <span>{data.icon}</span> 
                     <span>{data.tile}</span>
                 </QuickLinkItems>
-            ))  
+                {
+                        data.subMenu && data.subMenu.map((items, j)=>(
+                             <QuickLinkItems key={j} onClick={()=>navigate(items.url)}>
+                                <span>{items.icon}</span> 
+                                <span>{items.title}</span>
+                             </QuickLinkItems>
+                        ))
+                    }
+           </> ))  
         }
         </QuickLinkContent>
     </QuickLinkWrapper>

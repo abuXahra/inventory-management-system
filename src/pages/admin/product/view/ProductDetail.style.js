@@ -25,6 +25,7 @@ export const ProductDetailContent = styled.div`
 export const ProductDetailPicture = styled.div`
   width: 22%;
   display: flex;
+  flex-direction: column;
   background-color: white;
   gap: 20px;
 

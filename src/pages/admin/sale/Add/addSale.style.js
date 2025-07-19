@@ -111,6 +111,8 @@ export const TotalChargesWrapper = styled.div`
 `;
 
 export const InnerWrapper = styled.div`
+  background-color: ${({ bgColor }) => bgColor || "rgba(186, 186, 186, 0.07)"};
+  padding: ${({ pd }) => pd || "10px"};
   width: ${({ wd }) => wd || "45%"};
   display: flex;
   justify-content: space-between;

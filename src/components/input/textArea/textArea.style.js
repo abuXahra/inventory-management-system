@@ -29,7 +29,7 @@ export const InputLabel = styled.label`
 
 export const InputStyle = styled.textarea`
   border: 1px solid ${({ bdColor }) => bdColor || "#0d398420"};
-  border-radius: 2px;
+  border-radius: 10px;
   padding: ${({ inputPadding }) => inputPadding || "6px"};
   background-color: transparent;
   color: ${({ txtColor }) => txtColor || "grey"};

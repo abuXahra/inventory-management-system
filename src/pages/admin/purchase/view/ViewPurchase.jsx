@@ -88,6 +88,7 @@ export default function ViewPurchase() {
                             <thead>
                                 <TdStyled><b>#</b></TdStyled>
                                 <TdStyled><b>Item Name</b></TdStyled>
+                                <TdStyled><b>Quantity</b></TdStyled>
                                 <TdStyled><b>Price</b></TdStyled>
                                 <TdStyled><b>Tax(%)</b></TdStyled>
                                 <TdStyled><b>Tax Amount</b></TdStyled>
@@ -99,6 +100,7 @@ export default function ViewPurchase() {
                                 <tr key={i}>
                                     <TdStyled>{i+1}</TdStyled>
                                     <TdStyled>{data.title}</TdStyled>
+                                    <TdStyled>{data.qty}</TdStyled>
                                     <TdStyled>{data.price}</TdStyled>
                                     <TdStyled>None</TdStyled>
                                     <TdStyled>0.00</TdStyled>

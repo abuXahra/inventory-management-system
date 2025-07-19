@@ -142,7 +142,7 @@ useEffect(()=>{
 
             const updatedTax = {
                 name: taxName,
-                taxPercentage: taxValue,
+                taxPercentage: parseInt(taxValue),
                 status: taxStatus
             }
 
@@ -183,7 +183,8 @@ useEffect(()=>{
                                 error={taxNameError} 
                                 label={'Tax Name'}
                                 title={'Tax Name'}
-                                value={taxName}    
+                                value={taxName} 
+                                type={'text'}   
                             />
 
 
@@ -193,7 +194,8 @@ useEffect(()=>{
                                 error={taxValueError} 
                                 value={taxValue}
                                 label={'Tax Value'}
-                                title={'Tax Value'}    
+                                title={'Tax Value'} 
+                                type={'text'}   
                             />
 
                              {/* Tax Status */}

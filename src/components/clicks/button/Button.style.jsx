@@ -8,7 +8,7 @@ export const ButtonWrapper = styled.button`
     background-color: ${({ btnColor }) => btnColor || "red"};
     color: ${({ btnTxtClr }) => btnTxtClr || "white"};
     border: ${({ btnBorder }) => btnBorder || "none"};
-    border-radius: ${({btnBdRd})=> btnBdRd || "5px"};
+    border-radius: ${({btnBdRd})=> btnBdRd || "10px"};
     cursor: pointer;
     font-size: ${({btnFontSize}) => btnFontSize || ''};
 

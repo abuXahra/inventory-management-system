@@ -13,6 +13,7 @@ export const SupplierContent = styled.div`
   display: flex;
   flex-direction: column;
   gap: 20px;
+  border-top: 2px solid green;
 
   @media (max-width: 768px) {
     flex-direction: column;

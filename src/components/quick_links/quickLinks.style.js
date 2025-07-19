@@ -1,7 +1,8 @@
 import styled from "styled-components";
 
 export const QuickLinkWrapper = styled.div`
-  width: 100%;
+  width: fit-content;
+  /* align-self: center; */
   background-color: white;
   border-radius: 10px;
   box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px,
@@ -21,10 +22,10 @@ export const QuickLinkHeader = styled.div`
 `;
 
 export const QuickLinkContent = styled.div`
-  width: 100%;
+  /* width: 100%; */
   display: flex;
   flex-direction: row;
-  gap: 10px;
+  gap: 20px;
   padding: 10px;
 `;
 

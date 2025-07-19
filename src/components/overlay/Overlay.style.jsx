@@ -2,7 +2,19 @@
 
 
 
-import styled from 'styled-components'
+import styled, {keyframes} from 'styled-components'
+
+// Slide-down animation
+const slideDown = keyframes`
+  from {
+    opacity: 0;
+    transform: translateY(-50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+`;
 
 export const OverlayWrapper = styled.div`
 display: flex;
@@ -35,6 +47,8 @@ export const OverlayCard = styled.div`
     padding: 20px;
     font-size: 18px;
     text-align: center;
+    /* animation: ${slideDown} 0.3s ease-out; 👈 Slide down effect */
+    animation: ${slideDown} 0.4s cubic-bezier(0.25, 1, 0.5, 1);
 
     img{
         border-radius: 10px;
@@ -51,8 +65,8 @@ export const CloseIcon = styled.div`
     display: flex;
     justify-content: flex-end;
     position: absolute;
-    top: 10px;
-    right: 10px;
+    top: 5px;
+    right: 5px;
 
     span{
         cursor: pointer;

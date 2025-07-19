@@ -63,19 +63,10 @@ export const SidebarItemLists = [
   {
     tile: "Setting",
     url: "#",
+    icon: <HiUsers />,
     subMenu: [
       {
-        title: "TAX List",
-        url: "/tax",
-        icon: <TbTax />,
-      },
-      {
-        title: "Unit List",
-        url: "/units",
-        icon: <MdAcUnit />,
-      },
-      {
-        title: "Company Profile",
+        title: "Company",
         url: "/company-profile",
         icon: <IoMicOffCircle />,
       },
@@ -84,7 +75,16 @@ export const SidebarItemLists = [
         url: "/users",
         icon: <FaUsers />,
       },
+      {
+        title: "TAX",
+        url: "/tax",
+        icon: <TbTax />,
+      },
+      {
+        title: "Unit",
+        url: "/units",
+        icon: <MdAcUnit />,
+      },
     ],
-    icon: <HiUsers />,
   },
 ];
