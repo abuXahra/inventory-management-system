@@ -551,7 +551,6 @@ const hanldeSumbit = async (e) =>{
     };
       setIsBtnLoading(true);
       console.log('======new purchase data==========\n', updatePurchase)
-            alert('form validated triggered')
             try {
           
               const res = await axios.put(`${process.env.REACT_APP_URL}/api/purchase/${purchaseId}`, updatePurchase);

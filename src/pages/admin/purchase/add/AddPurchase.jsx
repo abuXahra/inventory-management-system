@@ -359,7 +359,7 @@ useEffect(() => {
 
   setTaxAmount(totalTaxAmount.toFixed(2));
   setUnitCost(unitPriceWithTax.toFixed(2));
-  setAmount(totalPurchase.toFixed(2));
+  setAmount(totalPurchase.toFixed(2)); //Purchase price
 
 };
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import PageTitle from '../../../../components/page_title/PageTitle'
 import ItemContainer from '../../../../components/item_container/ItemContainer'
 import JewelLogo from '../../../../images/logo1.png' 
@@ -7,13 +7,85 @@ import { ProductItemList } from '../../../../data/productItems'
 import Button from '../../../../components/clicks/button/Button'
 import { FaEdit, FaPrint } from 'react-icons/fa'
 import { FaDownload } from 'react-icons/fa6'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { ButtonsWrapper, ChargesWrapper, DateWrapper, InfoBillWrapper, InvoiceWrapper, LogoDateWrapper, LogoWrapper, NoteWrapper, TableStyled, TdStyled, ViewPurchaseContent, ViewPurchaseWrapper } from './viewPurchase.style'
+import axios from 'axios'
 
 export default function ViewPurchase() {
   const [itemList, setItemList] = useState(ProductItemList);
 
   const navigate = useNavigate();
+  const {purchaseId} = useParams();
+  const [supplierId, setSupplierId] = useState('')
+  const [purchaseData, setPurchaseData] = useState('');
+  const [supplierData, setSupplierData] = useState('');
+  const [companyData, setCompanyData] = useState('');
+
+  const [isLoading, setIsLoading] = useState(false);
+  const [isBtnLoading, setIsBtnLoading] = useState(false);
+  // const [showDeleteCard, setShowDeleteCard] = useState(false);
+  // const [grabId, setGrabId] = useState('');
+  // const [grabTitle, setGrabTitle] = useState('');
+
+
+  // Fetch invoice detail
+                useEffect(()=>{
+                  const fetchInvoice = async() =>{
+                    setIsLoading(true)
+                      try {
+                          const res = await axios.get(`${process.env.REACT_APP_URL}/api/purchase/${purchaseId}`);        
+                          console.log('====== purchase data: \n', res.data, '==================')
+                          setPurchaseData(res.data);
+                          setSupplierId(res.data.supplier)
+                          setIsLoading(false);
+                      } catch (error) {
+                          console.log(error);
+                          setIsLoading(false);
+                      }
+                
+                  }
+                  fetchInvoice();
+
+                const fetchSupplier = async() =>{
+                  setIsLoading(true)
+                    try {
+                        const res = await axios.get(`${process.env.REACT_APP_URL}/api/suppliers/${supplierId}`);        
+                        console.log('====== supplier data: \n', res.data, '==================')
+                        setSupplierData(res.data);
+                        console.log('supplier data; ', res.data)
+                        setIsLoading(false);
+                    } catch (error) {
+                        console.log(error);
+                        setIsLoading(false);
+                    }
+              
+                }
+                fetchSupplier();                  
+
+                 const fetchCompany = async() =>{
+                    setIsLoading(true)
+                      try {
+                          const res = await axios.get(`${process.env.REACT_APP_URL}/api/company`);
+                          setCompanyData(res.data)
+                          setIsLoading(false);
+                      } catch (error) {
+                          console.log(error);
+                          setIsLoading(false);
+                      }
+                
+                  }
+                  fetchCompany();
+                },[purchaseId, supplierId])
+
+                // print invoice
+                const printInoiceHanlder = () => {
+
+                }
+
+                // download invoice
+                const downloadHandler = () => {
+
+                }
 
   return (
     <ViewPurchaseWrapper>
