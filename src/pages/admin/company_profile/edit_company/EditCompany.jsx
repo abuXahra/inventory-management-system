@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import PageTitle from '../../../../components/page_title/PageTitle'
 import ItemContainer from '../../../../components/item_container/ItemContainer'
 import Input from '../../../../components/input/Input'
@@ -22,6 +22,7 @@ import ContentLoader, {
   Facebook,
   Instagram
 } from 'react-content-loader'
+import { UserContext } from '../../../../components/context/UserContext'
 
 
 export default function EditCompany() {
@@ -30,6 +31,8 @@ export default function EditCompany() {
     const navigate = useNavigate();
 
     const [isLoading, setIsLoading] = useState(false);
+    const {user} = useContext(UserContext)
+    
     
     const {companyId} = useParams();
 
@@ -361,7 +364,7 @@ export default function EditCompany() {
                 customer: customerInitial,
                 sale: saleInitial,
                 expense: expenseInitial,
-                userId: '',
+                userId: user._id,
 
                        }
                        

@@ -555,7 +555,7 @@ const hanldeSumbit = async (e) =>{
           
               const res = await axios.put(`${process.env.REACT_APP_URL}/api/purchase/${purchaseId}`, updatePurchase);
               
-              navigate(`/purchase-invoice/${res.data._id}`);
+              navigate(`/purchase-invoice/${purchaseId}`);
                 // toast success message
                  toast.success('Purchase updated Successfully')
                    setIsBtnLoading(false);

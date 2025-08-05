@@ -1,18 +1,25 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import PageTitle from '../../../../components/page_title/PageTitle'
 import ItemContainer from '../../../../components/item_container/ItemContainer'
 import JewelLogo from '../../../../images/logo1.png' 
 import { SiPantheon } from 'react-icons/si'
 import { ProductItemList } from '../../../../data/productItems'
 import Button from '../../../../components/clicks/button/Button'
-import { FaEdit, FaPrint } from 'react-icons/fa'
+import { FaEdit, FaPrint, FaVoicemail } from 'react-icons/fa'
 import { FaDownload } from 'react-icons/fa6'
 import { useNavigate, useParams } from 'react-router-dom'
 import { ButtonsWrapper, ChargesWrapper, DateWrapper, InfoBillWrapper, InvoiceWrapper, LogoDateWrapper, LogoWrapper, NoteWrapper, TableStyled, TdStyled, ViewPurchaseContent, ViewPurchaseWrapper } from './viewPurchase.style'
 import axios from 'axios'
+import { List } from 'react-content-loader'
+import { useReactToPrint } from 'react-to-print' // for printing
+import jsPDF from 'jspdf'
+import html2canvas from  'html2canvas'
+import ButtonLoader from '../../../../components/clicks/button/button_loader/ButtonLoader'
 
 export default function ViewPurchase() {
-  const [itemList, setItemList] = useState(ProductItemList);
+  // const [itemList, setItemList] = useState(ProductItemList);
+
+
 
   const navigate = useNavigate();
   const {purchaseId} = useParams();
@@ -47,54 +54,94 @@ export default function ViewPurchase() {
                   fetchInvoice();
 
                 const fetchSupplier = async() =>{
-                  setIsLoading(true)
+                  // setIsLoading(true)
                     try {
                         const res = await axios.get(`${process.env.REACT_APP_URL}/api/suppliers/${supplierId}`);        
                         console.log('====== supplier data: \n', res.data, '==================')
                         setSupplierData(res.data);
                         console.log('supplier data; ', res.data)
-                        setIsLoading(false);
+                        // setIsLoading(false);
                     } catch (error) {
                         console.log(error);
-                        setIsLoading(false);
+                        // setIsLoading(false);
                     }
               
                 }
                 fetchSupplier();                  
 
                  const fetchCompany = async() =>{
-                    setIsLoading(true)
+                    // setIsLoading(true)
                       try {
                           const res = await axios.get(`${process.env.REACT_APP_URL}/api/company`);
-                          setCompanyData(res.data)
-                          setIsLoading(false);
+                          setCompanyData(res.data[0])
+                          // setIsLoading(false);
                       } catch (error) {
                           console.log(error);
-                          setIsLoading(false);
+                          // setIsLoading(false);
                       }
                 
                   }
                   fetchCompany();
                 },[purchaseId, supplierId])
 
-                // print invoice
-                const printInoiceHanlder = () => {
+               
 
-                }
+                
+  // for printing
+  const contentRef = useRef(null)
+  const reactToPrintFn = useReactToPrint({contentRef})
 
-                // download invoice
-                const downloadHandler = () => {
+    // for download pdf invoice
+  const pdfRef = useRef(null)
+  const downloadPDF = () => {
+    const input = pdfRef.current;
+    setIsBtnLoading(true)
+    return html2canvas(input).then((canvas) => {
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF('p', 'mm', 'a4', true);
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = pdf.internal.pageSize.getHeight();
+      const imgWidth =  canvas.width;
+      const imgHeight = canvas.height;
+      const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
+      const imgX = (pdfWidth - imgWidth * ratio) / 2;
+      const imgY = 30;
+      pdf.addImage(imgData, 'PNG', imgX, imgY, imgWidth * ratio, imgHeight * ratio );
+      pdf.save('invoice.pdf')
+      setIsBtnLoading(false);
+    })
+  }
 
-                }
+  const type = 'print'
+
+  const handleBtnClick = (type) => {
+
+    if (type === 'print') {
+      return reactToPrintFn();
+    }else if(type === 'pdf'){
+      return downloadPDF();
+    }
+
+  }
+
 
   return (
     <ViewPurchaseWrapper>
     {/* Page title */}
     <PageTitle title={'Purchase'} subTitle={'/ View'}/>
+
+    
+       {/* content */}
+    <>
+      {isLoading?
+          <List/> :
     <ViewPurchaseContent>
       {/* invoice wrapper */}
-      <InvoiceWrapper>
-        
+      {/* <InvoiceWrapper ref={contentRef}> */}
+         <InvoiceWrapper ref={(el) => {
+            contentRef.current = el;
+            pdfRef.current = el;
+          }}>
         {/* Logo AND dATE */}
         <LogoDateWrapper>
           {/* logo */}
@@ -110,19 +157,19 @@ export default function ViewPurchase() {
               <div>
                   <div>
                       <span><b>INVOICE NO.:</b></span>
-                      <span>SA1001</span>                  
+                      <span>{purchaseData?.code}</span>                  
                   </div>
                   <div>
                       <span><b>INVOICE DATE:</b></span>
-                      <span>02-Jan-2020</span>                  
+                      <span>{new Date(purchaseData?.purchaseDate).toDateString()}</span>                  
                   </div>
                   <div>
                       <span><b>SALES STATUS:</b></span>
-                      <span>Received</span>                  
+                      <span>{purchaseData?.purchaseStatus}</span>                  
                   </div>
                   <div>
                       <span><b>Payment STATUS:</b></span>
-                      <span><div>Paid</div></span>                  
+                      <span><div>{purchaseData?.paymentStatus}</div></span>                  
                   </div>
               </div>
              
@@ -135,10 +182,10 @@ export default function ViewPurchase() {
               <h3>OUR INFORMATION</h3>
               <hr />
               <div>
-                  <span><b>Inventory</b></span>
-                  <span>Address: Mirpur, Daghaka Bangladesh</span>
-                  <span>Phone: 09055001663</span>
-                  <span>Email: morningunit@gmail.com</span>
+                  <span><b>{companyData?.companyName?.toUpperCase()}</b></span>
+                  <span>Address:{companyData?.address}</span>
+                  <span>Phone: {companyData?.phoneNumber}</span>
+                  <span>Email: {companyData?.companyEmail}</span>
               </div>
            </div>
 
@@ -147,10 +194,10 @@ export default function ViewPurchase() {
               <h3>BILLING TO</h3>
               <hr />
               <div>
-                  <span><b>Walk-in Customer</b></span>
-                  <span>Address: Mirpur, Daghaka Bangladesh</span>
-                  <span>Phone: 09055001663</span>
-                  <span>Email: morningunit@gmail.com</span>
+                  <span><b>{supplierData?.name?.toUpperCase()}</b></span>
+                  <span>Address: {supplierData?.address}</span>
+                  <span>Phone: {supplierData?.phoneNumber}</span>
+                  <span>Email: {supplierData?.email}</span>
               </div>
            </div>
         </InfoBillWrapper>
@@ -163,21 +210,21 @@ export default function ViewPurchase() {
                                 <TdStyled><b>Quantity</b></TdStyled>
                                 <TdStyled><b>Price</b></TdStyled>
                                 <TdStyled><b>Tax(%)</b></TdStyled>
-                                <TdStyled><b>Tax Amount</b></TdStyled>
-                                <TdStyled><b>Unit Cost</b></TdStyled>
-                                <TdStyled><b>Amount</b></TdStyled>
+                                <TdStyled><b>Tax Amount </b></TdStyled>
+                                <TdStyled><b>Unit Cost </b></TdStyled>
+                                <TdStyled><b>Amount </b></TdStyled>
                             </thead>
                             <tbody>
-                            {itemList.map((data, i)=>(
+                            {purchaseData.purchaseItems?.map((data, i)=>(
                                 <tr key={i}>
                                     <TdStyled>{i+1}</TdStyled>
                                     <TdStyled>{data.title}</TdStyled>
-                                    <TdStyled>{data.qty}</TdStyled>
+                                    <TdStyled>{data.quantity}</TdStyled>
                                     <TdStyled>{data.price}</TdStyled>
-                                    <TdStyled>None</TdStyled>
-                                    <TdStyled>0.00</TdStyled>
-                                    <TdStyled>{data.price}</TdStyled>
-                                    <TdStyled>{data.qty + data.price }</TdStyled>
+                                    <TdStyled>{data.tax}%</TdStyled>
+                                    <TdStyled>{data.taxAmount}</TdStyled>
+                                    <TdStyled>{data.unitCost}</TdStyled>
+                                    <TdStyled>{data.amount }</TdStyled>
                                 </tr>
                             ))
                         }
@@ -192,16 +239,14 @@ export default function ViewPurchase() {
                   <TableStyled pd="0px">
                             <thead>
                                 <TdStyled><b>Date</b></TdStyled>
-                                <TdStyled><b>Amount</b></TdStyled>
+                                <TdStyled><b>Amount </b></TdStyled>
                                 <TdStyled><b>Payment Type</b></TdStyled>
-                                <TdStyled><b>Note</b></TdStyled>
                             </thead>
                             <tbody>
                                    <tr>
-                                        <TdStyled>02-Jan-2020</TdStyled>
-                                        <TdStyled>{'N300,000'}</TdStyled>
-                                        <TdStyled>{'Cash'}</TdStyled>
-                                        <TdStyled>{''}</TdStyled>
+                                        <TdStyled>{new Date(purchaseData?.purchaseDate).toDateString()}</TdStyled>
+                                        <TdStyled>{purchaseData?.purchaseAmount}</TdStyled>
+                                        <TdStyled>{purchaseData?.paymentType}</TdStyled>
                                     </tr>
                             </tbody>
                         </TableStyled>
@@ -216,32 +261,43 @@ export default function ViewPurchase() {
                   {/* subtotal */}
                   <div>
                     <span><b>Sub Total</b></span>
-                    <span>N300,000</span>
+                    <span><span dangerouslySetInnerHTML={{ __html: companyData.currencySymbol }}/>{purchaseData?.subTotal}</span>
                   </div>
                         {/* Other Charges */}
                   <div>
                     <span><b>Other Charges</b></span>
-                    <span>N0.00</span>
+                    <span><span dangerouslySetInnerHTML={{ __html: companyData.currencySymbol }}/>{purchaseData?.otherCharges}</span>
                   </div>
 
                         {/* Disacount*/}
                   <div>
-                    <span><b>Discount</b></span>
-                    <span>N600</span>
+                    <span><b>Discount ({purchaseData?.discount})%</b></span>
+                    <span><span dangerouslySetInnerHTML={{ __html: companyData.currencySymbol }}/>{purchaseData?.discountValue}</span>
                   </div>
   
-                    {/* Disacount*/}
+
+                        {/* Shipping*/}
+                  <div>
+                    <span><b>Shipping</b></span>
+                    <span><span dangerouslySetInnerHTML={{ __html: companyData.currencySymbol }}/>{purchaseData?.shipping}</span>
+                  </div>
+
+                    {/* Grand Total*/}
                   <div>
                     <span><b>Grand Total</b></span>
-                    <span>N300,500</span>
+                    <span><b><span dangerouslySetInnerHTML={{ __html: companyData.currencySymbol }}/>
+                    {purchaseData?.purchaseAmount?.toLocaleString('en-NG', { 
+                      minimumFractionDigits: 2, 
+                      maximumFractionDigits: 2 
+                    })}</b></span>
                   </div>
                 </div>
               </ChargesWrapper>
 
               {/* Note */}
               <NoteWrapper>
-                <span>Note:</span>
-                <hr />
+                <span>Note: {purchaseData?.note}</span>
+                <hr /> 
               </NoteWrapper>
       </InvoiceWrapper>
   
@@ -256,31 +312,45 @@ export default function ViewPurchase() {
           btnFontSize={'12px'}
           btnLeftIcon={<FaEdit/>}
           btnBdRd={'2px'}
-          btnOnClick={()=>navigate('/edit/:salesId')}
+          btnOnClick={()=>navigate(`/edit-purchase/${purchaseData?._id}`)}
         />
 
         {/* print */}
-        <Button
-          btnColor={'#0284c7'}
-          btnText={'Print'}
-          btnPd={'5px 10px'}
-          btnFontSize={'12px'}
-          btnLeftIcon={<FaPrint/>}
-          btnOnClick={()=>{}}
-          btnBdRd={'2px'}
-        />
+            <Button
+              btnColor={'#0284c7'}
+              btnText={'Print'}
+              btnPd={'5px 10px'}
+              btnFontSize={'12px'}
+              btnLeftIcon={<FaPrint />}
+              btnBdRd={'2px'}
+              btnOnClick={()=>handleBtnClick('print')}
+            />
+        
 
         {/* download */}
         <Button
           btnColor={'#0284c7'}
-          btnText={'Download'}
+          btnText={isBtnLoading? <ButtonLoader text={'Generating PDF'}/> : 'Download'}
           btnPd={'5px 10px'}
           btnFontSize={'12px'}
-          btnLeftIcon={<FaDownload/>}
+          btnLeftIcon={isBtnLoading? "" : <FaDownload/>}
           btnBdRd={'2px'}
+          btnOnClick={()=>handleBtnClick('pdf')}
+        />
+
+        <Button
+          btnColor={'#0284c7'}
+          btnText={'Email'}
+          btnPd={'5px 10px'}
+          btnFontSize={'12px'}
+          btnLeftIcon={<FaVoicemail/>}
+          btnBdRd={'2px'}
+          btnOnClick={()=>{}}
         />
       </ButtonsWrapper>
     </ViewPurchaseContent>
+    }
+          </>
 </ViewPurchaseWrapper>
   )
 }

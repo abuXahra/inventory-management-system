@@ -137,6 +137,10 @@ export const TdStyled = styled.td`
     color: red;
     cursor: pointer;
     border-radius: 3px;
+
+    span {
+      color: black;
+    }
   }
 `;
 

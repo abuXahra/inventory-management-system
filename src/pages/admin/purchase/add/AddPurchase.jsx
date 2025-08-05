@@ -256,6 +256,7 @@ const paymentStatusItems = [
 
   // Fetch expense initial
     const [prefix, setPrefix] = useState('')
+    const [currencySymbol, setCurrencySymbol] = useState('')
 
 useEffect(() => {
 
@@ -265,6 +266,7 @@ useEffect(() => {
                 const res = await axios.get(`${process.env.REACT_APP_URL}/api/company`);
               
                 const prefixData = res.data[0].prefixes?.[0];
+                setCurrencySymbol(res.data.currencySymbol)
   
                 if (prefixData) {
                     setPrefix(prefixData.purchase);
@@ -748,7 +750,7 @@ const hanldeSumbit = async (e) =>{
                         </InnerWrapper>
                         <InnerWrapper>
                             <span><b>Sub Total</b></span>
-                            <span>N{Number(subTotal).toLocaleString()}</span>
+                            <span><span dangerouslySetInnerHTML={{ __html: currencySymbol }}/>{Number(subTotal).toLocaleString()}</span>
                         </InnerWrapper>
                     </AnyItemContainer>
                    
@@ -767,7 +769,7 @@ const hanldeSumbit = async (e) =>{
                             </InnerWrapper>
                             <InnerWrapper>
                                 <span><b> Other Charges</b></span>
-                                <span>N{otherCharges? otherCharges: 0}</span>
+                                <span><span dangerouslySetInnerHTML={{ __html: currencySymbol }}/>{otherCharges? otherCharges: 0}</span>
                             </InnerWrapper>
                     </AnyItemContainer>
 
@@ -786,7 +788,7 @@ const hanldeSumbit = async (e) =>{
                             </InnerWrapper>
                             <InnerWrapper>
                                 <span><b> Discount {discount && '('+ discount + '%)'}</b></span>
-                                <span>N{discountValue? Number(discountValue).toLocaleString():0}</span>
+                                <span><span dangerouslySetInnerHTML={{ __html: currencySymbol }}/>{discountValue? Number(discountValue).toLocaleString():0}</span>
                             </InnerWrapper>
                     </AnyItemContainer>
 
@@ -805,7 +807,7 @@ const hanldeSumbit = async (e) =>{
                             </InnerWrapper>
                             <InnerWrapper>
                                 <span><b>Shipping</b></span>
-                                <span>N{shipping? shipping: 0}</span>
+                                <span><span dangerouslySetInnerHTML={{ __html: currencySymbol }}/>{shipping? shipping: 0}</span>
                             </InnerWrapper>
                     </AnyItemContainer>
 
@@ -816,7 +818,7 @@ const hanldeSumbit = async (e) =>{
                             </InnerWrapper>
                             <InnerWrapper>
                                 <span><b> Grand Total</b></span>
-                                <span><b>N{grandTotal? grandTotal : 0}</b></span>
+                                <span><b><span dangerouslySetInnerHTML={{ __html: currencySymbol }}/>{grandTotal? grandTotal : 0}</b></span>
                             </InnerWrapper>
                     </AnyItemContainer>
                 </TotalChargesWrapper>
