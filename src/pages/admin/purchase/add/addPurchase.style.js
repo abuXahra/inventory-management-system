@@ -135,21 +135,23 @@ export const InnerWrapper = styled.div`
 export const DropdownWrapper = styled.div`
   background-color: white;
   position: absolute;
-  top: 50px;
-  width: 100%;
+  top: ${({ topPosition }) => topPosition || "50px"};
+  width: ${({ width }) => width || "100%"};
   border-radius: 10px;
+  border: 1px solid #cccccc;
   display: flex;
   flex-direction: column;
   gap: 5px;
   align-items: flex-start;
   justify-content: flex-start;
   z-index: 999;
+  /* padding: 5px; */
 `;
 
 export const DropdownItems = styled.div`
   width: 100%;
   border-bottom: 1px solid #80808016;
-  padding: 5px;
+  padding: 8px;
   font-size: 10px;
   cursor: pointer;
 

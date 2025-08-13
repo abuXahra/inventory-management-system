@@ -189,8 +189,9 @@ function App() {
             {/* SALE */}
             <Route path="/sales" element={<SalePage />} />
             <Route path="/add-sale" element={<AddSale />} />
-            <Route path="/edit/:salesId" element={<EditSale />} />
-            <Route path="/invoice/:salesId" element={<ViewSale />} />
+            <Route path="/edit-sale/:saleId" element={<EditSale />} />
+            <Route path="/sale-invoice/:saleId" element={<ViewSale />} />
+
             {/* CUSTOMER */}
             <Route path="/customers" element={<CustomerPage />} />
             <Route path="/add-customer" element={<AddCustomer />} />

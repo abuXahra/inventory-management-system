@@ -1,7 +1,6 @@
 import React, {useState, useEffect} from 'react'
 import PageTitle from '../../../components/page_title/PageTitle'
 import { UserDetailContent, UserDetailData, UserDetailPicture, UserDetailWrapper, PictureWrapper } from './userDetail.style'
-import profilePicture from '../../../images/professional_passport.png'
 import { FaEdit, FaTrash } from 'react-icons/fa'
 import { useNavigate, useParams } from 'react-router-dom'
 import ItemContainer from '../../../components/item_container/ItemContainer'

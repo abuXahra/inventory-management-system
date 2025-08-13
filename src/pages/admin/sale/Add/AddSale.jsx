@@ -14,8 +14,8 @@ import { UserContext } from '../../../../components/context/UserContext'
 import { toast } from 'react-toastify'
 import ButtonLoader from '../../../../components/clicks/button/button_loader/ButtonLoader'
 import ToastComponents from '../../../../components/toast_message/toast_component/ToastComponents'
-import { AddSalesContent, AddSalesWrapper, AnyItemContainer, CustomerInfoWrapper, HrStyled, InnerWrapper, ItemListContent, ItemsWrapper, SelectItemContent, TableStyled, TdStyled, TotalChargesWrapper } from './addSale.style'
-import { DropdownItems, DropdownWrapper, TableResponsiveWrapper } from '../../purchase/add/addPurchase.style'
+import { AddSalesContent, AddSalesWrapper, CustomerInfoWrapper, HrStyled, ItemListContent, ItemsWrapper, SelectItemContent, TotalChargesWrapper } from './addSale.style'
+import { AnyItemContainer, DropdownItems, DropdownWrapper, InnerWrapper, TableResponsiveWrapper, TableStyled, TdStyled } from '../../purchase/add/addPurchase.style'
 
 export default function AddSale() {
 
@@ -94,6 +94,14 @@ const [grandTotal, setGrandTotal] = useState(0);
 const [products, setProducts] = useState([]);
 
 const [customerItems, setCustomerItems] = useState([])
+const [showCusDropdown, setShowCusDropdown] = useState(false);
+const [customerId, setCustomerId] = useState('');
+
+
+const [showPartialField, setShowPartialField] = useState(false);
+const [amountPaid, setAmountPaid] = useState('')
+const [amountPaidError, setAmountPaidError] = useState(false);
+const [dueBalance, setDueBalance] = useState('');
 
 // onchange handler
 const handleChange = (type, e)=>{
@@ -127,8 +135,6 @@ const handleChange = (type, e)=>{
             setTax(e.target.value);
             calculateSalePrice(price, e.target.value, quantity);
             setTaxError(false);
-        }else if(type === 'price'){
-            setTaxAmount(e.target.value);
         }else if(type === 'unit-cost'){
             setUnitCost(e.target.value);
         }else if(type === 'amount'){
@@ -147,9 +153,11 @@ const handleChange = (type, e)=>{
             setSaleDate(e.target.value);
             setSaleDateError(false);
         }else if(type === 'customer-name'){
+
             setCustomer(e.target.value);
-             console.log(e.target.value);
+            setShowCusDropdown(e.target.value.trim().length > 0);
             setCustomerNameError(false);
+
         }else if(type === 'sale-status'){
             setSaleStatus(e.target.value);
             setSaleStatusError(false);
@@ -158,12 +166,28 @@ const handleChange = (type, e)=>{
         }else if(type === 'sale-amount'){
             setSaleAmount(e.target.value);
             setSaleAmountError(false);
-        }else if(type === 'payment-type'){
-            setPaymentType(e.target.value);
-            setPaymentTypeError(false);
         }else if(type === 'payment-status'){
             setPaymentStatus(e.target.value);
             setPaymentStatusError(false);
+
+            if(e.target.value === 'Partial'){
+                setShowPartialField(true)
+            }else{
+                setShowPartialField(false);
+            }
+
+            if(e.target.value === 'Not Paid'){
+                setPaymentType(paymentTypeItems[6].value)
+            }else{
+                setPaymentType('');
+            }
+        }else if(type === 'amount-paid'){
+            setAmountPaid(e.target.value);
+            setDueBalance(saleAmount - Number(e.target.value))
+            setAmountPaidError(false);
+        }else if(type === 'payment-type'){
+            setPaymentType(e.target.value);
+            setPaymentTypeError(false);
         }else if(type === 'note'){
             setNote(e.target.value);
         }
@@ -214,12 +238,15 @@ const saleStatusItem =  [
     },
 ]
 
-
 // payment
 const paymentTypeItems =  [
         {
         title: 'Select',
         value: ''
+    },
+    {
+        title: 'Card',
+        value: 'Card'
     },
     {
         title: 'Cash',
@@ -230,8 +257,16 @@ const paymentTypeItems =  [
         value: 'Check'
     },
     {
-        title: 'Transfer',
-        value: 'Transfer'
+        title: 'Online',
+        value: 'Online'
+    },
+    {
+        title: 'Bank Transfer',
+        value: 'Bank Transfer'
+    },
+      {
+        title: 'N/A',
+        value: 'N/A'
     },
 ]
 
@@ -241,12 +276,16 @@ const paymentStatusItems = [
         value: ''
     },
     {
-        title: 'paid',
-        value: 'paid'
-    },
+        title: 'Paid',
+        value: 'Paid'
+    },  
     {
         title: 'Partial',
         value: 'Partial'
+    },
+    {
+        title: 'Not Paid',
+        value: 'Not Paid'
     },
 ]
 
@@ -302,14 +341,14 @@ useEffect(() => {
             
                      const res = await axios.get(process.env.REACT_APP_URL + "/api/customers/")
                
-                     
-                     setCustomerItems([
-                        { title: 'Select', value: '' }, 
-                        ...res.data.map(customer => ({
-                            title: customer.name,
-                            value: customer._id,
-                        }))
-                    ]);
+                     setCustomerItems(res.data)
+                    //  setCustomerItems([
+                    //     { title: 'Select', value: '' }, 
+                    //     ...res.data.map(customer => ({
+                    //         title: customer.name,
+                    //         value: customer._id,
+                    //     }))
+                    // ]);
                      setIsLoading(false)
                      
                  } catch (err) {
@@ -353,12 +392,12 @@ useEffect(() => {
 
   const taxAmountPerUnit = p * (t / 100);
   const unitPriceWithTax = p + taxAmountPerUnit;
-  const totalPurchase = unitPriceWithTax * q;
+  const totalSale = unitPriceWithTax * q;
   const totalTaxAmount = taxAmountPerUnit * q;
 
   setTaxAmount(totalTaxAmount.toFixed(2));
   setUnitCost(unitPriceWithTax.toFixed(2));
-  setAmount(totalPurchase.toFixed(2)); //sale price
+  setAmount(totalSale.toFixed(2)); //sale price
 
 };
 
@@ -368,13 +407,26 @@ const dropdownHandler = (product) => {
     setProductId(product._id)
     setSearchTitle('');
     setTitle(product.title)
-    setQuantity(product.openingStock);
-    setPrice(product.price)
+    setQuantity();
+    setPrice(product.salePrice)
     setTax(product.tax)
-    setTaxAmount(product.taxAmount)
-    setUnitCost(product.unitCost)
-    setAmount(product.salePrice)
+    setTaxAmount()
+    setUnitCost()
+    setAmount()
 }
+
+
+
+
+// search name dropdownd handler
+
+const dropdownCustomerName = (customer) => {
+    setShowCusDropdown(false)
+    setCustomerId(customer._id)
+    setCustomer(customer.name)    
+}
+
+
 
 // add to array list
 const addToList = (e) =>{
@@ -483,18 +535,27 @@ const hanldeSumbit = async (e) =>{
         setPaymentStatusError(true)
         isValid = false;
     }
-         
+     
+ if (paymentStatus === 'Partial') {
+  if (!amountPaid || parseFloat(amountPaid) <= 0) {
+    setAmountPaidError(true);
+    isValid = false;
+  }
+}
     
     if(isValid){
       
       const newSale = {
-      purchaseDate: new Date(saleDate),
-      supplier: customer._id || customer,
+      saleDate: new Date(saleDate),
+    //   customer: customer._id || customer,
+      customer: customerId,
       saleStatus,
       reference,
       saleAmount: Number(saleAmount),
-      paymentType,
       paymentStatus,
+      paymentType,
+      amountPaid: Number(amountPaid),
+      dueBalance,
       note,
       subTotal: Number(subTotal),
       otherCharges: Number(otherCharges),
@@ -519,12 +580,15 @@ const hanldeSumbit = async (e) =>{
     };
       setIsBtnLoading(true);
       console.log('======new sale data==========\n', newSale)
-            alert('form validated triggered')
+            // alert('form validated triggered')
             try {
           
               const res = await axios.post(`${process.env.REACT_APP_URL}/api/sale/create`, newSale);
+
+              console.log(res.data)
+              navigate(`/sale-invoice/${res.data.newSale._id}`);
               
-              navigate(`/sale-invoice/${res.data._id}`);
+              
                 // toast success message
                  toast.success('Sale added Successfully')
                    setIsBtnLoading(false);
@@ -538,7 +602,7 @@ const hanldeSumbit = async (e) =>{
   return (
     <AddSalesWrapper>
                 {/* Page title */}
-                <PageTitle title={'Purchase'} subTitle={'/ Add'}/>
+                <PageTitle title={'Sale'} subTitle={'/ Add'}/>
         <AddSalesContent>
         <ItemsWrapper>
             {/* SelectItem */}
@@ -729,7 +793,7 @@ const hanldeSumbit = async (e) =>{
                                     flexDirection: 'column', 
                                     gap: '20px'
                                 }}>
-                                   <h3>Purchase Item</h3> 
+                                   <h3>Sale Items</h3> 
                                    <p>Not Item on the List</p>
                                 </div>)
                 }
@@ -826,35 +890,74 @@ const hanldeSumbit = async (e) =>{
     {/* Customer info */}
         <CustomerInfoWrapper>
             <form action="" onSubmit={(e)=>hanldeSumbit(e)}>
-                <ItemContainer title={'Supply Info'}>
+                <ItemContainer title={'Customer Info'}>
+                    
+                  <Input 
+                                value={customer} 
+                                title={'Customer Name'}
+                                onChange={(e)=>handleChange('customer-name', e)} 
+                                error={customerNameError} 
+                                type={'text'} 
+                                label={'Customer Name'} 
+                                placeholder={'search...'}
+                                requiredSymbol={'*'}
+                            />  
+                           {showCusDropdown && (
+                                    <DropdownWrapper topPosition={'80px'} width={"96%"}>
+                                        {customerItems.filter(c =>
+                                        customer.length > 0 &&
+                                        c.name.toLowerCase().includes(customer.toLowerCase())
+                                        ).length > 0 ? (
+                                        customerItems
+                                            .filter(c => 
+                                            customer.length > 0 &&
+                                            c.name.toLowerCase().includes(customer.toLowerCase())
+                                            )
+                                            .map((data, i) => (
+                                            <DropdownItems key={i} onClick={() => dropdownCustomerName(data)}>
+                                                {data.name}
+                                            </DropdownItems>
+                                            ))
+                                        ) : (
+                                        <DropdownItems>
+                                            <div style={{width: "100%", display: "flex", flexDirection: "column", gap: "5px", padding: "20px", justifyContent: "center", alignItems: "center"}}>
+                                                <span>No such customer </span>
+                                                <a href="/add-customer">Please click here to add </a>
+                                            </div>
+                                        
+                                        </DropdownItems>
+                                        )}
+                                    </DropdownWrapper>
+                            )}
+
                     <Input 
                                 value={saleDate} 
                                 title={'Date'}
-                                onChange={(e)=>handleChange('purchase-date', e)} 
+                                onChange={(e)=>handleChange('sale-date', e)} 
                                 type={'date'} 
                                 label={'Date'} 
                                 error={saleDateError}
                                 requiredSymbol={'*'}
                             /> 
 
-                    <SelectInput 
+                    {/* <SelectInput 
                                 options={customerItems} 
                                 label={'Customer Name'}
                                 value={customer}
                                 error={customerNameError}
                                 requiredSymbol={'*'}
-                                title={'Supply Name'}
-                                onChange={(e)=>handleChange('supply-name', e)}
-                            />
-
+                                title={'Customer Name'}
+                                onChange={(e)=>handleChange('customer-name', e)}
+                            /> */}
+                        
                     <SelectInput 
                                 options={saleStatusItem} 
                                 label={'Sale Status'}
                                 value={saleStatus}
                                 error={saleStatusError}
                                 requiredSymbol={'*'}
-                                title={'Purchase Status'}
-                                onChange={(e)=>handleChange('purchase-status', e)}
+                                title={'Sale Status'}
+                                onChange={(e)=>handleChange('sale-status', e)}
                             />
 
                     <Input 
@@ -863,32 +966,22 @@ const hanldeSumbit = async (e) =>{
                                 onChange={(e)=>handleChange('references', e)} 
                                 type={'text'} 
                                 label={'References'} 
-                                // error={purchaseDateError}
+                                // error={saleDateError}
                             /> 
 
                 </ItemContainer>
                 <ItemContainer title={'Payment Info'}>
                     <Input 
                                 value={saleAmount} 
-                                title={'Purchase Amount'}
-                                onChange={(e)=>handleChange('purchase-amount', e)} 
+                                title={'Sale Amount'}
+                                onChange={(e)=>handleChange('sale-amount', e)} 
                                 type={'text'} 
-                                label={'Purchase Amount'} 
+                                label={'Sale Amount'} 
                                 requiredSymbol={'*'}
                                 readOnly 
                                 inputBg='#c4c4c449'
                                 error={saleAmountError}
                             /> 
-                    
-                    <SelectInput 
-                                options={paymentTypeItems} 
-                                label={'Payment Type'}
-                                value={paymentType}
-                                error={paymentTypeError}
-                                requiredSymbol={'*'}
-                                title={'Payment Type'}
-                                onChange={(e)=>handleChange('payment-type', e)}
-                            />
                       
                     <SelectInput 
                                 options={paymentStatusItems} 
@@ -900,6 +993,28 @@ const hanldeSumbit = async (e) =>{
                                 onChange={(e)=>handleChange('payment-status', e)}
                             />
 
+                   {showPartialField &&
+                    <Input 
+                                value={amountPaid} 
+                                title={'Amount Paid'}
+                                onChange={(e)=>handleChange('amount-paid', e)} 
+                                type={'text'} 
+                                label={'Amount Paid'} 
+                                requiredSymbol={'*'}
+                                placeholder={'0.00'}
+                                error={amountPaidError}
+                     /> }
+
+                    <SelectInput 
+                                options={paymentTypeItems} 
+                                label={'Payment Type'}
+                                value={paymentType}
+                                error={paymentTypeError}
+                                requiredSymbol={'*'}
+                                title={'Payment Type'}
+                                onChange={(e)=>handleChange('payment-type', e)}
+                     />
+
                     <TextArea 
                                 label={'Note'} 
                                 title={'Note'} 
@@ -907,7 +1022,7 @@ const hanldeSumbit = async (e) =>{
                                 value={note} 
                             />
 
-                    {/* Add to Purchase button */}
+                    {/* Add to SALE button */}
                     <ItemButtonWrapper btnAlign={'flex-start'}>
                                 <Button
                                     btnText={isBtnLoading ? <ButtonLoader text={'Adding...'} /> : 'Add Sale'}

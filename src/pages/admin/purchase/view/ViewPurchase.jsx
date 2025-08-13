@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react'
 import PageTitle from '../../../../components/page_title/PageTitle'
 import ItemContainer from '../../../../components/item_container/ItemContainer'
-import JewelLogo from '../../../../images/logo1.png' 
+import CompanyLogo from '../../../../images/product_placeholder.jpg' 
 import { SiPantheon } from 'react-icons/si'
 import { ProductItemList } from '../../../../data/productItems'
 import Button from '../../../../components/clicks/button/Button'
@@ -17,9 +17,6 @@ import html2canvas from  'html2canvas'
 import ButtonLoader from '../../../../components/clicks/button/button_loader/ButtonLoader'
 
 export default function ViewPurchase() {
-  // const [itemList, setItemList] = useState(ProductItemList);
-
-
 
   const navigate = useNavigate();
   const {purchaseId} = useParams();
@@ -30,10 +27,6 @@ export default function ViewPurchase() {
 
   const [isLoading, setIsLoading] = useState(false);
   const [isBtnLoading, setIsBtnLoading] = useState(false);
-  // const [showDeleteCard, setShowDeleteCard] = useState(false);
-  // const [grabId, setGrabId] = useState('');
-  // const [grabTitle, setGrabTitle] = useState('');
-
 
   // Fetch invoice detail
                 useEffect(()=>{
@@ -112,9 +105,7 @@ export default function ViewPurchase() {
     })
   }
 
-  const type = 'print'
-
-  const handleBtnClick = (type) => {
+    const handleBtnClick = (type) => {
 
     if (type === 'print') {
       return reactToPrintFn();
@@ -137,7 +128,7 @@ export default function ViewPurchase() {
           <List/> :
     <ViewPurchaseContent>
       {/* invoice wrapper */}
-      {/* <InvoiceWrapper ref={contentRef}> */}
+  
          <InvoiceWrapper ref={(el) => {
             contentRef.current = el;
             pdfRef.current = el;
@@ -147,7 +138,9 @@ export default function ViewPurchase() {
           {/* logo */}
             <LogoWrapper>
               <div>
-                <img src={JewelLogo} alt="" srcset="" />
+                <img src={purchaseData.companyLogo ? 
+                  process.env.REACT_APP_URL+'/images/'+ purchaseData.companyLogo:
+                  CompanyLogo} alt="" srcset="" />
               </div>
             </LogoWrapper>
             {/* date */}
@@ -338,7 +331,7 @@ export default function ViewPurchase() {
           btnOnClick={()=>handleBtnClick('pdf')}
         />
 
-        <Button
+        {/* <Button
           btnColor={'#0284c7'}
           btnText={'Email'}
           btnPd={'5px 10px'}
@@ -346,7 +339,7 @@ export default function ViewPurchase() {
           btnLeftIcon={<FaVoicemail/>}
           btnBdRd={'2px'}
           btnOnClick={()=>{}}
-        />
+        /> */}
       </ButtonsWrapper>
     </ViewPurchaseContent>
     }

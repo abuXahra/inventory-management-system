@@ -70,7 +70,7 @@ export const AnyItemContainer = styled.div`
   width: 100%;
   display: flex;
   justify-content: ${({ justifyContent }) => justifyContent || ""};
-  gap: 20px;
+  gap: ${({ gap }) => gap || "20px"};
   font-size: 10px;
 
   @media (max-width: 768px) {
@@ -111,7 +111,9 @@ export const TotalChargesWrapper = styled.div`
 `;
 
 export const InnerWrapper = styled.div`
-  width: 45%;
+  background-color: ${({ bgColor }) => bgColor || "rgba(186, 186, 186, 0.07)"};
+  padding: ${({ pd }) => pd || "10px"};
+  width: ${({ wd }) => wd || "45%"};
   display: flex;
   justify-content: space-between;
   align-items: center;

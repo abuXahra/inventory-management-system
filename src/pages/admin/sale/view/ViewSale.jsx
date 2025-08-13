@@ -1,34 +1,146 @@
-import React, { useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import PageTitle from '../../../../components/page_title/PageTitle'
-import { ButtonsWrapper, ChargesWrapper, DateWrapper, InfoBillWrapper, InvoiceWrapper, LogoDateWrapper, LogoWrapper, NoteWrapper, TableStyled, TdStyled, ViewSalesContent, ViewSalesWrapper } from './viewSale.style'
+import { ButtonsWrapper, ChargesWrapper, DateWrapper, InfoBillWrapper, InvoiceWrapper, LogoDateWrapper, LogoWrapper, NoteWrapper, PartialPaymentWrapper, TableStyled, TdStyled, ViewSalesContent, ViewSalesWrapper } from './viewSale.style'
 import ItemContainer from '../../../../components/item_container/ItemContainer'
-import JewelLogo from '../../../../images/logo1.png' 
+import CompanyLogo from '../../../../images/product_placeholder.jpg'  
 import { SiPantheon } from 'react-icons/si'
 import { ProductItemList } from '../../../../data/productItems'
 import Button from '../../../../components/clicks/button/Button'
 import { FaEdit, FaPrint } from 'react-icons/fa'
 import { FaDownload } from 'react-icons/fa6'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
+import axios from 'axios'
+import { useReactToPrint } from 'react-to-print'
+import html2canvas from 'html2canvas'
+import jsPDF from 'jspdf'
+import { List } from 'react-content-loader'
+import ButtonLoader from '../../../../components/clicks/button/button_loader/ButtonLoader'
 
 export default function ViewSale() {
   const [itemList, setItemList] = useState(ProductItemList);
 
   const navigate = useNavigate();
+    const {saleId} = useParams();
+    const [customerId, setCustomerId] = useState('')
+    const [saleData, setSaleData] = useState('');
+    const [customerData, setCustomerData] = useState('');
+    const [companyData, setCompanyData] = useState('');
 
+    const [isLoading, setIsLoading] = useState(false);
+    const [isBtnLoading, setIsBtnLoading] = useState(false);
+  
+
+// Fetch invoice detail
+                useEffect(()=>{
+                  const fetchInvoice = async() =>{
+                    setIsLoading(true)
+                      try {
+                          const res = await axios.get(`${process.env.REACT_APP_URL}/api/sale/${saleId}`);        
+                          console.log('====== sale data: \n', res.data, '==================')
+                          setSaleData(res.data);
+                          setCustomerId(res.data.customer)
+                          setIsLoading(false);
+                      } catch (error) {
+                          console.log(error);
+                          setIsLoading(false);
+                      }
+                
+                  }
+                  fetchInvoice();
+
+                const fetchCustomer = async() =>{
+                    try {
+                        const res = await axios.get(`${process.env.REACT_APP_URL}/api/customers/${customerId}`);        
+                        console.log('====== customer data: \n', res.data, '==================')
+                        setCustomerData(res.data);
+                        console.log('customer data; ', res.data)
+
+                    } catch (error) {
+                        console.log(error);
+                        // setIsLoading(false);
+                    }
+              
+                }
+                fetchCustomer();                  
+
+                 const fetchCompany = async() =>{
+                    // setIsLoading(true)
+                      try {
+                          const res = await axios.get(`${process.env.REACT_APP_URL}/api/company`);
+                          setCompanyData(res.data[0])
+                          // setIsLoading(false);
+                      } catch (error) {
+                          console.log(error);
+                          // setIsLoading(false);
+                      }
+                
+                  }
+                  fetchCompany();
+                },[saleId, customerId])
+
+               
+
+                
+  // for printing
+  const contentRef = useRef(null)
+  const reactToPrintFn = useReactToPrint({contentRef})
+
+  // for download pdf invoice
+  const pdfRef = useRef(null)
+  const downloadPDF = () => {
+    const input = pdfRef.current;
+    setIsBtnLoading(true)
+    return html2canvas(input).then((canvas) => {
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF('p', 'mm', 'a4', true);
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = pdf.internal.pageSize.getHeight();
+      const imgWidth =  canvas.width;
+      const imgHeight = canvas.height;
+      const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
+      const imgX = (pdfWidth - imgWidth * ratio) / 2;
+      const imgY = 30;
+      pdf.addImage(imgData, 'PNG', imgX, imgY, imgWidth * ratio, imgHeight * ratio );
+      pdf.save('invoice.pdf')
+      setIsBtnLoading(false);
+    })
+  }
+
+  const handleBtnClick = (type) => {
+
+    if (type === 'print') {
+      return reactToPrintFn();
+    }else if(type === 'pdf'){
+      return downloadPDF();
+    }
+
+  }
   return (
     <ViewSalesWrapper>
     {/* Page title */}
     <PageTitle title={'Sale'} subTitle={'/ View'}/>
+
+    {/* content */}
+    <>
+      {isLoading?
+       <List/> :
+
     <ViewSalesContent>
       {/* invoice wrapper */}
-      <InvoiceWrapper>
+        
+    <InvoiceWrapper ref={(el) => {
+      contentRef.current = el;
+      pdfRef.current = el;
+    }}>
         
         {/* Logo AND dATE */}
         <LogoDateWrapper>
           {/* logo */}
             <LogoWrapper>
               <div>
-                <img src={JewelLogo} alt="" srcset="" />
+                <img src={companyData ? 
+                  process.env.REACT_APP_URL+'/images/'+ companyData.companyLogo:
+                  CompanyLogo} alt="" srcset="" />
               </div>
             </LogoWrapper>
             {/* date */}
@@ -38,19 +150,19 @@ export default function ViewSale() {
               <div>
                   <div>
                       <span><b>INVOICE NO.:</b></span>
-                      <span>SA1001</span>                  
+                      <span>{saleData?.code}</span>                  
                   </div>
                   <div>
                       <span><b>INVOICE DATE:</b></span>
-                      <span>02-Jan-2020</span>                  
+                      <span>{new Date(saleData?.saleDate).toDateString()}</span>                                    
                   </div>
                   <div>
                       <span><b>SALES STATUS:</b></span>
-                      <span>Received</span>                  
+                      <span>{saleData?.saleStatus}</span>                  
                   </div>
                   <div>
                       <span><b>Payment STATUS:</b></span>
-                      <span><div>Paid</div></span>                  
+                      <span><div>{saleData?.paymentStatus}</div></span>                  
                   </div>
               </div>
              
@@ -63,10 +175,10 @@ export default function ViewSale() {
               <h3>OUR INFORMATION</h3>
               <hr />
               <div>
-                  <span><b>Inventory</b></span>
-                  <span>Address: Mirpur, Daghaka Bangladesh</span>
-                  <span>Phone: 09055001663</span>
-                  <span>Email: morningunit@gmail.com</span>
+                  <span><b>{companyData?.companyName?.toUpperCase()}</b></span>
+                  <span>Address: {companyData?.address}</span>
+                  <span>Phone: {companyData?.phoneNumber}</span>
+                  <span>Email: {companyData?.companyEmail}</span>
               </div>
            </div>
 
@@ -75,98 +187,136 @@ export default function ViewSale() {
               <h3>BILLING TO</h3>
               <hr />
               <div>
-                  <span><b>Walk-in Customer</b></span>
-                  <span>Address: Mirpur, Daghaka Bangladesh</span>
-                  <span>Phone: 09055001663</span>
-                  <span>Email: morningunit@gmail.com</span>
+                  <span><b>{customerData?.name?.toUpperCase()}</b></span>
+                  <span>Address: {customerData?.address}</span>
+                  <span>Phone: {customerData?.phoneNumber}</span>
+                  <span>Email: {customerData?.email}</span>
               </div>
            </div>
         </InfoBillWrapper>
-
-        {/* table of items */}
-           <TableStyled>
-                            <thead>
-                                <TdStyled><b>#</b></TdStyled>
-                                <TdStyled><b>Item Name</b></TdStyled>
-                                <TdStyled><b>Price</b></TdStyled>
-                                <TdStyled><b>Tax(%)</b></TdStyled>
-                                <TdStyled><b>Tax Amount</b></TdStyled>
-                                <TdStyled><b>Unit Cost</b></TdStyled>
-                                <TdStyled><b>Amount</b></TdStyled>
-                            </thead>
-                            <tbody>
-                            {itemList.map((data, i)=>(
-                                <tr key={i}>
-                                    <TdStyled>{i+1}</TdStyled>
-                                    <TdStyled>{data.title}</TdStyled>
-                                    <TdStyled>{data.price}</TdStyled>
-                                    <TdStyled>None</TdStyled>
-                                    <TdStyled>0.00</TdStyled>
-                                    <TdStyled>{data.price}</TdStyled>
-                                    <TdStyled>{data.qty + data.price }</TdStyled>
-                                </tr>
-                            ))
-                        }
-                            </tbody>
-                        </TableStyled>
-              
-              {/* Total Charges */}
-              <ChargesWrapper>
-                <div>
-                  <h3>Payment</h3>
-                  <hr />
-                  <TableStyled pd="0px">
-                            <thead>
-                                <TdStyled><b>Date</b></TdStyled>
-                                <TdStyled><b>Amount</b></TdStyled>
-                                <TdStyled><b>Payment Type</b></TdStyled>
-                                <TdStyled><b>Note</b></TdStyled>
-                            </thead>
-                            <tbody>
-                                   <tr>
-                                        <TdStyled>02-Jan-2020</TdStyled>
-                                        <TdStyled>{'N300,000'}</TdStyled>
-                                        <TdStyled>{'Cash'}</TdStyled>
-                                        <TdStyled>{''}</TdStyled>
-                                    </tr>
-                            </tbody>
-                        </TableStyled>
-                </div>
-
+<br/>
+      {/* /* table of items */}
+                 <TableStyled>
+                                  <thead>
+                                      <TdStyled><b>#</b></TdStyled>
+                                      <TdStyled><b>Item Name</b></TdStyled>
+                                      <TdStyled><b>Quantity</b></TdStyled>
+                                      <TdStyled><b>Price</b></TdStyled>
+                                      <TdStyled><b>Tax(%)</b></TdStyled>
+                                      <TdStyled><b>Tax Amount </b></TdStyled>
+                                      <TdStyled><b>Unit Cost </b></TdStyled>
+                                      <TdStyled><b>Amount </b></TdStyled>
+                                  </thead>
+                                  <tbody>
+                                  {saleData.saleItems?.map((data, i)=>(
+                                      <tr key={i}>
+                                          <TdStyled>{i+1}</TdStyled>
+                                          <TdStyled>{data.title}</TdStyled>
+                                          <TdStyled>{data.quantity}</TdStyled>
+                                          <TdStyled>{data.price}</TdStyled>
+                                          <TdStyled>{data.tax}%</TdStyled>
+                                          <TdStyled>{data.taxAmount}</TdStyled>
+                                          <TdStyled>{data.unitCost}</TdStyled>
+                                          <TdStyled>{data.amount }</TdStyled>
+                                      </tr>
+                                  ))
+                              }
+                                  </tbody>
+                              </TableStyled>  
+ <br/>
                 {/* Total Charges */}
-                <div>
+                            <ChargesWrapper>
+                              <div>
+                                <h3>Payment</h3>
+                                <hr />
+                                <TableStyled pd="0px">
+                                          <thead>
+                                              <TdStyled><b>Date</b></TdStyled>
+                                              <TdStyled><b>Amount </b></TdStyled>
+                                              <TdStyled><b>Payment Type</b></TdStyled>
+                                          </thead>
+                                          <tbody>
+                                                 <tr>
+                                                      <TdStyled>{new Date(saleData?.saleDate).toDateString()}</TdStyled>
+                                                      <TdStyled>{saleData?.saleAmount}</TdStyled>
+                                                      <TdStyled>{saleData?.paymentType}</TdStyled>
+                                                  </tr>
+                                          </tbody>
+                                      </TableStyled>
+                              </div>
+              
+                             
+                              {/* Total Charges */}
+                              <div>
+              
+                              <h3>Charges</h3>
+                              <hr />
+              
+                                {/* subtotal */}
+                                <div>
+                                  <span><b>Sub Total</b></span>
+                                  <span><span dangerouslySetInnerHTML={{ __html: companyData.currencySymbol }}/>{saleData?.subTotal}</span>
+                                </div>
+                                      {/* Other Charges */}
+                                <div>
+                                  <span>Other Charges</span>
+                                  <span><span dangerouslySetInnerHTML={{ __html: companyData.currencySymbol }}/>{saleData?.otherCharges}</span>
+                                </div>
+              
+                                      {/* Disacount*/}
+                                <div>
+                                  <span>Discount ({saleData?.discount})%</span>
+                                  <span><span dangerouslySetInnerHTML={{ __html: companyData.currencySymbol }}/>{saleData?.discountValue}</span>
+                                </div>
+                
+              
+                                      {/* Shipping*/}
+                                <div>
+                                  <span>Shipping</span>
+                                  <span><span dangerouslySetInnerHTML={{ __html: companyData.currencySymbol }}/>{saleData?.shipping}</span>
+                                </div>
+              
+                                  {/* Grand Total*/}
+                                <div>
+                                  <span><b>Grand Total</b></span>
+                                  <span><b><span dangerouslySetInnerHTML={{ __html: companyData.currencySymbol }}/>
+                                  {saleData?.saleAmount?.toLocaleString('en-NG', { 
+                                    minimumFractionDigits: 2, 
+                                    maximumFractionDigits: 2 
+                                  })}</b></span>
+                                </div>
+                              </div>
 
-                <h3>Charges</h3>
-                <hr />
+                            </ChargesWrapper>
 
-                  {/* subtotal */}
-                  <div>
-                    <span><b>Sub Total</b></span>
-                    <span>N300,000</span>
-                  </div>
-                        {/* Other Charges */}
-                  <div>
-                    <span><b>Other Charges</b></span>
-                    <span>N0.00</span>
-                  </div>
+                          {  saleData.paymentStatus === 'Partial' && 
+                                                        
+                              <PartialPaymentWrapper>
+                                  <h3>Advance payment</h3> <hr />
+                                     <div>                                   
+                                        <span>Amount Paid</span>
+                                        <span><span dangerouslySetInnerHTML={{ __html: companyData.currencySymbol }}/>{saleData?.amountPaid.toLocaleString('en-NG', { 
+                                              minimumFractionDigits: 2, 
+                                              maximumFractionDigits: 2 
+                                            })}</span>
+                                      </div>
+                                                   
+                                     <div>
+                                        <span><b>Balance</b></span>
+                                        <span><b><span dangerouslySetInnerHTML={{ __html: companyData.currencySymbol }}/>{saleData.dueBalance?.toLocaleString('en-NG', { 
+                                    minimumFractionDigits: 2, 
+                                    maximumFractionDigits: 2 
+                                  })}</b></span>
+                                      </div>
+                                                        
+                              
+                        </PartialPaymentWrapper>
+                    }
 
-                        {/* Disacount*/}
-                  <div>
-                    <span><b>Discount</b></span>
-                    <span>N600</span>
-                  </div>
-  
-                    {/* Disacount*/}
-                  <div>
-                    <span><b>Grand Total</b></span>
-                    <span>N300,500</span>
-                  </div>
-                </div>
-              </ChargesWrapper>
-
+<br/>
               {/* Note */}
               <NoteWrapper>
-                <span>Note:</span>
+                <span>Note: {saleData?.note}</span>
                 <hr />
               </NoteWrapper>
       </InvoiceWrapper>
@@ -174,39 +324,53 @@ export default function ViewSale() {
     {/* Action buttons */}
       <ButtonsWrapper>
 
-        {/* Edit */}
-        <Button
-          btnColor={'rgb(35, 139, 0)'}
-          btnText={'Edit'}
-          btnPd={'5px 10px'}
-          btnFontSize={'12px'}
-          btnLeftIcon={<FaEdit/>}
-          btnBdRd={'2px'}
-          btnOnClick={()=>navigate('/edit/:salesId')}
-        />
-
-        {/* print */}
-        <Button
-          btnColor={'#0284c7'}
-          btnText={'Print'}
-          btnPd={'5px 10px'}
-          btnFontSize={'12px'}
-          btnLeftIcon={<FaPrint/>}
-          btnOnClick={()=>{}}
-          btnBdRd={'2px'}
-        />
-
-        {/* download */}
-        <Button
-          btnColor={'#0284c7'}
-          btnText={'Download'}
-          btnPd={'5px 10px'}
-          btnFontSize={'12px'}
-          btnLeftIcon={<FaDownload/>}
-          btnBdRd={'2px'}
-        />
+         {/* Edit */}
+                <Button
+                  btnColor={'rgb(35, 139, 0)'}
+                  btnText={'Edit'}
+                  btnPd={'5px 10px'}
+                  btnFontSize={'12px'}
+                  btnLeftIcon={<FaEdit/>}
+                  btnBdRd={'2px'}
+                  btnOnClick={()=>navigate(`/edit-sale/${saleData?._id}`)}
+                />
+        
+                {/* print */}
+                    <Button
+                      btnColor={'#0284c7'}
+                      btnText={'Print'}
+                      btnPd={'5px 10px'}
+                      btnFontSize={'12px'}
+                      btnLeftIcon={<FaPrint />}
+                      btnBdRd={'2px'}
+                      btnOnClick={()=>handleBtnClick('print')}
+                    />
+                
+        
+                {/* download */}
+                <Button
+                  btnColor={'#0284c7'}
+                  btnText={isBtnLoading? <ButtonLoader text={'Generating PDF'}/> : 'Download'}
+                  btnPd={'5px 10px'}
+                  btnFontSize={'12px'}
+                  btnLeftIcon={isBtnLoading? "" : <FaDownload/>}
+                  btnBdRd={'2px'}
+                  btnOnClick={()=>handleBtnClick('pdf')}
+                />
+        
+                {/* <Button
+                  btnColor={'#0284c7'}
+                  btnText={'Email'}
+                  btnPd={'5px 10px'}
+                  btnFontSize={'12px'}
+                  btnLeftIcon={<FaVoicemail/>}
+                  btnBdRd={'2px'}
+                  btnOnClick={()=>{}}
+                /> */}
       </ButtonsWrapper>
     </ViewSalesContent>
+        }
+          </>
 </ViewSalesWrapper>
   )
 }

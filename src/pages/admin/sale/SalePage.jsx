@@ -1,51 +1,77 @@
 
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import PageTitle from '../../../components/page_title/PageTitle'
 import { SalePageContent, SalePageWrapper } from './salePage.style'
 import ListHeader from '../../../components/page_title/list_header/ListHeader'
 import { useNavigate } from 'react-router-dom'
 import SalesTable from '../../../components/table/sale_table/Sale'
+import axios from 'axios'
+import { List } from 'react-content-loader'
 
-// import {DataTable} from 'react-data-table-component'
 
 
 export default function SalePage() {
   
-  const data = [
-    {
-      id: 1,
-      date: '02-01-2021',
-      code: 'SA1001',
-      name: 'Walk-in Customer',
-      status: 'Received',
-      grandTotal: '$300',
-      paymentStatus: 'Paid',
-    },    {
-      id: 2,
-      date: '02-01-2022',
-      code: 'SA1002',
-      name: 'Yusuf Abdulazeez',
-      status: 'Pending',
-      grandTotal: '$500',
-      paymentStatus: 'Paid',
-    },
-    {
-      id: 3,
-      date: '02-01-2024',
-      code: 'SA1008',
-      name: 'Helen Nwaosu',
-      status: 'Received',
-      grandTotal: '$700',
-      paymentStatus: 'Paid',
-    },
-  ];
+  
+     const[saleRecords, setSaleRecords] = useState([]);
+     const [allSaleRecords, setAllSaleRecords] = useState([]);
+     const [isLoading, setIsLoading] = useState(false);
+  
+     // fetch expense handler 
+                          useEffect(() => {
+                              const getSale = async () => { 
+                                setIsLoading(true)  
+                                try {
+                                      const res = await axios.get(process.env.REACT_APP_URL + "/api/sale/")
+                                     
+                                      setSaleRecords(res.data)
+                                      setAllSaleRecords(res.data);
+                                      setIsLoading(false)
+                    
+                                      console.log(res.data)
+                                  } catch (err) {
+                                      console.log(err)
+                                      setIsLoading(false)
+                                  }
+                          
+                              }
+                              getSale();
+                          }, [])
 
-  const[records, setRecords] = useState(data);
-  const handleChange = (e) => {
-    let query = e.target.value;  
-    const newRecords = data.filter(item => item.name.toLocaleLowerCase().includes(query.toLocaleLowerCase()))
-    setRecords(newRecords);
-  }
+
+
+           // handle sale delete
+          const deleteSale = async (saleId,  updatedList = null) => {
+            
+            if (updatedList) {
+              setSaleRecords(updatedList);
+              return { success: true };
+            }
+            
+            try {
+              await axios.delete(`${process.env.REACT_APP_URL}/api/sale/${saleId}`);
+              const updatedSale = saleRecords.filter(sale => sale._id !== saleId);
+              setSaleRecords(updatedSale);
+              return { success: true };
+            } catch (error) {
+              return { success: false, message: error.message };
+            }
+          };
+
+// handle search query
+            const handleSearchQueryOnChange = (e) => {
+              let query = e.target.value;
+              //  if query is empty, reset to all record
+              if(query === ''){
+                setSaleRecords(allSaleRecords);
+              }else{
+                // Filter records based on query
+                const filterRecords = allSaleRecords.filter(item =>
+                  item.customer?.name.toLocaleLowerCase().includes(query.toLocaleLowerCase())
+                );
+                setSaleRecords(filterRecords)
+              }
+            }
 
 
   const navigate = useNavigate();
@@ -54,20 +80,26 @@ export default function SalePage() {
         <PageTitle title={'Sale'}/>
 
         {/* content */}
+      {isLoading? <List/> :
         <SalePageContent>
           <ListHeader 
-            title={'Add Sale'} 
+            title={'Sale'} 
             btnOnClick={()=>navigate('/add-sale')}
-            searQuery={'Name'}
-            onChange={handleChange}
+            searQuery={'Customer'}
+            onChange={handleSearchQueryOnChange}
             type={'text'}
+            dataLength={saleRecords.length}
           />
           
           {/* Sales Table */}
-            <SalesTable data={records}/>
+            <SalesTable 
+              data={saleRecords}
+              onDeleteSale={deleteSale}
+              setIsLoading={setIsLoading}
+            />
         </SalePageContent>
 
-        
+      }
     </SalePageWrapper>
   )
 }

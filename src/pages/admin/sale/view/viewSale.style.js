@@ -44,12 +44,13 @@ export const LogoDateWrapper = styled.div`
 
 export const LogoWrapper = styled.div`
   div {
-    width: 200px;
+    width: 150px;
     height: auto;
     padding: 20px;
     border: 1px solid #cccccc;
     border-radius: 5px;
     padding: 5px;
+    margin-bottom: 20px;
     box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px,
       rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
 
@@ -97,15 +98,17 @@ export const DateWrapper = styled.div`
 export const InfoBillWrapper = styled.div`
   width: 100%;
   display: flex;
+  justify-content: space-between;
   gap: 20px;
 
   div {
-    width: 50%;
+    width: 40%;
     display: flex;
     flex-direction: column;
     gap: 10px;
 
     div {
+      width: 100%;
       display: flex;
       flex-direction: column;
       gap: 2px;
@@ -202,6 +205,22 @@ export const ChargesWrapper = styled.div`
 
   @media (max-width: 768px) {
     flex-direction: column;
+  }
+`;
+
+export const PartialPaymentWrapper = styled.div`
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  div {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+  @media (max-width: 768px) {
+    width: 100%;
   }
 `;
 

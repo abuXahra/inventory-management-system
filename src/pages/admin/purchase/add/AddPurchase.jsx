@@ -371,7 +371,7 @@ const dropdownHandler = (product) => {
     setProductId(product._id)
     setSearchTitle('');
     setTitle(product.title)
-    setQuantity(product.openingStock);
+    // setQuantity();
     setPrice(product.price)
     setTax(product.tax)
     setTaxAmount(product.taxAmount)

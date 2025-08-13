@@ -244,8 +244,12 @@ const paymentStatusItems = [
         value: ''
     },
     {
-        title: 'paid',
-        value: 'paid'
+        title: 'Paid',
+        value: 'Paid'
+    },  
+    {
+        title: 'Not Paid',
+        value: 'Not Paid'
     },
     {
         title: 'Partial',
