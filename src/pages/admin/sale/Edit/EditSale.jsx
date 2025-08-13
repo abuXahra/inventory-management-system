@@ -533,7 +533,13 @@ const hanldeSumbit = async (e) =>{
         isValid = false;
     }
          
-    
+    if (paymentStatus === 'Partial') {
+        if (!amountPaid || parseFloat(amountPaid) <= 0) {
+            setAmountPaidError(true);
+            isValid = false;
+        }
+}
+
     if(isValid){
       
       const newSale = {
@@ -543,8 +549,10 @@ const hanldeSumbit = async (e) =>{
       saleStatus,
       reference,
       saleAmount: Number(saleAmount),
-      paymentType,
       paymentStatus,
+      paymentType,
+      amountPaid: Number(amountPaid),
+      dueBalance,
       note,
       subTotal: Number(subTotal),
       otherCharges: Number(otherCharges),
@@ -971,7 +979,27 @@ const hanldeSumbit = async (e) =>{
                                 inputBg='#c4c4c449'
                                 error={saleAmountError}
                             /> 
+                    <SelectInput 
+                                                    options={paymentStatusItems} 
+                                                    label={'Payment Status'}
+                                                    value={paymentStatus}
+                                                    error={paymentStatusError}
+                                                    requiredSymbol={'*'}
+                                                    title={'Payment Status'}
+                                                    onChange={(e)=>handleChange('payment-status', e)}
+                                                />
                     
+                                {showPartialField &&
+                                        <Input 
+                                                    value={amountPaid} 
+                                                    title={'Amount Paid'}
+                                                    onChange={(e)=>handleChange('amount-paid', e)} 
+                                                    type={'text'} 
+                                                    label={'Amount Paid'} 
+                                                    requiredSymbol={'*'}
+                                                    placeholder={'0.00'}
+                                                    error={amountPaidError}
+                                         /> }
                     <SelectInput 
                                 options={paymentTypeItems} 
                                 label={'Payment Type'}
@@ -982,16 +1010,6 @@ const hanldeSumbit = async (e) =>{
                                 onChange={(e)=>handleChange('payment-type', e)}
                             />
                       
-                    <SelectInput 
-                                options={paymentStatusItems} 
-                                label={'Payment Status'}
-                                value={paymentStatus}
-                                error={paymentStatusError}
-                                requiredSymbol={'*'}
-                                title={'Payment Status'}
-                                onChange={(e)=>handleChange('payment-status', e)}
-                            />
-
                     <TextArea 
                                 label={'Note'} 
                                 title={'Note'} 
