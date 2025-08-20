@@ -15,6 +15,7 @@ import { useReactToPrint } from 'react-to-print' // for printing
 import jsPDF from 'jspdf'
 import html2canvas from  'html2canvas'
 import ButtonLoader from '../../../../components/clicks/button/button_loader/ButtonLoader'
+import { PartialPaymentWrapper } from '../../sale/view/viewSale.style'
 
 export default function ViewPurchase() {
 
@@ -36,7 +37,7 @@ export default function ViewPurchase() {
                           const res = await axios.get(`${process.env.REACT_APP_URL}/api/purchase/${purchaseId}`);        
                           console.log('====== purchase data: \n', res.data, '==================')
                           setPurchaseData(res.data);
-                          setSupplierId(res.data.supplier)
+                          setSupplierId(res.data.supplier._id)
                           setIsLoading(false);
                       } catch (error) {
                           console.log(error);
@@ -44,8 +45,26 @@ export default function ViewPurchase() {
                       }
                 
                   }
-                  fetchInvoice();
+                  fetchInvoice();               
 
+                 const fetchCompany = async() =>{
+                    // setIsLoading(true)
+                      try {
+                          const res = await axios.get(`${process.env.REACT_APP_URL}/api/company`);
+                          setCompanyData(res.data[0])
+                          // setIsLoading(false);
+                      } catch (error) {
+                          console.log(error);
+                          // setIsLoading(false);
+                      }
+                
+                  }
+                  fetchCompany();
+                },[purchaseId])
+
+         
+               useEffect(()=>{
+                 
                 const fetchSupplier = async() =>{
                   // setIsLoading(true)
                     try {
@@ -61,23 +80,8 @@ export default function ViewPurchase() {
               
                 }
                 fetchSupplier();                  
+                },[supplierId])
 
-                 const fetchCompany = async() =>{
-                    // setIsLoading(true)
-                      try {
-                          const res = await axios.get(`${process.env.REACT_APP_URL}/api/company`);
-                          setCompanyData(res.data[0])
-                          // setIsLoading(false);
-                      } catch (error) {
-                          console.log(error);
-                          // setIsLoading(false);
-                      }
-                
-                  }
-                  fetchCompany();
-                },[purchaseId, supplierId])
-
-               
 
                 
   // for printing
@@ -138,8 +142,8 @@ export default function ViewPurchase() {
           {/* logo */}
             <LogoWrapper>
               <div>
-                <img src={purchaseData.companyLogo ? 
-                  process.env.REACT_APP_URL+'/images/'+ purchaseData.companyLogo:
+                <img src={companyData? 
+                  process.env.REACT_APP_URL+'/images/'+ companyData.companyLogo:
                   CompanyLogo} alt="" srcset="" />
               </div>
             </LogoWrapper>
@@ -194,7 +198,7 @@ export default function ViewPurchase() {
               </div>
            </div>
         </InfoBillWrapper>
-
+<br/>
         {/* table of items */}
            <TableStyled>
                             <thead>
@@ -223,7 +227,7 @@ export default function ViewPurchase() {
                         }
                             </tbody>
                         </TableStyled>
-              
+       <br/>       
               {/* Total Charges */}
               <ChargesWrapper>
                 <div>
@@ -286,6 +290,32 @@ export default function ViewPurchase() {
                   </div>
                 </div>
               </ChargesWrapper>
+
+                 {  purchaseData.paymentStatus === 'Partial' && 
+                                                                      
+                                            <PartialPaymentWrapper>
+                                                <h3>Advance payment</h3> <hr />
+                                                   <div>                                   
+                                                      <span>Amount Paid</span>
+                                                      <span><span dangerouslySetInnerHTML={{ __html: companyData.currencySymbol }}/>{purchaseData?.amountPaid.toLocaleString('en-NG', { 
+                                                            minimumFractionDigits: 2, 
+                                                            maximumFractionDigits: 2 
+                                                          })}</span>
+                                                    </div>
+                                                                 
+                                                   <div>
+                                                      <span><b>Balance</b></span>
+                                                      <span><b><span dangerouslySetInnerHTML={{ __html: companyData.currencySymbol }}/>{purchaseData.dueBalance?.toLocaleString('en-NG', { 
+                                                  minimumFractionDigits: 2, 
+                                                  maximumFractionDigits: 2 
+                                                })}</b></span>
+                                                    </div>
+                                                                      
+                                            
+                                      </PartialPaymentWrapper>
+                                  }
+              
+              <br/>
 
               {/* Note */}
               <NoteWrapper>

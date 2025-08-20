@@ -170,20 +170,20 @@ const handleChange = (type, e)=>{
             setPaymentStatus(e.target.value);
             setPaymentStatusError(false);
 
-            if(e.target.value === 'Partial'){
+            if(e.target.value === 'partial'){
                 setShowPartialField(true)
             }else{
                 setShowPartialField(false);
             }
 
-            if(e.target.value === 'Not Paid'){
+            if(e.target.value === 'unpaid'){
                 setPaymentType(paymentTypeItems[6].value)
             }else{
                 setPaymentType('');
             }
         }else if(type === 'amount-paid'){
             setAmountPaid(e.target.value);
-            setDueBalance(saleAmount - Number(e.target.value))
+            setDueBalance((saleAmount - Number(e.target.value)).toFixed(2))
             setAmountPaidError(false);
         }else if(type === 'payment-type'){
             setPaymentType(e.target.value);
@@ -225,20 +225,16 @@ const saleStatusItem =  [
         value: ''
     },
     {
-        title: 'received',
-        value: 'received'
+        title: 'completed',
+        value: 'completed'
     },
     {
         title: 'pending',
         value: 'pending'
     },
-        {
-        title: 'ordered',
-        value: 'ordered'
-    },
 ]
 
-// payment
+// payment items
 const paymentTypeItems =  [
         {
         title: 'Select',
@@ -276,16 +272,16 @@ const paymentStatusItems = [
         value: ''
     },
     {
-        title: 'Paid',
-        value: 'Paid'
+        title: 'unpaid',
+        value: 'unpaid'
     },  
     {
-        title: 'Partial',
-        value: 'Partial'
+        title: 'partial',
+        value: 'partial'
     },
     {
-        title: 'Not Paid',
-        value: 'Not Paid'
+        title: 'paid',
+        value: 'paid'
     },
 ]
 
@@ -419,7 +415,6 @@ const dropdownHandler = (product) => {
 
 
 // search name dropdownd handler
-
 const dropdownCustomerName = (customer) => {
     setShowCusDropdown(false)
     setCustomerId(customer._id)
@@ -536,7 +531,7 @@ const hanldeSumbit = async (e) =>{
         isValid = false;
     }
      
- if (paymentStatus === 'Partial') {
+ if (paymentStatus === 'partial') {
   if (!amountPaid || parseFloat(amountPaid) <= 0) {
     setAmountPaidError(true);
     isValid = false;
@@ -576,7 +571,7 @@ const hanldeSumbit = async (e) =>{
             }))
             : [],
       prefix: prefix,
-      userId: user._id
+      userId: user?._id
     };
       setIsBtnLoading(true);
       console.log('======new sale data==========\n', newSale)
@@ -993,7 +988,8 @@ const hanldeSumbit = async (e) =>{
                                 onChange={(e)=>handleChange('payment-status', e)}
                             />
 
-                   {showPartialField &&
+                  <div style={{display: "flex", gap: "10px"}}>
+                     {showPartialField &&
                     <Input 
                                 value={amountPaid} 
                                 title={'Amount Paid'}
@@ -1005,6 +1001,18 @@ const hanldeSumbit = async (e) =>{
                                 error={amountPaidError}
                      /> }
 
+                {showPartialField &&
+                                        <Input 
+                                            value={dueBalance} 
+                                            title={'Due Balance'}
+                                            onChange={(e)=>handleChange('due-amount', e)} 
+                                            type={'text'} 
+                                            label={'Due Balance'} 
+                                            readOnly 
+                                            inputBg='#c4c4c449'
+                                        /> 
+                                        }
+                            </div>
                     <SelectInput 
                                 options={paymentTypeItems} 
                                 label={'Payment Type'}

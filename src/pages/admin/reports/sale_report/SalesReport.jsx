@@ -3,7 +3,7 @@
 
 
 
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { AddressWrapper, AnyItemContaineri, DateWrapper, Logo, LogoDateWrapper, LogoWrapper, ReportHeaderContent, ReportHeaderWrapper, SalesReportContent, SalesReportWrapper, SearchReportWrapper, SearchResultWrapper } from './salesReport.style'
 import PageTitle from '../../../../components/page_title/PageTitle';
@@ -18,6 +18,7 @@ import ItemContainer from '../../../../components/item_container/ItemContainer';
 import ButtonLoader from '../../../../components/clicks/button/button_loader/ButtonLoader';
 import SaleReportTable from '../../../../components/table/report_table/sale_report_table/SaleReportTable';
 import JewelLogo from '../../../../images/logo1.png'
+import axios from 'axios';
 
 
 
@@ -58,6 +59,42 @@ export default function SalesReport() {
     const [toDate, setToDate] = useState(todayDate)
     const [toDateError, setToDateError] = useState(false)
     
+
+    const [company, setCompany] = useState('')
+    const [customer, setCustomer] = useState([])
+    const [saleData, setSaleData] = useState([])
+
+    useEffect(()=>{
+        const fetchCompany = async () =>{
+            try {
+                const res =await axios.get(`${process.env.REACT_APP_URL}/api/company`)
+                setCompany(res.data);
+                console.log('company:\ln', res.data)
+            } catch (error) {
+                console.log(error)
+            }
+        }
+        fetchCompany()
+
+    const fetchCustomer = async () =>{
+            try {
+                const res=await axios.get(`${process.env.REACT_APP_URL}/api/company`)
+                setCustomer(res.data);
+            } catch (error) {
+                console.log(error)
+            }
+        }
+    
+    const fetchSale = async () => {
+        try {
+            const res =await  axios.get(`${process.env.REACT_APP_URL}/API/sale`)
+            setSaleData(res.data)
+
+        } catch (error) {
+            console.log(error)
+        }
+    }
+    },[])
 
     const onChangeHandler = (type, e)=>{
         if (type === 'name') {
@@ -100,6 +137,7 @@ export default function SalesReport() {
 
 
 
+
   const data = [
     {
       id: 1,
@@ -109,6 +147,7 @@ export default function SalesReport() {
       mobile: '+2349055001663',
       totalAmount: 300,
       paidAmount: 300,
+      dueAmount: 300,
       paymentStatus: 'paid'
     }, 
     {
@@ -118,6 +157,7 @@ export default function SalesReport() {
         name: 'Isah Abdulmumin',
         totalAmount: 300,
         paidAmount: 300,
+        dueAmount: 300,
         paymentStatus: 'Paid'
     }, 
 
@@ -128,6 +168,7 @@ export default function SalesReport() {
         name: 'Isah Abdulmumin',
         totalAmount: 300,
         paidAmount: 300,
+        dueAmount: 300,
         paymentStatus: 'Pending'
     }, 
     {
@@ -137,6 +178,7 @@ export default function SalesReport() {
         name: 'Isah Abdulmumin',
         totalAmount: 300,
         paidAmount: 300,
+        dueAmount: 300,
         paymentStatus: 'Unpaid'
     }, 
   ];

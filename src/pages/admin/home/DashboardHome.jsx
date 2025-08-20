@@ -68,9 +68,7 @@ function DashboardHome() {
       paymentStatus: 'Paid',
     },
   ];
-
-
-
+const {user} = useContext(UserContext);
 
   return (
     <HomeWrapper>
@@ -78,7 +76,7 @@ function DashboardHome() {
         <GreetingWrapper>
           <GreetingCard>
             <h1>Welcome back</h1>
-            <h5>Admin</h5>
+            <h5>{user.role}</h5>
           </GreetingCard>
 
           <DateTimeWrapper>

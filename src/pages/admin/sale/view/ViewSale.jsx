@@ -17,7 +17,7 @@ import { List } from 'react-content-loader'
 import ButtonLoader from '../../../../components/clicks/button/button_loader/ButtonLoader'
 
 export default function ViewSale() {
-  const [itemList, setItemList] = useState(ProductItemList);
+  
 
   const navigate = useNavigate();
     const {saleId} = useParams();
@@ -38,7 +38,7 @@ export default function ViewSale() {
                           const res = await axios.get(`${process.env.REACT_APP_URL}/api/sale/${saleId}`);        
                           console.log('====== sale data: \n', res.data, '==================')
                           setSaleData(res.data);
-                          setCustomerId(res.data.customer)
+                          setCustomerId(res.data.customer._id)
                           setIsLoading(false);
                       } catch (error) {
                           console.log(error);
@@ -47,21 +47,7 @@ export default function ViewSale() {
                 
                   }
                   fetchInvoice();
-
-                const fetchCustomer = async() =>{
-                    try {
-                        const res = await axios.get(`${process.env.REACT_APP_URL}/api/customers/${customerId}`);        
-                        console.log('====== customer data: \n', res.data, '==================')
-                        setCustomerData(res.data);
-                        console.log('customer data; ', res.data)
-
-                    } catch (error) {
-                        console.log(error);
-                        // setIsLoading(false);
-                    }
-              
-                }
-                fetchCustomer();                  
+                             
 
                  const fetchCompany = async() =>{
                     // setIsLoading(true)
@@ -76,10 +62,31 @@ export default function ViewSale() {
                 
                   }
                   fetchCompany();
-                },[saleId, customerId])
+                },[saleId])
 
                
 
+        useEffect(()=>{
+                 
+          // if (!customerId) return;
+
+                const fetchCustomer = async() =>{
+                    try {
+                        const res = await axios.get(`${process.env.REACT_APP_URL}/api/customers/${customerId}`);        
+                        console.log('====== customer data: \n', res.data, '==================')
+                        setCustomerData(res.data);
+                        console.log('customer data; ', res.data)
+
+                    } catch (error) {
+                        console.log(error);
+                        // setIsLoading(false);
+                    }
+              
+                }
+            fetchCustomer()
+                },[customerId])
+
+               
                 
   // for printing
   const contentRef = useRef(null)
@@ -289,7 +296,7 @@ export default function ViewSale() {
 
                             </ChargesWrapper>
 
-                          {  saleData.paymentStatus === 'Partial' && 
+                          {  saleData.paymentStatus === 'partial' && 
                                                         
                               <PartialPaymentWrapper>
                                   <h3>Advance payment</h3> <hr />

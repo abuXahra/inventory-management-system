@@ -44,7 +44,7 @@ export const LogoDateWrapper = styled.div`
 
 export const LogoWrapper = styled.div`
   div {
-    width: 200px;
+    width: 150px;
     height: auto;
     padding: 20px;
     border: 1px solid #cccccc;

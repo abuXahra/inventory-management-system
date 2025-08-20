@@ -98,12 +98,12 @@ export const TopCardContentWrapper= styled.div`
     width: 100%;
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-between;
+    justify-content: center;
     gap: 20px;
 
 
     @media (max-width: 768px) {
-        flex-direction: column;
+        flex-wrap: wrap;
     }
 `
 
@@ -121,7 +121,7 @@ export const TopCard = styled.div`
     justify-content: flex-end;
 
     @media (max-width: 768px) {
-       width: 100%;
+       width: 47%;
     }
 
 `

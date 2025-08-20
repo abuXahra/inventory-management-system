@@ -188,16 +188,19 @@ const getStatusBackgroundColor = (paymentStatus) => {
       name: "#",
       selector: (row) => row.id,
       sortable: true,
+      width: '6%',
     },
     {
       name: "Invoice No",
       selector: (row) => row.code,
       sortable: true,
+      width: '10%',
     },
     {
       name: "Date",
       selector: (row) => row.date,
       sortable: true,
+      width: '10%',
     },
     {
       name: "Name",
@@ -211,6 +214,11 @@ const getStatusBackgroundColor = (paymentStatus) => {
     },
     {
       name: "Paid Amount (N)",
+      selector: (row) => row.paidAmount,
+      sortable: true,
+    },
+   {
+      name: "Due Amount (N)",
       selector: (row) => row.paidAmount,
       sortable: true,
     },
@@ -261,7 +269,7 @@ const getStatusBackgroundColor = (paymentStatus) => {
           footer={{
             columns: [
               { name: "Invoice No.", colSpan: 3 },
-              { name: "Total", colSpan: 3, align: "right" },
+              { name: "<b>Total</b>", colSpan: 3, align: "right" },
             ],
           }}
         />

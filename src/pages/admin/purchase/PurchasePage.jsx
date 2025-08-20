@@ -59,18 +59,25 @@ export default function PurchasePage() {
 
 // handle search query
             const handleSearchQueryOnChange = (e) => {
-              let query = e.target.value;
-              //  if query is empty, reset to all record
-              if(query === ''){
-                setPurchaseRecords(allPurchaseRecords);
-              }else{
-                // Filter records based on query
-                const filterRecords = allPurchaseRecords.filter(item =>
-                  item.supplier?.name.toLocaleLowerCase().includes(query.toLocaleLowerCase())
-                );
-                setPurchaseRecords(filterRecords)
-              }
-            }
+  const query = e.target.value.trim().toLowerCase(); // normalize query
+
+  if (query === '') {
+    setPurchaseRecords(allPurchaseRecords);
+  } else {
+    const filteredRecords = allPurchaseRecords.filter(item => {
+      const supplierName = item.supplier?.name?.toLowerCase() || '';
+      const purchaseCode = item.code?.toLowerCase() || ''; // use correct field name
+
+      return (
+        supplierName.includes(query) ||
+        purchaseCode.includes(query)
+      );
+    });
+
+    setPurchaseRecords(filteredRecords);
+  }
+};
+
 
 
   const navigate = useNavigate();
@@ -84,7 +91,7 @@ export default function PurchasePage() {
           <ListHeader 
             title={'Purchase'} 
             btnOnClick={()=>navigate('/add-purchase')}
-            searQuery={'Supplier'}
+            searQuery={'Supplier or Invoice Code'}
             onChange={handleSearchQueryOnChange}
             type={'text'}
             dataLength={purchaseRecords.length}

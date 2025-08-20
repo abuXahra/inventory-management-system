@@ -97,6 +97,13 @@ const [grandTotal, setGrandTotal] = useState(0);
 const [products, setProducts] = useState([]);
 
 const [supplierItems, setSupplierItems] = useState([])
+const [showSupDropdown, setShowSupDropdown] = useState(false);
+const [supplierId, setSupplierId] = useState('');
+
+const [showPartialField, setShowPartialField] = useState(false);
+const [amountPaid, setAmountPaid] = useState('')
+const [amountPaidError, setAmountPaidError] = useState(false);
+const [dueBalance, setDueBalance] = useState('');
 
 // onchange handler
 const handleChange = (type, e)=>{
@@ -150,9 +157,11 @@ const handleChange = (type, e)=>{
             setPurchaseDate(e.target.value);
             setPurchaseDateError(false);
         }else if(type === 'supply-name'){
+
             setSupplier(e.target.value);
-             console.log(e.target.value);
+            setShowSupDropdown(e.target.value.trim().length > 0);
             setSupplierNameError(false);
+
         }else if(type === 'purchase-status'){
             setPurchaseStatus(e.target.value);
             setPurchaseStatusError(false);
@@ -161,12 +170,29 @@ const handleChange = (type, e)=>{
         }else if(type === 'purchase-amount'){
             setPurchaseAmount(e.target.value);
             setPurchaseAmountError(false);
-        }else if(type === 'payment-type'){
-            setPaymentType(e.target.value);
-            setPaymentTypeError(false);
         }else if(type === 'payment-status'){
             setPaymentStatus(e.target.value);
             setPaymentStatusError(false);
+
+            if(e.target.value === 'Partial'){
+                setShowPartialField(true)
+            }else{
+                setShowPartialField(false);
+            }
+
+            if(e.target.value === 'Not Paid'){
+                setPaymentType(paymentTypeItems[6].value)
+            }else{
+                setPaymentType('');
+            }
+
+        }else if(type === 'amount-paid'){
+            setAmountPaid(e.target.value);
+            setDueBalance(purchaseAmount - Number(e.target.value))
+            setAmountPaidError(false);
+        }else if(type === 'payment-type'){
+            setPaymentType(e.target.value);
+            setPaymentTypeError(false);
         }else if(type === 'note'){
             setNote(e.target.value);
         }
@@ -218,11 +244,15 @@ const purchaseStatusItem =  [
 ]
 
 
-// customers name
+// payment items
 const paymentTypeItems =  [
         {
         title: 'Select',
         value: ''
+    },
+    {
+        title: 'Card',
+        value: 'Card'
     },
     {
         title: 'Cash',
@@ -233,8 +263,16 @@ const paymentTypeItems =  [
         value: 'Check'
     },
     {
-        title: 'Transfer',
-        value: 'Transfer'
+        title: 'Online',
+        value: 'Online'
+    },
+    {
+        title: 'Bank Transfer',
+        value: 'Bank Transfer'
+    },
+      {
+        title: 'N/A',
+        value: 'N/A'
     },
 ]
 
@@ -244,14 +282,19 @@ const paymentStatusItems = [
         value: ''
     },
     {
-        title: 'paid',
-        value: 'paid'
-    },
+        title: 'Paid',
+        value: 'Paid'
+    },  
     {
         title: 'Partial',
         value: 'Partial'
     },
+    {
+        title: 'Not Paid',
+        value: 'Not Paid'
+    },
 ]
+
 
 
   // Fetch expense initial
@@ -305,14 +348,14 @@ useEffect(() => {
             
                      const res = await axios.get(process.env.REACT_APP_URL + "/api/suppliers/")
                
-                     
-                     setSupplierItems([
-                        { title: 'Select', value: '' }, 
-                        ...res.data.map(supplier => ({
-                            title: supplier.name,
-                            value: supplier._id,
-                        }))
-                    ]);
+                     setSupplierItems(res.data)
+                    //  setSupplierItems([
+                    //     { title: 'Select', value: '' }, 
+                    //     ...res.data.map(supplier => ({
+                    //         title: supplier.name,
+                    //         value: supplier._id,
+                    //     }))
+                    // ]);
                      setIsLoading(false)
                      
                  } catch (err) {
@@ -378,6 +421,16 @@ const dropdownHandler = (product) => {
     setUnitCost(product.unitCost)
     setAmount(product.purchasePrice)
 }
+
+
+// search name dropdownd handler
+const dropdownSupplierName = (supplier) => {
+    setShowSupDropdown(false)
+    setSupplierId(supplier._id)
+    setSupplier(supplier.name)    
+}
+
+
 
 // add to array list
 const addToList = (e) =>{
@@ -486,18 +539,27 @@ const hanldeSumbit = async (e) =>{
         setPaymentStatusError(true)
         isValid = false;
     }
-         
+
+if (paymentStatus === 'Partial') {
+  if (!amountPaid || parseFloat(amountPaid) <= 0) {
+    setAmountPaidError(true);
+    isValid = false;
+  }
+}
     
     if(isValid){
       
       const newPurchase = {
       purchaseDate: new Date(purchaseDate),
-      supplier: supplier._id || supplier,
+    //   supplier: supplier._id || supplier,
+      supplier: supplierId,
       purchaseStatus,
       reference,
       purchaseAmount: Number(purchaseAmount),
-      paymentType,
       paymentStatus,
+      paymentType,
+      amountPaid: Number(amountPaid),
+      dueBalance,
       note,
       subTotal: Number(subTotal),
       otherCharges: Number(otherCharges),
@@ -527,7 +589,7 @@ const hanldeSumbit = async (e) =>{
           
               const res = await axios.post(`${process.env.REACT_APP_URL}/api/purchase/create`, newPurchase);
               
-              navigate(`/purchase-invoice/${res.data._id}`);
+              navigate(`/purchase-invoice/${res.data.newPurchase._id}`);
                 // toast success message
                  toast.success('Purchase added Successfully')
                    setIsBtnLoading(false);
@@ -830,7 +892,48 @@ const hanldeSumbit = async (e) =>{
         <SupplierInfoWrapper>
             <form action="" onSubmit={(e)=>hanldeSumbit(e)}>
                 <ItemContainer title={'Supply Info'}>
+ 
                     <Input 
+                                value={supplier} 
+                                title={'Supplier Name'}
+                                onChange={(e)=>handleChange('supply-name', e)} 
+                                error={supplierNameError} 
+                                type={'text'} 
+                                label={'Supplier Name'} 
+                                placeholder={'search...'}
+                                requiredSymbol={'*'}
+                            />  
+                 
+
+                        {showSupDropdown && (
+                                    <DropdownWrapper topPosition={'80px'} width={"96%"}>
+                                        {supplierItems.filter(c =>
+                                        supplier.length > 0 &&
+                                        c.name.toLowerCase().includes(supplier.toLowerCase())
+                                        ).length > 0 ? (
+                                        supplierItems
+                                            .filter(c => 
+                                            supplier.length > 0 &&
+                                            c.name.toLowerCase().includes(supplier.toLowerCase())
+                                            )
+                                            .map((data, i) => (
+                                            <DropdownItems key={i} onClick={() => dropdownSupplierName(data)}>
+                                                {data.name}
+                                            </DropdownItems>
+                                            ))
+                                        ) : (
+                                        <DropdownItems>
+                                            <div style={{width: "100%", display: "flex", flexDirection: "column", gap: "5px", padding: "20px", justifyContent: "center", alignItems: "center"}}>
+                                                <span>No such supplier </span>
+                                                <a href="/add-supplier">Please click here to add </a>
+                                            </div>
+                                        
+                                        </DropdownItems>
+                                        )}
+                                    </DropdownWrapper>
+                            )}
+
+                   <Input 
                                 value={purchaseDate} 
                                 title={'Date'}
                                 onChange={(e)=>handleChange('purchase-date', e)} 
@@ -840,7 +943,7 @@ const hanldeSumbit = async (e) =>{
                                 requiredSymbol={'*'}
                             /> 
 
-                    <SelectInput 
+                    {/* <SelectInput 
                                 options={supplierItems} 
                                 label={'Supply Name'}
                                 value={supplier}
@@ -848,7 +951,7 @@ const hanldeSumbit = async (e) =>{
                                 requiredSymbol={'*'}
                                 title={'Supply Name'}
                                 onChange={(e)=>handleChange('supply-name', e)}
-                            />
+                            /> */}
 
                     <SelectInput 
                                 options={purchaseStatusItem} 
@@ -883,15 +986,6 @@ const hanldeSumbit = async (e) =>{
                                 error={purchaseAmountError}
                             /> 
                     
-                    <SelectInput 
-                                options={paymentTypeItems} 
-                                label={'Payment Type'}
-                                value={paymentType}
-                                error={paymentTypeError}
-                                requiredSymbol={'*'}
-                                title={'Payment Type'}
-                                onChange={(e)=>handleChange('payment-type', e)}
-                            />
                       
                     <SelectInput 
                                 options={paymentStatusItems} 
@@ -903,6 +997,41 @@ const hanldeSumbit = async (e) =>{
                                 onChange={(e)=>handleChange('payment-status', e)}
                             />
 
+<div style={{display: "flex", gap: "10px"}}>
+                     {showPartialField &&
+                    <Input 
+                                value={amountPaid} 
+                                title={'Amount Paid'}
+                                onChange={(e)=>handleChange('amount-paid', e)} 
+                                type={'text'} 
+                                label={'Amount Paid'} 
+                                requiredSymbol={'*'}
+                                placeholder={'0.00'}
+                                error={amountPaidError}
+                     /> }
+
+                {showPartialField &&
+                                        <Input 
+                                            value={dueBalance} 
+                                            title={'Due Balance'}
+                                            onChange={(e)=>handleChange('due-amount', e)} 
+                                            type={'text'} 
+                                            label={'Due Balance'} 
+                                            readOnly 
+                                            inputBg='#c4c4c449'
+                                        /> 
+                                        }
+                            </div>
+                    <SelectInput 
+                                options={paymentTypeItems} 
+                                label={'Payment Type'}
+                                value={paymentType}
+                                error={paymentTypeError}
+                                requiredSymbol={'*'}
+                                title={'Payment Type'}
+                                onChange={(e)=>handleChange('payment-type', e)}
+                            />
+                  
                     <TextArea 
                                 label={'Note'} 
                                 title={'Note'} 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import PageTitle from '../../../../components/page_title/PageTitle'
 import ItemContainer from '../../../../components/item_container/ItemContainer'
 import Input from '../../../../components/input/Input'
@@ -12,8 +12,13 @@ import { FaLocationDot } from 'react-icons/fa6'
 import ButtonLoader from '../../../../components/clicks/button/button_loader/ButtonLoader'
 import { AiFillPicture } from 'react-icons/ai'
 import { AddPaymentContent, AddPaymentWrapper } from '../../payment/add/AddPayment.style'
+import axios from 'axios'
+import { DropdownItems, DropdownWrapper } from '../../purchase/add/addPurchase.style'
+import { UserContext } from '../../../../components/context/UserContext'
 
 export default function AddPayment() {
+
+
 
 // Payment for
 const paymentForItems =  [
@@ -62,75 +67,90 @@ const invoiceNoItems =  [
     },
 ]
 
+// payment items
 const paymentTypeItems =  [
-    {
-        title: 'select',
+        {
+        title: 'Select',
         value: ''
+    },
+    {
+        title: 'Card',
+        value: 'Card'
     },
     {
         title: 'Cash',
         value: 'Cash'
     },
     {
-        title: 'Transfer',
-        value: 'Transfer'
+        title: 'Check',
+        value: 'Check'
     },
     {
-        title: 'Check-payment',
-        value: 'Check-payment'
+        title: 'Online',
+        value: 'Online'
+    },
+    {
+        title: 'Bank Transfer',
+        value: 'Bank Transfer'
+    },
+      {
+        title: 'N/A',
+        value: 'N/A'
     },
 ]
 
 
 
     const navigate = useNavigate();
+    const {user} = useContext(UserContext)
 
     const [isLoading, setIsLoading] = useState(false);
+
+    const [items, setItems] = useState([])
 
     const todayDate = new Date().toISOString().split('T')[0]; // Format: YYYY-MM-DD (2025-02-29)
 
     // date
-    const [date, setDate] = useState(todayDate);
+    const [paymentDate, setPaymentDate] = useState(todayDate);
     const [dateError, setDateError] = useState(false);
 
-// payment for
+    // payment for
     const [paymentFor, setPaymentFor] = useState('');
     const [paymentForError, setPaymentForError] = useState(false);
 
-// Invoice No.
+    // Invoice No.
     const [invoiceNo, setInvoiceNo] = useState('');
     const [invoiceNoError, setInvoiceNoError] = useState(false);
 
     // due amount
-    const [dueAmount, setDueAmount] = useState('');
+    const [dueBalance, setDueBalance] = useState('');
     const [dueAmountError, setDueAmountError] = useState(false);
-
   
-// payment type
+    // payment type
     const [paymentType, setPaymentType] = useState('')
     const [paymentTypeError, setPaymentTypeError] = useState(false);
-
 
     // payable amount
     const [payableAmount, setPayableAmount] = useState('')
     const [payableAmountError, setPayableAmountError] = useState(false);
 
-
-        // note
-        const [note, setNote] = useState('')
+    // note
+    const [note, setNote] = useState('')
        
-    
+
+
 
     const handleChange = (type, e) =>{
         if(type === 'date'){
-            setDate(e.target.value);
+            setPaymentDate(e.target.value);
             setDateError(false);
         }else if(type === 'payment-for'){
+            setShowItemDropdown(true)
             setPaymentFor(e.target.value);
             setInvoiceNo(e.target.value)
             setPaymentForError(false);
         }else if(type === 'due-amount'){
-            setDueAmount(e.target.value);
+            setDueBalance(e.target.value);
             setDueAmountError(false);
         }else if(type === 'invoice'){
             setInvoiceNo(e.target.value);
@@ -145,15 +165,57 @@ const paymentTypeItems =  [
             setNote(e.target.value);
         }
     }
-// }else if(type === 'invoice'){
-//     // setInvoiceNo(e.target.value)
-//     // setInvoiceNoError(false)
 
-    const submitHandler = (e) => {
+        // fetch expense data
+        useEffect(() => {
+        const getPurchase = async () => { 
+            setIsLoading(true);
+            try {
+            const res = await axios.get(process.env.REACT_APP_URL + "/api/purchase/");
+            // merge purchase items directly instead of nesting arrays
+            setItems(prev => [...prev, ...res.data]);  
+            setIsLoading(false);
+            } catch (err) {
+            console.log(err);
+            setIsLoading(false);
+            }
+        };
+
+        const getSale = async () => { 
+            setIsLoading(true);
+            try {
+            const res = await axios.get(process.env.REACT_APP_URL + "/api/sale/");
+            // merge sales items directly instead of nesting arrays
+            setItems(prev => [...prev, ...res.data]);  
+            setIsLoading(false);
+            } catch (err) {
+            console.log(err);
+            setIsLoading(false);
+            }
+        };
+
+        getPurchase();
+        getSale();
+        }, []);
+
+
+    const [showItemDropdown, setShowItemDropdown] = useState(false);
+    // search name dropdownd handler
+        const dropdownItems = (item) => {
+        setShowItemDropdown(false);
+        setPaymentFor(item.code);
+        setInvoiceNo(item.code);        // set invoiceNo same as code
+        setDueBalance(item.dueBalance);   // from DB
+        };
+
+    
+    console.log('======', items, '========');
+    
+    const submitHandler = async (e) => {
         e.preventDefault();
         let isValid = true;
 
-        if(!date){
+        if(!paymentDate){
             setDateError(true);
             isValid = false;
         }
@@ -169,7 +231,7 @@ const paymentTypeItems =  [
         }
 
         
-        if(!dueAmount){
+        if(!dueBalance){
             setDueAmountError(true);
             isValid = false;
         }
@@ -185,8 +247,27 @@ const paymentTypeItems =  [
 
         if(isValid){
             setIsLoading(true)
-            alert(invoiceNo)
-            navigate(`/payments`)
+            
+            try {
+
+                const newPayment = {
+                    paymentDate,
+                    paymentFor,
+                    invoiceNo,
+                    dueBalance: Number(dueBalance),
+                    payableAmount: Number(payableAmount),
+                    paymentType,
+                    note,
+                    useId: user._id
+                }
+
+                const res = await axios.post(`${process.env.REACT_APP_URL}/api/payment/create`) 
+                console.log(res.data)
+                navigate(`/payments`)
+                
+            } catch (error) {
+              console.log(error)   
+            }
         }
     }
 
@@ -201,7 +282,7 @@ const paymentTypeItems =  [
                         <AnyItemContainer justifyContent={'space-between'}>
                             {/* date */}
                             <Input 
-                                value={date} 
+                                value={paymentDate} 
                                 title={'Date'}
                                 onChange={(e)=>handleChange('date', e)} 
                                 error={dateError} 
@@ -210,13 +291,51 @@ const paymentTypeItems =  [
                             />
 
                             {/* Payment for */}
-                            <SelectInput 
+                            {/* <SelectInput 
                                 onChange={(e)=>handleChange('payment-for', e)} 
                                 error={paymentForError} 
                                 options={paymentForItems} 
                                 label={'Payment For'}
                                 title={'Payment For'}    
-                            />
+                            /> */}
+
+ <Input 
+                                value={paymentFor} 
+                                title={'Payment For'}
+                                onChange={(e)=>handleChange('payment-for', e)} 
+                                error={paymentForError} 
+                                type={'text'} 
+                                label={'Payment For'} 
+                                placeholder={'search...'}
+                                requiredSymbol={'*'}
+                            />  
+                           {showItemDropdown && (
+                                    <DropdownWrapper topPosition={'80px'} width={"96%"}>
+                                        { items.filter(c =>
+                                            paymentFor.length > 0 &&
+                                            c.code.toLowerCase().includes(paymentFor.toLowerCase())
+                                            ).length > 0 ? (
+                                            items
+                                                .filter(c => 
+                                                paymentFor.length > 0 &&
+                                                c.code.toLowerCase().includes(paymentFor.toLowerCase())
+                                                )
+                                                .map((data, i) => (
+                                                <DropdownItems key={i} onClick={() => dropdownItems(data)}>
+                                                    {data.code}
+                                                </DropdownItems>
+                                                ))
+                                        ) : (
+                                        <DropdownItems>
+                                            <div style={{width: "100%", display: "flex", flexDirection: "column", gap: "5px", padding: "20px", justifyContent: "center", alignItems: "center"}}>
+                                                <span>No Item Found </span>
+                                                <a href="/add-customer">Please click here to add </a>
+                                            </div>
+                                        
+                                        </DropdownItems>
+                                        )}
+                                    </DropdownWrapper>
+                            )}
 
                       
                       {/* Invoice Number */}
@@ -233,7 +352,7 @@ const paymentTypeItems =  [
                             
                             {/* Due Amount */}
                             <Input 
-                                value={dueAmount} 
+                                value={dueBalance} 
                                 title={'Due Amount (N)'}
                                 onChange={(e)=>handleChange('due-amount', e)}  
                                 type={'text'} 
@@ -293,4 +412,118 @@ const paymentTypeItems =  [
     </AddPaymentWrapper>
   )
 }
+
+
+
+// import React, { useState } from "react";
+// import axios from "axios";
+
+// const AddPayment = () => {
+//   const [paymentFor, setPaymentFor] = useState("");
+//   const [invoiceNo, setInvoiceNo] = useState("");
+//   const [dueAmount, setDueAmount] = useState("");
+//   const [paymentDate, setPaymentDate] = useState("");
+//   const [paymentType, setPaymentType] = useState("");
+//   const [payableAmount, setPayableAmount] = useState("");
+  
+//   const [note, setNote] = useState("");
+
+//   // Fetch details when paymentFor changes
+//   const handleFetchTransaction = async () => {
+//     try {
+//       const res = await axios.get(`/api/payments/transaction/${paymentFor}`);
+//       setInvoiceNo(res.data.invoiceNo);
+//       setDueAmount(res.data.dueAmount);
+//     } catch (err) {
+//       alert("Transaction not found!");
+//     }
+//   };
+
+//   const handleSubmit = async (e) => {
+//     e.preventDefault();
+//     try {
+//       await axios.post("/api/payments/register", {
+//         paymentFor,
+//         invoiceNo,
+//         dueAmount,
+//         paymentDate,
+//         paymentType,
+//         payableAmount,
+//         note,
+//         userId: "currentUserId" // replace with actual user
+//       });
+//       alert("Payment recorded successfully!");
+//     } catch (err) {
+//       alert("Error saving payment!");
+//     }
+//   };
+
+//   return (
+//     <form onSubmit={handleSubmit}>
+//       <div>
+//         <label>Payment For (Code)</label>
+//         <input
+//           type="text"
+//           value={paymentFor}
+//           onChange={(e) => setPaymentFor(e.target.value)}
+//           onBlur={handleFetchTransaction}
+//         />
+//       </div>
+
+//       <div>
+//         <label>Invoice No</label>
+//         <input type="text" value={invoiceNo} readOnly />
+//       </div>
+
+//       <div>
+//         <label>Due Amount</label>
+//         <input type="text" value={dueAmount} readOnly />
+//       </div>
+
+//       <div>
+//         <label>Payment Date</label>
+//         <input
+//           type="date"
+//           value={paymentDate}
+//           onChange={(e) => setPaymentDate(e.target.value)}
+//           required
+//         />
+//       </div>
+
+//       <div>
+//         <label>Payment Type</label>
+//         <select
+//           value={paymentType}
+//           onChange={(e) => setPaymentType(e.target.value)}
+//           required
+//         >
+//           <option value="">Select</option>
+//           <option value="Cash">Cash</option>
+//           <option value="Bank">Bank</option>
+//           <option value="Transfer">Transfer</option>
+//         </select>
+//       </div>
+
+//       <div>
+//         <label>Payable Amount</label>
+//         <input
+//           type="number"
+//           value={payableAmount}
+//           onChange={(e) => setPayableAmount(e.target.value)}
+//           required
+//         />
+//       </div>
+
+//       <div>
+//         <label>Note</label>
+//         <textarea value={note} onChange={(e) => setNote(e.target.value)} />
+//       </div>
+
+//       <button type="submit">Submit Payment</button>
+//     </form>
+//   );
+// };
+
+// export default AddPayment;
+
 

@@ -4,7 +4,7 @@ import { ListHeaderWrapper } from './listHeader.style'
 import Button from '../../clicks/button/Button'
 import Input from '../../input/Input'
 
-function ListHeader({ title, btnOnClick, searQuery, onChange, type, dataLength, icon, inputDisplay, entries, }) {
+function ListHeader({ title, btnOnClick, searQuery, onChange, type, dataLength, icon, inputDisplay, entries, InputWidth}) {
   return (
     <ListHeaderWrapper>
       <span> 
@@ -17,10 +17,11 @@ function ListHeader({ title, btnOnClick, searQuery, onChange, type, dataLength, 
         <div style={{marginLeft: "10px"}}>
       <Input
             bdColor={'white'}
-            placeholder={`Search by ${searQuery}`}
+            placeholder={`${searQuery}`}
             onChange={onChange}
             Icon={<FaSearch/>}
             type={type}
+            InputWidth={InputWidth}
             inputDisplay={inputDisplay}
           />
         </div>

@@ -168,22 +168,29 @@ const handleChange = (type, e)=>{
         }else if(type === 'sale-amount'){
             setSaleAmount(e.target.value);
             setSaleAmountError(false);
-        }else if(type === 'payment-type'){
-            setPaymentType(e.target.value);
-            setPaymentTypeError(false);
         }else if(type === 'payment-status'){
             setPaymentStatus(e.target.value);
             setPaymentStatusError(false);
 
-            if(e.target.value === 'Partial'){
+            if(e.target.value === 'partial'){
                 setShowPartialField(true)
             }else{
                 setShowPartialField(false);
             }
+
+            if(e.target.value === 'unpaid'){
+                setPaymentType(paymentTypeItems[6].value)
+            }else{
+                setPaymentType('');
+            }
+            
         }else if(type === 'amount-paid'){
             setAmountPaid(e.target.value);
-            setDueBalance(saleAmount - Number(e.target.value))
+            setDueBalance((saleAmount - Number(e.target.value)).toFixed(2))
             setAmountPaidError(false);
+        }else if(type === 'payment-type'){
+            setPaymentType(e.target.value);
+            setPaymentTypeError(false);
         }else if(type === 'note'){
             setNote(e.target.value);
         }
@@ -221,18 +228,15 @@ const saleStatusItem =  [
         value: ''
     },
     {
-        title: 'received',
-        value: 'received'
+        title: 'completed',
+        value: 'completed'
     },
     {
         title: 'pending',
         value: 'pending'
     },
-        {
-        title: 'ordered',
-        value: 'ordered'
-    },
 ]
+
 
 
 // payment
@@ -273,19 +277,57 @@ const paymentStatusItems = [
         value: ''
     },
     {
-        title: 'Paid',
-        value: 'Paid'
+        title: 'unpaid',
+        value: 'unpaid'
     },  
     {
-        title: 'Partial',
-        value: 'Partial'
+        title: 'partial',
+        value: 'partial'
     },
     {
-        title: 'Not Paid',
-        value: 'Not Paid'
+        title: 'paid',
+        value: 'paid'
     },
 ]
 
+
+
+useEffect(()=>{
+    // fetch purchase data
+        const getPurchaseData = async () => {
+            setIsLoading(true) 
+             try {
+                     const res = await axios.get(process.env.REACT_APP_URL + "/api/sale/" + saleId);
+                     console.log('////////////////////////////', res.data, '/////////////////////////////')
+                     const formattedSaleDate = new Date(res.data.saleDate).toISOString().split('T')[0];
+                     setSaleDate(formattedSaleDate);
+                     setCustomer(res.data.customer.name)
+                     setSaleStatus(res.data.saleStatus)
+                     setReference(res.data.reference)
+                     setSaleAmount(res.data.saleAmount)
+                     setPaymentStatus(res.data.paymentStatus)
+                     setShowPartialField(res.data.paymentStatus === 'Partial');
+                     setPaymentType(res.data.paymentType)
+                     setAmountPaid(res.data?.amountPaid)
+                     setDueBalance(res.data?.dueBalance)
+                     setNote(res.data.note);
+                     setSubTotal(res.data.subTotal);
+                     setOtherCharges(res.data.otherCharges)
+                     setDiscount(res.data.discount)
+                     setDiscountValue(res.data.discountValue)
+                     setShipping(res.data.shipping)
+                     setItemList(res.data.saleItems)
+                     setIsLoading(false)
+                     
+                     console.log(res.data)
+                 } catch (err) {
+                     console.log(err)
+                     setIsLoading(false)
+                     }
+                   }
+                 getPurchaseData()
+
+            },[saleId])
 
   // Fetch sale initial
     const [prefix, setPrefix] = useState('')
@@ -294,7 +336,7 @@ const paymentStatusItems = [
 useEffect(() => {
 
      const fetchCompany = async() =>{
-          setIsLoading(true)
+        //   setIsLoading(true)
             try {
                 const res = await axios.get(`${process.env.REACT_APP_URL}/api/company`);
               
@@ -305,7 +347,7 @@ useEffect(() => {
                     setPrefix(prefixData.sale);
                 }
   
-                setIsLoading(false);
+                // setIsLoading(false);
             } catch (error) {
                 console.log(error);
                 setIsLoading(false);
@@ -419,8 +461,8 @@ const dropdownHandler = (product) => {
 
 const dropdownCustomerName = (customer) => {
     setShowCusDropdown(false)
-    setCustomerId(customer._id)
-    setCustomer(customer.name)    
+    setCustomerId(customer?._id)
+    setCustomer(customer?.name)   
 }
 
 
@@ -533,7 +575,7 @@ const hanldeSumbit = async (e) =>{
         isValid = false;
     }
          
-    if (paymentStatus === 'Partial') {
+    if (paymentStatus === 'partial') {
         if (!amountPaid || parseFloat(amountPaid) <= 0) {
             setAmountPaidError(true);
             isValid = false;
@@ -541,11 +583,10 @@ const hanldeSumbit = async (e) =>{
 }
 
     if(isValid){
-      
-      const newSale = {
+      console.log('////////======', customer._id , "and ", customerId)
+      const updateSale = {
       saleDate: new Date(saleDate),
-    //   customer: customer._id || customer,
-      customer: customerId,
+      customer: customerId || customer?._id,
       saleStatus,
       reference,
       saleAmount: Number(saleAmount),
@@ -573,17 +614,17 @@ const hanldeSumbit = async (e) =>{
             }))
             : [],
       prefix: prefix,
-      userId: user._id
+      userId: user?._id
     };
       setIsBtnLoading(true);
-      console.log('======new sale data==========\n', newSale)
+      console.log('======new sale data==========\n', updateSale)
             // alert('form validated triggered')
             try {
           
-              const res = await axios.post(`${process.env.REACT_APP_URL}/api/sale/create`, newSale);
+              const res = await axios.put(`${process.env.REACT_APP_URL}/api/sale/${saleId}`, updateSale);
 
               console.log(res.data)
-              navigate(`/sale-invoice/${res.data.newSale._id}`);
+              navigate(`/sale-invoice/${saleId}`);
               
               
                 // toast success message
@@ -901,16 +942,8 @@ const hanldeSumbit = async (e) =>{
                             />  
                            {showCusDropdown && (
                                     <DropdownWrapper topPosition={'80px'} width={"96%"}>
-                                        {customerItems.filter(c =>
-                                        customer.length > 0 &&
-                                        c.name.toLowerCase().includes(customer.toLowerCase())
-                                        ).length > 0 ? (
-                                        customerItems
-                                            .filter(c => 
-                                            customer.length > 0 &&
-                                            c.name.toLowerCase().includes(customer.toLowerCase())
-                                            )
-                                            .map((data, i) => (
+                                        {customerItems.filter(c =>customer.length > 0 && c.name.toLowerCase().includes(customer.toLowerCase())).length > 0 ? 
+                                        (customerItems.filter(c => customer.length > 0 && c.name.toLowerCase().includes(customer.toLowerCase())).map((data, i) => (
                                             <DropdownItems key={i} onClick={() => dropdownCustomerName(data)}>
                                                 {data.name}
                                             </DropdownItems>
@@ -988,8 +1021,8 @@ const hanldeSumbit = async (e) =>{
                                                     title={'Payment Status'}
                                                     onChange={(e)=>handleChange('payment-status', e)}
                                                 />
-                    
-                                {showPartialField &&
+                    <div style={{display: "flex", gap: "10px"}}>
+                                        {showPartialField &&
                                         <Input 
                                                     value={amountPaid} 
                                                     title={'Amount Paid'}
@@ -1000,6 +1033,19 @@ const hanldeSumbit = async (e) =>{
                                                     placeholder={'0.00'}
                                                     error={amountPaidError}
                                          /> }
+
+                                        {showPartialField &&
+                                        <Input 
+                                            value={dueBalance} 
+                                            title={'Due Balance'}
+                                            onChange={(e)=>handleChange('due-amount', e)} 
+                                            type={'text'} 
+                                            label={'Due Balance'} 
+                                            readOnly 
+                                            inputBg='#c4c4c449'
+                                        /> 
+                                        }
+                                </div>
                     <SelectInput 
                                 options={paymentTypeItems} 
                                 label={'Payment Type'}
@@ -1020,7 +1066,7 @@ const hanldeSumbit = async (e) =>{
                     {/* Add to SALE button */}
                     <ItemButtonWrapper btnAlign={'flex-start'}>
                                 <Button
-                                    btnText={isBtnLoading ? <ButtonLoader text={'Adding...'} /> : 'Add Sale'}
+                                    btnText={isBtnLoading ? <ButtonLoader text={'Updating...'} /> : 'Update Sale'}
                                     btnFontSize={'12px'}
                                     btnColor={'green'}
                                     btnTxtClr={'white'}

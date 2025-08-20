@@ -60,14 +60,15 @@ export default function SalePage() {
 
 // handle search query
             const handleSearchQueryOnChange = (e) => {
-              let query = e.target.value;
+              let query = e.target.value.trim().toLowerCase();
               //  if query is empty, reset to all record
               if(query === ''){
                 setSaleRecords(allSaleRecords);
               }else{
                 // Filter records based on query
                 const filterRecords = allSaleRecords.filter(item =>
-                  item.customer?.name.toLocaleLowerCase().includes(query.toLocaleLowerCase())
+                  item.customer?.name.toLocaleLowerCase().includes(query.toLocaleLowerCase())||
+                  item.code?.toLowerCase().includes(query)
                 );
                 setSaleRecords(filterRecords)
               }
@@ -85,7 +86,7 @@ export default function SalePage() {
           <ListHeader 
             title={'Sale'} 
             btnOnClick={()=>navigate('/add-sale')}
-            searQuery={'Customer'}
+            searQuery={'Customer or code'}
             onChange={handleSearchQueryOnChange}
             type={'text'}
             dataLength={saleRecords.length}

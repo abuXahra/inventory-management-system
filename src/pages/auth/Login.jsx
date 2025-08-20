@@ -56,8 +56,9 @@ export default function Login() {
             
                 const {token, user: userData} = res.data;
                 localStorage.setItem("token", token);  // ✅ Save JWT to localStorage
-                setUser(res.data);
+                
                 toast.success('Login successfully')
+                setUser(userData);
                 setIsLoading(false);
                 navigate('/dashboard')
             } catch (err) {
