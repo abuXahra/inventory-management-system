@@ -72,6 +72,7 @@ export const AnyItemContainer = styled.div`
   justify-content: ${({ justifyContent }) => justifyContent || ""};
   gap: ${({ gap }) => gap || "20px"};
   font-size: 10px;
+  position: relative;
 
   @media (max-width: 768px) {
     flex-direction: column;

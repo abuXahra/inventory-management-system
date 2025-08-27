@@ -174,13 +174,13 @@ const handleChange = (type, e)=>{
             setPaymentStatus(e.target.value);
             setPaymentStatusError(false);
 
-            if(e.target.value === 'Partial'){
+            if(e.target.value === 'partial'){
                 setShowPartialField(true)
             }else{
                 setShowPartialField(false);
             }
 
-            if(e.target.value === 'Not Paid'){
+            if(e.target.value === 'unpaid'){
                 setPaymentType(paymentTypeItems[6].value)
             }else{
                 setPaymentType('');
@@ -230,16 +230,12 @@ const purchaseStatusItem =  [
         value: ''
     },
     {
-        title: 'received',
-        value: 'received'
+        title: 'completed',
+        value: 'completed'
     },
     {
         title: 'pending',
         value: 'pending'
-    },
-        {
-        title: 'ordered',
-        value: 'ordered'
     },
 ]
 
@@ -277,21 +273,21 @@ const paymentTypeItems =  [
 ]
 
 const paymentStatusItems = [
-    {
+     {
         title: 'Select',
         value: ''
     },
     {
-        title: 'Paid',
-        value: 'Paid'
+        title: 'unpaid',
+        value: 'unpaid'
     },  
     {
-        title: 'Partial',
-        value: 'Partial'
+        title: 'partial',
+        value: 'partial'
     },
     {
-        title: 'Not Paid',
-        value: 'Not Paid'
+        title: 'paid',
+        value: 'paid'
     },
 ]
 
@@ -540,7 +536,7 @@ const hanldeSumbit = async (e) =>{
         isValid = false;
     }
 
-if (paymentStatus === 'Partial') {
+if (paymentStatus === 'partial') {
   if (!amountPaid || parseFloat(amountPaid) <= 0) {
     setAmountPaidError(true);
     isValid = false;

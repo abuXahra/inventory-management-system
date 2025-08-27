@@ -291,7 +291,7 @@ export default function ViewPurchase() {
                 </div>
               </ChargesWrapper>
 
-                 {  purchaseData.paymentStatus === 'Partial' && 
+                 {  purchaseData.paymentStatus === 'partial' && 
                                                                       
                                             <PartialPaymentWrapper>
                                                 <h3>Advance payment</h3> <hr />

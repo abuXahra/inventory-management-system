@@ -16,6 +16,7 @@ import ButtonLoader from '../../../../components/clicks/button/button_loader/But
 import ToastComponents from '../../../../components/toast_message/toast_component/ToastComponents'
 import { AddSalesContent, AddSalesWrapper, CustomerInfoWrapper, EditSalesContent, EditSalesWrapper, HrStyled, ItemListContent, ItemsWrapper, SelectItemContent, TotalChargesWrapper } from './editSale.style'
 import { AnyItemContainer, DropdownItems, DropdownWrapper, InnerWrapper, TableResponsiveWrapper, TableStyled, TdStyled } from '../../purchase/add/addPurchase.style'
+import { List } from 'react-content-loader'
 
 
 export default function EditSale() {
@@ -105,6 +106,7 @@ const [amountPaid, setAmountPaid] = useState('')
 const [amountPaidError, setAmountPaidError] = useState(false);
 const [dueBalance, setDueBalance] = useState('');
 
+const [saleCode, setSaleCode] = useState('');
 // onchange handler
 const handleChange = (type, e)=>{
         if (type === 'searchTitle'){
@@ -238,7 +240,6 @@ const saleStatusItem =  [
 ]
 
 
-
 // payment
 const paymentTypeItems =  [
         {
@@ -294,19 +295,20 @@ const paymentStatusItems = [
 
 useEffect(()=>{
     // fetch purchase data
-        const getPurchaseData = async () => {
+        const getSaleData = async () => {
             setIsLoading(true) 
              try {
                      const res = await axios.get(process.env.REACT_APP_URL + "/api/sale/" + saleId);
                      console.log('////////////////////////////', res.data, '/////////////////////////////')
                      const formattedSaleDate = new Date(res.data.saleDate).toISOString().split('T')[0];
+                     setSaleCode(res.data.code)
                      setSaleDate(formattedSaleDate);
                      setCustomer(res.data.customer.name)
                      setSaleStatus(res.data.saleStatus)
                      setReference(res.data.reference)
                      setSaleAmount(res.data.saleAmount)
                      setPaymentStatus(res.data.paymentStatus)
-                     setShowPartialField(res.data.paymentStatus === 'Partial');
+                     setShowPartialField(res.data.paymentStatus === 'partial');
                      setPaymentType(res.data.paymentType)
                      setAmountPaid(res.data?.amountPaid)
                      setDueBalance(res.data?.dueBalance)
@@ -325,7 +327,7 @@ useEffect(()=>{
                      setIsLoading(false)
                      }
                    }
-                 getPurchaseData()
+                 getSaleData()
 
             },[saleId])
 
@@ -640,8 +642,10 @@ const hanldeSumbit = async (e) =>{
   return (
     <EditSalesWrapper>
                 {/* Page title */}
-                <PageTitle title={'Sale'} subTitle={'/ Add'}/>
-        <EditSalesContent>
+ <PageTitle title={`Sale (${saleCode})`} subTitle={'/ Edit'}/>
+    <>
+    {isLoading? <List/> : 
+    <EditSalesContent>
         <ItemsWrapper>
             {/* SelectItem */}
             <SelectItemContent>
@@ -1022,7 +1026,7 @@ const hanldeSumbit = async (e) =>{
                                                     onChange={(e)=>handleChange('payment-status', e)}
                                                 />
                     <div style={{display: "flex", gap: "10px"}}>
-                                        {showPartialField &&
+                                {showPartialField &&
                                         <Input 
                                                     value={amountPaid} 
                                                     title={'Amount Paid'}
@@ -1077,6 +1081,8 @@ const hanldeSumbit = async (e) =>{
             </form>
         </CustomerInfoWrapper>
         </EditSalesContent>
+ } </>
+  
         {/* Toast messages */}
         <ToastComponents/>
     </EditSalesWrapper>

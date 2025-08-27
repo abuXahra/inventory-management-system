@@ -598,6 +598,7 @@ const hanldeSumbit = async (e) =>{
     <AddSalesWrapper>
                 {/* Page title */}
                 <PageTitle title={'Sale'} subTitle={'/ Add'}/>
+                due balance {dueBalance}
         <AddSalesContent>
         <ItemsWrapper>
             {/* SelectItem */}

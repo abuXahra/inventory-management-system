@@ -61,11 +61,10 @@ const [amountError, setAmountError] = useState(false);
 const [purchaseDate, setPurchaseDate] = useState(todayDate);
 const [purchaseDateError, setPurchaseDateError] = useState(false);
 
-// const [purchaseQuantity, setPurchaseQuantity] = useState(null)
 
 const [supplier, setSupplier] = useState('');
 const [supplierNameError, setSupplierNameError] = useState(false);
-console.log(supplier)
+
 
 const [purchaseStatus, setPurchaseStatus] = useState('');
 const [purchaseStatusError, setPurchaseStatusError] = useState(false);
@@ -178,13 +177,13 @@ const handleChange = (type, e)=>{
             setPaymentStatus(e.target.value);
             setPaymentStatusError(false);
         
-            if(e.target.value === 'Partial'){
+            if(e.target.value === 'partial'){
                 setShowPartialField(true)
             }else{
                 setShowPartialField(false);
             }
 
-            if(e.target.value === 'Not Paid'){
+            if(e.target.value === 'unpaid'){
                 setPaymentType(paymentTypeItems[6].value)
             }else{
                 setPaymentType('');
@@ -233,16 +232,12 @@ const purchaseStatusItem =  [
         value: ''
     },
     {
-        title: 'received',
-        value: 'received'
+        title: 'completed',
+        value: 'completed'
     },
     {
         title: 'pending',
         value: 'pending'
-    },
-        {
-        title: 'ordered',
-        value: 'ordered'
     },
 ]
 
@@ -286,16 +281,16 @@ const paymentStatusItems = [
         value: ''
     },
     {
-        title: 'Paid',
-        value: 'Paid'
+        title: 'unpaid',
+        value: 'unpaid'
     },  
     {
-        title: 'Partial',
-        value: 'Partial'
+        title: 'partial',
+        value: 'partial'
     },
     {
-        title: 'Not Paid',
-        value: 'Not Paid'
+        title: 'paid',
+        value: 'paid'
     },
 ]
 
@@ -313,7 +308,7 @@ useEffect(()=>{
                      setReference(res.data.reference)
                      setPurchaseAmount(res.data.purchaseAmount)
                      setPaymentStatus(res.data.paymentStatus)
-                     setShowPartialField(res.data.paymentStatus === 'Partial');
+                     setShowPartialField(res.data.paymentStatus === 'partial');
                      setPaymentType(res.data.paymentType)
                      setAmountPaid(res.data?.amountPaid)
                      setDueBalance(res.data?.dueBalance)
@@ -338,6 +333,7 @@ useEffect(()=>{
 
   // Fetch expense initial
     const [prefix, setPrefix] = useState('')
+    const [currencySymbol, setCurrencySymbol] = useState('')
 
 useEffect(() => {
 
@@ -347,6 +343,7 @@ useEffect(() => {
                 const res = await axios.get(`${process.env.REACT_APP_URL}/api/company`);
               
                 const prefixData = res.data[0].prefixes?.[0];
+                setCurrencySymbol(res.data.currencySymbol)
   
                 if (prefixData) {
                     setPrefix(prefixData.purchase);
@@ -574,7 +571,7 @@ const hanldeSumbit = async (e) =>{
         isValid = false;
     }
 
-    if (paymentStatus === 'Partial') {
+    if (paymentStatus === 'partial') {
         if (!amountPaid || parseFloat(amountPaid) <= 0) {
             setAmountPaidError(true);
             isValid = false;
@@ -847,7 +844,7 @@ const hanldeSumbit = async (e) =>{
                         </InnerWrapper>
                         <InnerWrapper>
                             <span><b>Sub Total</b></span>
-                            <span>N{Number(subTotal).toLocaleString()}</span>
+                            <span><span dangerouslySetInnerHTML={{ __html: currencySymbol }}/>{Number(subTotal).toLocaleString()}</span>
                         </InnerWrapper>
                     </AnyItemContainer>
                    
@@ -866,7 +863,7 @@ const hanldeSumbit = async (e) =>{
                             </InnerWrapper>
                             <InnerWrapper>
                                 <span><b> Other Charges</b></span>
-                                <span>N{otherCharges? otherCharges: 0}</span>
+                                <span><span dangerouslySetInnerHTML={{ __html: currencySymbol }}/>{otherCharges? otherCharges: 0}</span>
                             </InnerWrapper>
                     </AnyItemContainer>
 
@@ -885,7 +882,7 @@ const hanldeSumbit = async (e) =>{
                             </InnerWrapper>
                             <InnerWrapper>
                                 <span><b> Discount {discount && '('+ discount + '%)'}</b></span>
-                                <span>N{discountValue? Number(discountValue).toLocaleString():0}</span>
+                                <span><span dangerouslySetInnerHTML={{ __html: currencySymbol }}/>{discountValue? Number(discountValue).toLocaleString():0}</span>
                             </InnerWrapper>
                     </AnyItemContainer>
 
@@ -904,7 +901,7 @@ const hanldeSumbit = async (e) =>{
                             </InnerWrapper>
                             <InnerWrapper>
                                 <span><b>Shipping</b></span>
-                                <span>N{shipping? shipping: 0}</span>
+                                <span><span dangerouslySetInnerHTML={{ __html: currencySymbol }}/>{shipping? shipping: 0}</span>
                             </InnerWrapper>
                     </AnyItemContainer>
 
@@ -915,7 +912,7 @@ const hanldeSumbit = async (e) =>{
                             </InnerWrapper>
                             <InnerWrapper>
                                 <span><b> Grand Total</b></span>
-                                <span><b>N{grandTotal? grandTotal : 0}</b></span>
+                                <span><b><span dangerouslySetInnerHTML={{ __html: currencySymbol }}/>{grandTotal? grandTotal : 0}</b></span>
                             </InnerWrapper>
                     </AnyItemContainer>
                 </TotalChargesWrapper>
@@ -942,32 +939,25 @@ const hanldeSumbit = async (e) =>{
     
                             {showSupDropdown && (
                                         <DropdownWrapper topPosition={'80px'} width={"96%"}>
-                                            {supplierItems.filter(c =>
-                                            supplier.length > 0 &&
-                                            c.name.toLowerCase().includes(supplier.toLowerCase())
-                                            ).length > 0 ? (
-                                            supplierItems
-                                                .filter(c => 
-                                                supplier.length > 0 &&
-                                                c.name.toLowerCase().includes(supplier.toLowerCase())
-                                                )
-                                                .map((data, i) => (
-                                                <DropdownItems key={i} onClick={() => dropdownSupplierName(data)}>
-                                                    {data.name}
-                                                </DropdownItems>
-                                                ))
-                                            ) : (
-                                            <DropdownItems>
-                                                <div style={{width: "100%", display: "flex", flexDirection: "column", gap: "5px", padding: "20px", justifyContent: "center", alignItems: "center"}}>
-                                                    <span>No such supplier </span>
-                                                    <a href="/add-supplier">Please click here to add </a>
-                                                </div>
+                                          {supplierItems.filter(c =>supplier.length > 0 && c.name.toLowerCase().includes(supplier.toLowerCase())).length > 0 ? 
+                                           (supplierItems.filter(c => supplier.length > 0 && c.name.toLowerCase().includes(supplier.toLowerCase())).map((data, i) => (
+                                                                                      <DropdownItems key={i} onClick={() => dropdownSupplierName(data)}>
+                                                                                          {data.name}
+                                                                                      </DropdownItems>
+                                                                                      ))
+                                                                                  ) : (
+                                                                                  <DropdownItems>
+                                                                                      <div style={{width: "100%", display: "flex", flexDirection: "column", gap: "5px", padding: "20px", justifyContent: "center", alignItems: "center"}}>
+                                                                                          <span>No such Supplier </span>
+                                                                                          <a href="/add-customer">Please click here to add </a>
+                                                                                      </div>
+                                                                                  
+                                                                                  </DropdownItems>
+                                                                                  )}
+                                                                              </DropdownWrapper>
+                                                                      )}
+                                          
                                             
-                                            </DropdownItems>
-                                            )}
-                                        </DropdownWrapper>
-                                )}
-    
                        <Input 
                                     value={purchaseDate} 
                                     title={'Date'}

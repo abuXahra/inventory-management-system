@@ -93,10 +93,6 @@ const paymentTypeItems =  [
         title: 'Bank Transfer',
         value: 'Bank Transfer'
     },
-      {
-        title: 'N/A',
-        value: 'N/A'
-    },
 ]
 
 
@@ -258,10 +254,10 @@ const paymentTypeItems =  [
                     payableAmount: Number(payableAmount),
                     paymentType,
                     note,
-                    useId: user._id
+                    useId: user?._id
                 }
 
-                const res = await axios.post(`${process.env.REACT_APP_URL}/api/payment/create`) 
+                const res = await axios.post(`${process.env.REACT_APP_URL}/api/payment/register`, newPayment) 
                 console.log(res.data)
                 navigate(`/payments`)
                 
@@ -280,16 +276,6 @@ const paymentTypeItems =  [
             <form action="" onSubmit={submitHandler}>
                     <ItemContainer title={'New Payment'}>
                         <AnyItemContainer justifyContent={'space-between'}>
-                            {/* date */}
-                            <Input 
-                                value={paymentDate} 
-                                title={'Date'}
-                                onChange={(e)=>handleChange('date', e)} 
-                                error={dateError} 
-                                type={'date'} 
-                                label={'Date'} 
-                            />
-
                             {/* Payment for */}
                             {/* <SelectInput 
                                 onChange={(e)=>handleChange('payment-for', e)} 
@@ -310,7 +296,7 @@ const paymentTypeItems =  [
                                 requiredSymbol={'*'}
                             />  
                            {showItemDropdown && (
-                                    <DropdownWrapper topPosition={'80px'} width={"96%"}>
+                                    <DropdownWrapper topPosition={'50px'} width={"32%"}>
                                         { items.filter(c =>
                                             paymentFor.length > 0 &&
                                             c.code.toLowerCase().includes(paymentFor.toLowerCase())
@@ -329,7 +315,6 @@ const paymentTypeItems =  [
                                         <DropdownItems>
                                             <div style={{width: "100%", display: "flex", flexDirection: "column", gap: "5px", padding: "20px", justifyContent: "center", alignItems: "center"}}>
                                                 <span>No Item Found </span>
-                                                <a href="/add-customer">Please click here to add </a>
                                             </div>
                                         
                                         </DropdownItems>
@@ -337,16 +322,28 @@ const paymentTypeItems =  [
                                     </DropdownWrapper>
                             )}
 
-                      
+                                                  {/* date */}
+                            <Input 
+                                value={paymentDate} 
+                                title={'Date'}
+                                onChange={(e)=>handleChange('date', e)} 
+                                error={dateError} 
+                                type={'date'} 
+                                label={'Date'} 
+                            />
+
                       {/* Invoice Number */}
                             <Input 
                                 value={invoiceNo} 
                                 title={'Invoice No.'}
-                                // onChange={(e)=>handleChange('invoice', e)}  
+                                onChange={()=>{}}  
                                 type={'text'} 
                                 error={invoiceNoError}
                                 label={'Invoice No.'} 
-                            />     </AnyItemContainer>
+                                readOnly 
+                                inputBg='#c4c4c449'
+                            />     
+                    </AnyItemContainer>
 
                         <AnyItemContainer justifyContent={'space-between'}>
                             
@@ -354,9 +351,11 @@ const paymentTypeItems =  [
                             <Input 
                                 value={dueBalance} 
                                 title={'Due Amount (N)'}
-                                onChange={(e)=>handleChange('due-amount', e)}  
+                                onChange={()=>{}}  
                                 type={'text'} 
                                 label={'Due Amount'} 
+                                readOnly 
+                                inputBg='#c4c4c449'
                             />
 
                              {/* Payment Type */}
