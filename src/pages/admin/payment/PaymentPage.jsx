@@ -6,6 +6,8 @@ import { useNavigate } from 'react-router-dom'
 import PaymentTable from '../../../components/table/payment_table/Payment'
 import { PaymentPageContent, PaymentPageWrapper } from './paymentPage.style'
 import axios from 'axios'
+import { List } from 'react-content-loader'
+
 
 
 export default function PaymentPage() {
@@ -55,21 +57,18 @@ export default function PaymentPage() {
           };
 
 // handle search query
-  const handleSearchQueryOnChange = (e) => {
-  const query = e.target.value.trim().toLowerCase(); // normalize query
+const handleSearchQueryOnChange = (e) => {
+  const query = e.target.value.trim().toLowerCase();
 
   if (query === '') {
     setPaymentRecords(allPaymentRecords);
   } else {
     const filteredRecords = allPaymentRecords.filter(item => {
-      // const paymentType = item.paymentType?.toLowerCase() || '';
-      const paymentFor = item.paymentFor || ''; // use correct field name
-      // const note = item.note?.toLowerCase() || ''; // use correct field name
+      const paymentFor = (item.paymentFor || '').toLowerCase();
+      const paymentType = (item.paymentType || '').toLowerCase();
       return (
-        // paymentType.includes(query) 
-        // ||
-        paymentFor.includes(query)
-        // note.includes(query)
+        paymentFor.includes(query) ||
+        paymentType.includes(query) 
       );
     });
 
@@ -79,35 +78,9 @@ export default function PaymentPage() {
 
 
 
+
+
   // const navigate = useNavigate();
-
-
-  const data = [
-    {
-      id: 1,
-      date: '02-01-2020',
-      paymentFor: 'PT1001',
-      amount: 35000,
-      paymentType: "Cash",
-      note: 'Partial payment',
-    }, 
-    {
-      id: 2,
-      date: '02-01-2020',
-      paymentFor: 'PC1001',
-      amount: 35000,
-      paymentType: "Transfer",
-      note: 'Full payment',
-    }, 
-    {
-      id: 3,
-      date: '02-01-2020',
-      paymentFor: 'SA1001',
-      amount: 45000,
-      paymentType: "Cash",
-      note: 'Partial payment',
-    }, 
-  ];
 
   // const[records, setRecords] = useState(data);
   // const handleChange = (e) => {
@@ -122,12 +95,13 @@ export default function PaymentPage() {
     <PaymentPageWrapper>
         <PageTitle title={'Payments'}/>
 
-        {/* content */}
+      {/* content */}
+        {isLoading? <List/> :
         <PaymentPageContent>
           <ListHeader 
             title={'Add Payment'} 
             btnOnClick={()=>navigate('/add-payments')}
-            searQuery={'Payment For'}
+            searQuery={'Payment For, Payment Type'}
             onChange={handleSearchQueryOnChange}
             type={'text'}
             dataLength={paymentRecords.length}
@@ -140,6 +114,7 @@ export default function PaymentPage() {
             setIsLoading={setIsLoading}
           />
         </PaymentPageContent>
+}
     </PaymentPageWrapper>
   )
 }

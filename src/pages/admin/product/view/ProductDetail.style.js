@@ -12,13 +12,13 @@ export const ProductDetailContent = styled.div`
   width: 100%;
   display: flex;
   border: 1px solid #cccccc;
-  gap: 20px;
+  gap: 5px;
   background-color: white;
 
   @media (max-width: 768px) {
     width: 100%;
     display: flex;
-    flex-direction: column;
+    flex-direction: column-reverse;
   }
 `;
 
@@ -27,7 +27,7 @@ export const ProductDetailPicture = styled.div`
   display: flex;
   flex-direction: column;
   background-color: white;
-  gap: 20px;
+  gap: 5px;
 
   img {
     width: 100%;
@@ -43,7 +43,7 @@ export const ProductDetailData = styled.div`
   display: flex;
   flex-direction: column;
   background-color: white;
-  gap: 10px;
+  gap: 5px;
   @media (max-width: 768px) {
     width: 100%;
   }

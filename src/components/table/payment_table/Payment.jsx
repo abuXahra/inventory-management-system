@@ -8,6 +8,11 @@ import { ActionButton, ActionButtons, Container, TableWrapper } from './payment.
 import { customStyles } from '../TableCustomStyle.style';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import { SlideUpButton } from '../expense_table/Expense.style';
+import Button from '../../clicks/button/Button';
+import ButtonLoader from '../../clicks/button/button_loader/ButtonLoader';
+import Overlay from '../../overlay/Overlay';
+import ToastComponents from '../../toast_message/toast_component/ToastComponents';
 
 
 const PaymentTable = ({ data, onDeletePayment }) => {
@@ -39,14 +44,13 @@ const PaymentTable = ({ data, onDeletePayment }) => {
                 setShowDeleteCard(true);
                 setGrabId(paymentId);
                 setGrabPaymentFor(grabPaymentFor); 
-                // setGrabCode(purchaseCode) 
-            }
+          }
   
-  // Handle delete
-                 const handlePaymentDelete = async (purchaseId) => {
+  // Handle deletege
+                 const handlePaymentDelete = async (paymentId) => {
                     setIsLoading(true);
                     try {
-                      const response = await onDeletePayment(purchaseId); // call parent function
+                      const response = await onDeletePayment(paymentId); // call parent function
                   
                       if (response.success) {
                         toast.success('Payment deleted successfully');
@@ -97,13 +101,8 @@ const PaymentTable = ({ data, onDeletePayment }) => {
                           }
                         };
                   
-  
 
   const columns = [
-    {
-      name: '#',
-      selector: (row) => row.id,
-    },
         {
       name: 'Date',
       width: '15%',
@@ -125,6 +124,10 @@ const PaymentTable = ({ data, onDeletePayment }) => {
       selector: (row) => `N${row.payableAmount.toLocaleString()}`,
       sortable: true,
     },
+       {
+      name: 'Invoice No',
+      selector: (row) => row.invoiceNo,
+    },
     {
       name: 'Payment Type',
       selector: (row) => row.paymentType,
@@ -138,34 +141,75 @@ const PaymentTable = ({ data, onDeletePayment }) => {
       name: 'Actions',
       cell: (row) => (
         <ActionButtons>
-          <ActionButton clr='blue' onClick={() => navigate(`/edit-payment/${row.id}`)}><FaEdit /></ActionButton>
-          <ActionButton clr="red" onClick={() => handleDelete(row.id)}><FaTrash /></ActionButton>
+          <ActionButton clr='blue' onClick={() => navigate(`/edit-payment/${row._id}`)}><FaEdit /></ActionButton>
+          <ActionButton clr="red" onClick={() => handleGrabId(row._id, row.paymentFor)}><FaTrash/></ActionButton>
         </ActionButtons>
       ),
     },
   ];
 
-  const handleEdit = (rowData) => {
-    alert(`Editing row with ID: ${rowData.id}`);
-  };
-
-  const handleDelete = (id) => {
-    alert(`Deleting row with ID: ${id}`);
-  };
-
-  return (
+   return (
     <Container>
-      {/* <Title>Sales Data</Title> */}
       <TableWrapper>
         <DataTable
-          //   title="Sales Table"
-          columns={columns}
-          data={data}
-          pagination
-          responsive
-          customStyles={customStyles}
-        />
+                 //   title="PAYMENT Table"
+                              columns={columns}
+                              data={data}
+                              pagination
+                              paginationPerPage={50} // Default rows per page
+                              paginationRowsPerPageOptions={[10, 25, 50, 100]} // Options in the dropdown
+                              responsive
+                              customStyles={customStyles}
+                              selectableRows
+                              onSelectedRowsChange={({ selectedRows }) => setSelectedPayment(selectedRows)}
+                              selectableRowHighlight
+                            />
+        
       </TableWrapper>
+
+      {/* sliding button for delete bulk list */}
+                {selectedPayment.length > 0 && (
+                <SlideUpButton>
+                  <Button 
+                    btnColor={'red'} 
+                    btnOnClick={handleBulkDelete} 
+                    btnText= {isDeleting ? <ButtonLoader text="Deleting..." /> : `Delete Selected (${selectedPayment.length})`} 
+                    disabled={isDeleting}>             
+                  </Button>
+                </SlideUpButton>
+              )}
+      
+          {/* modal to delete single items */}
+                {showDeleteCard &&
+                                    <Overlay 
+                                      contentWidth={'30%'}
+                                      overlayButtonClick={()=>handlePaymentDelete(grabId)}
+                                      closeOverlayOnClick={()=>setShowDeleteCard(false)}
+                                      btnText1={isLoading ? <ButtonLoader text={'Deleting...'}/> : 'Yes'}
+                                    >
+                                      <p style={{margin: "40px", textAlign:"center", fontSize:"12px", lineHeight: "25px"}}>
+                                              Are you sure You want to delete the payment for this Invoice <br/><b>({grabPaymentFor}) </b> 
+                                        </p>
+                                    </Overlay>
+                                  }
+                  
+            {/* modal for bulk delete */}
+            {showBulkDeleteCard && (
+            <Overlay
+              contentWidth="30%"
+              overlayButtonClick={confirmBulkDelete}
+              closeOverlayOnClick={() => setShowBulkDeleteCard(false)}
+              btnText1={isDeleting ? <ButtonLoader text={'Deleting...'} /> : 'Yes'}
+            >
+              <p style={{ margin: "40px", textAlign: "center", fontSize: "12px", lineHeight: "25px" }}>
+                Are you sure you want to delete <b>{selectedPayment.length}</b> selected payment items?
+              </p>
+            </Overlay>
+          )}
+      
+          {/* Toast message user component */}
+            <ToastComponents/>
+      
     </Container>
   );
 };

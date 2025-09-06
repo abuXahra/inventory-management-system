@@ -136,8 +136,8 @@ const ProductTable = ({ data, onDeleteProd }) => {
     //   sortable: true,
     // },
     {
-      name: 'Quantity',
-      selector: (row) => row.quantity,
+      name: 'In stock',
+      selector: (row) => row.purchaseQuantity,
       sortable: true,
       width: '10%', // Set a different width
     },
@@ -213,7 +213,7 @@ const ProductTable = ({ data, onDeleteProd }) => {
                                       btnText1={isLoading ? <ButtonLoader text={'Deleting...'}/> : 'Yes'}
                                     >
                                       <p style={{margin: "40px", textAlign:"center", fontSize:"12px", lineHeight: "25px"}}>
-                                              Are you sure You want to delete the unit <b>{grabProductTitle} </b> 
+                                              Are you sure You want to delete the product <b>{grabProductTitle} </b> 
                                         </p>
                                     </Overlay>
                                   }
