@@ -3,8 +3,13 @@ import { FaDesktop, FaList, FaPlus, FaSearch } from 'react-icons/fa'
 import { ListHeaderWrapper } from './listHeader.style'
 import Button from '../../clicks/button/Button'
 import Input from '../../input/Input'
+import SelectInput from '../../input/selectInput/SelectInput'
 
-function ListHeader({ title, btnOnClick, searQuery, onChange, type, dataLength, icon, inputDisplay, entries, InputWidth}) {
+function ListHeader({ 
+  title, btnOnClick, searQuery, onChange, 
+  type, dataLength, icon, inputDisplay, entries, 
+  InputWidth, selectValue, selectOnchange, selectOption, selectTitle  
+}) {
   return (
     <ListHeaderWrapper>
       <span> 
@@ -14,7 +19,7 @@ function ListHeader({ title, btnOnClick, searQuery, onChange, type, dataLength, 
         <p>{dataLength}</p> 
         <p>{entries || 'Entries'}</p> 
 
-        <div style={{marginLeft: "10px"}}>
+      <div style={{marginLeft: "10px"}}>
       <Input
             bdColor={'white'}
             placeholder={`${searQuery}`}
@@ -25,6 +30,15 @@ function ListHeader({ title, btnOnClick, searQuery, onChange, type, dataLength, 
             inputDisplay={inputDisplay}
           />
         </div>
+
+       <div style={{marginLeft: "10px"}}>
+         <SelectInput 
+                    value={selectValue}
+                    onChange={selectOnchange}
+                    title={title}
+                    options={selectOption}
+                  />
+       </div>
 
       </span>
       
