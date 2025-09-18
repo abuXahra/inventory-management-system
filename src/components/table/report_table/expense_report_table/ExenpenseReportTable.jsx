@@ -1,60 +1,74 @@
-
-
-
-import React from "react";
+import React, { useEffect, useState } from "react";
 import DataTable from "react-data-table-component";
 import { customStyles } from "../../TableCustomStyle.style";
 import { Container, TableWrapper } from "./expenseReportTable";
+import axios from "axios";
 
 const ExpenseReportTable = ({ data }) => {
-  
-  // Calculate the total amounts and other sums as needed
-  const paidAmount = data.reduce((sum, row) => sum + row.paidAmount, 0);
+  // Calculate total amount
+  const amount = data.reduce((sum, row) => sum + row.amount, 0);
 
-        
+
+    // fetching currency from db
+    const [currencySymbol, setCurrencySymbol] =  useState('');
+      useEffect(()=>{
+          const fetchAllCompany = async() =>{
+              try {
+                  const res = await axios.get(`${process.env.REACT_APP_URL}/api/company`);
+                  setCurrencySymbol(res.data[0].currencySymbol)
+              } catch (error) {
+                console.log(error)
+              }
+          }
+          fetchAllCompany();
+        },[]);
+  
+
   const columns = [
     {
-      name: "#",
-      selector: (row) => row.id,
+      name: "Code",
+      selector: (row) => row.code,
       sortable: true,
+      width: "10%",
     },
     {
       name: "Date",
-      selector: (row) => row.date,
-      sortable: true,
-    },
-    {
-      name: "Payment For",
-      selector: (row) => row.paymentFor,
-      sortable: true,
-    },
-    {
-      name: "Paid Amount (N)",
-      selector: (row) => row.paidAmount,
-      sortable: true,
-    },
-    {
-        name: "Note",
-        selector: (row) => row.note,
-        sortable: true,
+      selector: (row) => {
+        if (!row.expenseDate) return "";
+        const date = new Date(row.expenseDate);
+        return isNaN(date.getTime()) ? "" : date.toLocaleDateString();
       },
+      sortable: true,
+      width: "10%",
+    },
+    {
+      name: "Expense For",
+      selector: (row) => row.expenseFor,
+      sortable: true,
+    },
+    {
+      name: "Paid Amount",
+      selector: (row) => row.amount,
+      sortable: true,
+    },
+    {
+      name: "Note",
+      selector: (row) => row.note,
+      sortable: true,
+    },
   ];
 
-
- 
-  // Merged row data (with total row)
+  // Total row with matching keys
   const mergedRow = {
-    id: "",  // Unique ID for this merged row
-    date: "",    // Add "Total" text to the Date column
-    paymentFor: <b>{`Total`}</b>,   // Leave it empty as it's not needed in the total row
-    paidAmount: <b>{paidAmount}</b>, // The total of the paid amounts
-    note: "",         // Leave note empty for the total row
+    code: "",
+    expenseDate: "",
+    expenseFor: <b>Total</b>,
+    amount:  <b><span dangerouslySetInnerHTML={{ __html: currencySymbol }} />{new Intl.NumberFormat('en-US', { style: 'decimal', minimumFractionDigits: 2 }).format(amount)}</b>,
+    note: "",
   };
 
-  // Combine the data with the merged row
   const combinedData = [...data, mergedRow];
 
-  
   return (
     <Container>
       <TableWrapper>
@@ -63,13 +77,6 @@ const ExpenseReportTable = ({ data }) => {
           data={combinedData}
           responsive
           customStyles={customStyles}
-          // Custom footer row for merged cells
-          footer={{
-            columns: [
-              { name: "Date", colSpan: 2 },
-              { name: "Total", colSpan: 2, align: "right" },
-            ],
-          }}
         />
       </TableWrapper>
     </Container>
@@ -77,4 +84,3 @@ const ExpenseReportTable = ({ data }) => {
 };
 
 export default ExpenseReportTable;
-

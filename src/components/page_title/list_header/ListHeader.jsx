@@ -8,7 +8,7 @@ import SelectInput from '../../input/selectInput/SelectInput'
 function ListHeader({ 
   title, btnOnClick, searQuery, onChange, 
   type, dataLength, icon, inputDisplay, entries, 
-  InputWidth, selectValue, selectOnchange, selectOption, selectTitle  
+  InputWidth
 }) {
   return (
     <ListHeaderWrapper>
@@ -31,17 +31,8 @@ function ListHeader({
           />
         </div>
 
-       <div style={{marginLeft: "10px"}}>
-         <SelectInput 
-                    value={selectValue}
-                    onChange={selectOnchange}
-                    title={title}
-                    options={selectOption}
-                  />
-       </div>
 
-      </span>
-      
+      </span>      
       <span>
     
         <Button

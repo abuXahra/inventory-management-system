@@ -15,9 +15,22 @@ export default function ProductPage() {
    const [products, setProducts] = useState([]);
    const [allProducts, setAllProducts] = useState([]);
    const [isLoading, setIsLoading] = useState(false);
+   const [company, setCompany] = useState('') 
 
    // fetch handler 
           useEffect(() => {
+
+                   const fetchCompany = async () =>{
+                          try {
+                              const res =await axios.get(`${process.env.REACT_APP_URL}/api/company`)
+                              setCompany(res.data[0]);
+                              console.log('company:\ln', res.data)
+                          } catch (error) {
+                              console.log(error)
+                          }
+                      }
+                    fetchCompany()
+                    
              const getProducts = async () => { 
              setIsLoading(true)  
              try {
@@ -77,56 +90,6 @@ export default function ProductPage() {
                     
            
   
-  // const data = [
-  //   {
-  //     id: 1,
-  //     imgUrl: ProductImage,
-  //     code: 'PT1001',
-  //     name: 'Nivea Men',
-  //     category: 'Necklace',
-  //     sku: '56422',
-  //     stock: "100",
-  //     unit: "Piece",
-  //     price: 35000,
-  //     alertQty: '10',
-  //     status: 'available',
-  //   }, 
-  //   {
-  //     id: 2,
-  //     imgUrl: ProductImage,
-  //     code: 'PT1001',
-  //     name: 'Nivea Men',
-  //     category: 'Necklace',
-  //     sku: '56422',
-  //     stock: "100",
-  //     unit: "Piece",
-  //     price: 35000,
-  //     alertQty: '10',
-  //     status: 'available',
-  //   }, 
-  //   {
-  //     id: 3,
-  //     imgUrl: ProductImage,
-  //     code: 'PT1001',
-  //     name: 'Nivea Men',
-  //     category: 'Necklace',
-  //     sku: '56422',
-  //     stock: "100",
-  //     unit: "Piece",
-  //     price: 35000,
-  //     alertQty: '10',
-  //     status: 'available',
-  //   }, 
-  // ];
-
-  // const[records, setRecords] = useState(data);
-  // const handleChange = (e) => {
-  //   let query = e.target.value;  
-  //   const newRecords = data.filter(item => item.name.toLocaleLowerCase().includes(query.toLocaleLowerCase()))
-  //   setRecords(newRecords);
-  // }
-
-
   const navigate = useNavigate();
   return (
     <ProductPageWrapper>
@@ -148,6 +111,7 @@ export default function ProductPage() {
             <ProductTable 
                 data={products}
                 onDeleteProd = {deleteProduct}
+                currencySymbol={company?.currencySymbol}
             />
         </ProductPageContent>
 } 

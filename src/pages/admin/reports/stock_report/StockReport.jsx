@@ -3,63 +3,67 @@
 
 
 
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import PageTitle from '../../../../components/page_title/PageTitle';
 import ListHeader from '../../../../components/page_title/list_header/ListHeader';
 import { FaPrint } from 'react-icons/fa';
-import JewelLogo from '../../../../images/logo1.png'
+import CompanyLogo from '../../../../images/product_placeholder.jpg'
 import { AddressWrapper, DateWrapper, Logo, LogoWrapper, ReportHeaderContent, ReportHeaderWrapper, StockReportContent, StockReportWrapper } from './stockReports.style';
 import StockReportTable from '../../../../components/table/report_table/stock_report/StockReportTable';
 import ProductImage from '../../../../images/necklace.jpeg'
+import axios from 'axios';
+import { List } from 'react-content-loader';
 
 
 export default function StockReport() {
 
+  
+  const [company, setCompany] = useState('')   
+  const [products, setProducts] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  
+     // fetch handler 
+            useEffect(() => {
 
-  const data = [
-    {
-      id: 1,
-      imgUrl: ProductImage,
-      code: 'SA1001',
-      name: 'Zirconia',
-      category: 'Necklace',
-      unit: 'piece',
-      tax: 'None',
-      price: '280',
-      stock: '148'
-    },
-    {
-      id: 2,
-      imgUrl: ProductImage,
-      code: 'SA1001',
-      name: 'Zirconia',
-      category: 'Necklace',
-      unit: 'piece',
-      tax: 'TAX(5%)',
-      price: '280',
-      stock: '148'
-    },
+               const fetchCompany = async () =>{
+                          try {
+                              const res =await axios.get(`${process.env.REACT_APP_URL}/api/company`)
+                              setCompany(res.data[0]);
+                              console.log('company:\ln', res.data)
+                          } catch (error) {
+                              console.log(error)
+                          }
+                      }
+                    fetchCompany()
 
-    {
-      id: 3,
-      imgUrl: ProductImage,
-      code: 'SA1001',
-      name: 'Zirconia',
-      category: 'Necklace',
-      unit: 'piece',
-      tax: 'TAX(7%)',
-      price: '280',
-      stock: '148'
-    },
-  ];
-
+               const getProducts = async () => { 
+               setIsLoading(true)  
+               try {
+                   const res = await axios.get(process.env.REACT_APP_URL + "/api/products")
+                   console.log(res.data)
+                   setProducts(res.data)
+                   setIsLoading(false)
+                   console.log(res.data)
+               } catch (err) {
+                   console.log(err)
+                   setIsLoading(false)
+                   }
+                 }
+                 
+               getProducts();
+               
+             }, [])
+         
 
   return (
     <StockReportWrapper>
       <PageTitle title={'Stock Report'} />
 
+
+
       {/* content */}
+      {isLoading? <List/> :
       <StockReportContent>
         <ListHeader
           title={'print'}
@@ -71,34 +75,42 @@ export default function StockReport() {
         />
 
         <ReportHeaderWrapper>
+           
           <ReportHeaderContent>
             {/* Logo */}
-            <LogoWrapper>
-              <Logo>
-                <div>
-                  <img src={JewelLogo} alt="" srcset="" />
-                </div>
-              </Logo>
+     <LogoWrapper>
+                                <Logo>
+                                    <div>
+                                        <img src={company ? 
+                                        process.env.REACT_APP_URL+'/images/'+ company.companyLogo:
+                                        CompanyLogo} alt="" srcset="" />
+                                    </div>
+                                </Logo>
 
-              <AddressWrapper>
-                <h4>Inventory</h4>
-                <span><b>Address:</b> Marpur, Ohaka Bangladesh</span>
-                <span><b>Phone:</b> 08135701458</span>
-                <span><b>Email:</b> abdulmuminiisah79@gmaiil.com</span>
-              </AddressWrapper>
-            </LogoWrapper>
+        
+           {  company &&  <AddressWrapper>
+                                <h3>{company?.companyName?.toUpperCase()}</h3>
+                                <span><b>Address:</b> {company?.address}</span>
+                                <span><b>Phone:</b> {company?.phoneNumber}</span>
+                                <span><b>Email:</b> {company?.companyEmail}</span>
+                            </AddressWrapper>
+                        }
+                            </LogoWrapper>
             {/* date */}
             <DateWrapper>
               <h3>Stock REPORT</h3>
-              <span>02-Jan-2020</span>
+              <span>{new Date().toDateString()}</span>
             </DateWrapper>
-
           </ReportHeaderContent>
         </ReportHeaderWrapper>
 
         {/* Stock Report Table Result */}
-        <StockReportTable data={data} />
+        <StockReportTable 
+          data={products}
+          currencySymbol={company?.currencySymbol} 
+        />
       </StockReportContent>
+      } 
     </StockReportWrapper>
   )
 }

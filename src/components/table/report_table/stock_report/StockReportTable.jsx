@@ -4,58 +4,72 @@ import DataTable from 'react-data-table-component';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import { Container, TableWrapper } from './stockReportTable.style';
+import prodPlaceHolder from '../../../../images/product_placeholder.jpg'
 
 
-const StockReportTable = ({ data, tbWidth }) => {
+const StockReportTable = ({ data, tbWidth, currencySymbol }) => {
 
   const navigate = useNavigate();
+
 
   const columns = [
     {
       name: 'S/N',
-      selector: (row) => row.id,
+      selector: (row, i) => i+1,
     },
-    {
-      name: 'Photo',
-      selector: (row) => row.imgUrl,
-      cell: (row) => <img src={row.imgUrl} alt={row.name} style={{ width: '20px', borderRadius: '100%', height: '20px', objectFit: 'cover' }} />,
-    },
+      {
+               name: 'Photo',
+               selector: (row) => <img
+               src={row.imgUrl ? process.env.REACT_APP_URL+'/images/'+ row.imgUrl : prodPlaceHolder}
+               alt={row.title}
+               style={{
+                 width: '20px',
+                 height: '20px',
+                 borderRadius: '10%',
+                 objectFit: 'cover'
+               }}
+             />,
+               // cell: (row) => <img src={`${process.env.REACT_APP_URL}/images/${row.imgUrl}` || pix} alt={row.name} style={{ width: '20px', borderRadius: '10%', height: '20px', objectFit: 'cover' }} />,
+               width: '10%',
+             },
     {
       name: 'Code',
       selector: (row) => row.code,
       sortable: true,
     },
     {
-      name: 'Name',
-      selector: (row) => row.name,
+      name: 'Title',
+      selector: (row) => row.title,
       sortable: true,
     },
     {
-      name: 'Categories',
-      selector: (row) => row.category,
+      name: 'Category',
+      selector: (row) => row.category?.title,
       sortable: true,
     },
     {
         name: 'Unit',
-        selector: (row) => row.unit,
+        selector: (row) => row.unit?.title,
         sortable: true,
         style: {
           width: '150px', // Set a different width
         },
       },
     {
-        name: 'Tax',
-        selector: (row) => row.tax,
+        name: 'Tax(%)',
+        selector: (row) => row.tax+"%",
         sortable: true,
       },
     {
       name: 'In Stock',
-      selector: (row) => row.stock,
+      selector: (row) => row.purchaseQuantity,
       sortable: true,
     },
     {
       name: 'Price',
-      selector: (row) => row.price,
+      selector: (row) =>  <div>
+         <span dangerouslySetInnerHTML={{ __html: currencySymbol }}/>{row.salePrice.toLocaleString()}
+       </div>,
       sortable: true,
     },
   ];

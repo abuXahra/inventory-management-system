@@ -17,7 +17,7 @@ import Button from '../../../../components/clicks/button/Button';
 import ItemContainer from '../../../../components/item_container/ItemContainer';
 import ButtonLoader from '../../../../components/clicks/button/button_loader/ButtonLoader';
 import SaleReportTable from '../../../../components/table/report_table/sale_report_table/SaleReportTable';
-import JewelLogo from '../../../../images/logo1.png'
+import CompanyLogo from '../../../../images/product_placeholder.jpg'
 import axios from 'axios';
 import { DropdownItems, DropdownWrapper } from '../../purchase/add/addPurchase.style';
 import { List } from 'react-content-loader'
@@ -46,13 +46,14 @@ export default function SalesReport() {
 
     const [isLoading, setIsLoading] = useState(false);
     const [isGenerating, setIsGenerating] = useState(false)
+    const [isGeneratingAll, setIsGeneratingAll] = useState(false)
 
     // today date
     const todayDate = new Date().toISOString().split('T')[0]; // Format: YYYY-MM-DD (2025-02-29)
 
     const [searchBy, setSearchBy] = useState('')
     const [searchError, setSearchError] = useState(false)
-   
+
     const [fromDate, setFromDate] = useState('')
     const [fromDateError, setFromDateError] = useState(false)
 
@@ -74,12 +75,16 @@ export default function SalesReport() {
   // ✅ New: payment status filter
   const [paymentStatusFilter, setPaymentStatusFilter] = useState("all");
 
+  // show All Report Button
+  const [showAllReportButton, setShowAllReportButton] = useState(false)
+ 
+
 
     useEffect(()=>{
         const fetchCompany = async () =>{
             try {
                 const res =await axios.get(`${process.env.REACT_APP_URL}/api/company`)
-                setCompany(res.data);
+                setCompany(res.data[0]);
                 console.log('company:\ln', res.data)
             } catch (error) {
                 console.log(error)
@@ -204,6 +209,8 @@ const dropdownCustomerName = (customer) => {
             }
 
             setSaleData(filteredSales);
+            // ✅ Show the "All Reports" button when a filter has been applied
+                setShowAllReportButton(true);
         } catch (err) {
             console.error(err);
         } finally {
@@ -217,68 +224,41 @@ const dropdownCustomerName = (customer) => {
 
 }
 
+const refetchSale = async (e) => {
+    e.preventDefault();
+    setSearchBy('');
+    setFromDate('');
+    setToDate('');
+    setCustomer('');
+    setShowAllReportButton(false); // ✅ Hide the button after fetching all reports
+
+    setIsGeneratingAll(true);
+    setIsLoading(true);  
+    try {
+        const res = await axios.get(`${process.env.REACT_APP_URL}/api/sale`);
+        setSaleData(res.data);
+    } catch (error) {
+        console.log(error);
+    } finally {
+        setIsLoading(false);
+        setIsGeneratingAll(false);
+    }
+};
 
 
-
-  const data = [
-    {
-      id: 1,
-      date: '02-01-2021',
-      code: 'SA1001',
-      name: 'Isah Abdulmumin',
-      mobile: '+2349055001663',
-      totalAmount: 300,
-      paidAmount: 300,
-      dueAmount: 300,
-      paymentStatus: 'paid'
-    }, 
-    {
-        id: 2,
-        date: '02-01-2021',
-        code: 'SA1001',
-        name: 'Isah Abdulmumin',
-        totalAmount: 300,
-        paidAmount: 300,
-        dueAmount: 300,
-        paymentStatus: 'Paid'
-    }, 
-
-    {
-        id: 3,
-        date: '02-01-2021',
-        code: 'SA1001',
-        name: 'Isah Abdulmumin',
-        totalAmount: 300,
-        paidAmount: 300,
-        dueAmount: 300,
-        paymentStatus: 'Pending'
-    }, 
-    {
-        id: 4,
-        date: '02-01-2021',
-        code: 'SA1001',
-        name: 'Isah Abdulmumin',
-        totalAmount: 300,
-        paidAmount: 300,
-        dueAmount: 300,
-        paymentStatus: 'Unpaid'
-    }, 
-  ];
-
-
-
-  const[records, setRecords] = useState(data);
-  const handleChange = (e) => {
-    let query = e.target.value;  
-    const newRecords = data.filter(item => item.name.toLocaleLowerCase().includes(query.toLocaleLowerCase()))
-    setRecords(newRecords);
-  }
+//   const[records, setRecords] = useState(data);
+//   const handleChange = (e) => {
+//     let query = e.target.value;  
+//     const newRecords = data.filter(item => item.name.toLocaleLowerCase().includes(query.toLocaleLowerCase()))
+//     setRecords(newRecords);
+//   }
 
     // ✅ Apply payment filter
   const filteredSaleData = saleData.filter((sale) => {
     if (paymentStatusFilter === "all") return true;
     return sale.paymentStatus?.toLowerCase() === paymentStatusFilter.toLowerCase();
   });
+
 
             const paymentStatusItems = [
               { title: "All", value: "all" },
@@ -296,7 +276,7 @@ const dropdownCustomerName = (customer) => {
         {/* Search Report */}
        {customerItems.length > 0 && 
        <SearchReportWrapper>
-            <form onSubmit={submitHandler}>
+            <form>
             <ItemContainer title={'Generate Report'}> 
                         
                         <AnyItemContainer>
@@ -374,14 +354,26 @@ const dropdownCustomerName = (customer) => {
                         </AnyItemContainer>    
                             
                     
-                            <ItemButtonWrapper btnAlign={'flex-start'}>
+                         <ItemButtonWrapper btnAlign={'flex-start'}>
                             <Button
+                                btnOnClick={submitHandler}
                                 btnText={isGenerating? <ButtonLoader text={'Generating...'}/> : 'Generate'}
                                 btnFontSize={'12px'}
                                 btnColor={'Green'}
                                 btnTxtClr={'white'}
                                 btnAlign={'flex-end'}
                                 />
+
+                          { showAllReportButton &&
+                           <Button
+                                btnText={isGeneratingAll? <ButtonLoader text={'Generating...'}/> : 'All Reports'}
+                                btnFontSize={'12px'}
+                                btnColor={'#0284c7'}
+                                btnTxtClr={'white'}
+                                btnAlign={'flex-end'}
+                                btnOnClick={(e)=>refetchSale(e)}
+                                />
+                            }
                         </ItemButtonWrapper>
                     </ItemContainer>          
             </form>
@@ -392,35 +384,34 @@ const dropdownCustomerName = (customer) => {
           <ListHeader 
             title={'print'} 
             btnOnClick={()=>{}}
-            onChange={handleChange}
+            onChange={''}
             type={'text'}
             dataLength={saleData.length}
             icon={<FaPrint/>}
-            inputDisplay={'none'}
-
-            selectValue={paymentStatusFilter}
-            selectOnchange={(e)=>setPaymentStatusFilter(e.target.value)}
-            selectTitle={"Payment Status"}
-            selectOption={paymentStatusItems}
-          />
+            inputDisplay={'none'}/>
           
+   
            
           <ReportHeaderWrapper>
                 <ReportHeaderContent>
                     {/* Logo */}
                             <LogoWrapper>
                                 <Logo>
-                                   <div>
-                                        <img src={JewelLogo} alt="" srcset="" />
-                                    </div> 
+                                    <div>
+                                        <img src={company ? 
+                                        process.env.REACT_APP_URL+'/images/'+ company.companyLogo:
+                                        CompanyLogo} alt="" srcset="" />
+                                    </div>
                                 </Logo>
 
-                            <AddressWrapper>
-                                <h4>Inventory</h4>
-                                <span><b>Address:</b> Marpur, Ohaka Bangladesh</span>
-                                <span><b>Phone:</b> 08135701458</span>
-                                <span><b>Email:</b> abdulmuminiisah79@gmaiil.com</span>
+        
+           {  company &&  <AddressWrapper>
+                                <h3>{company?.companyName?.toUpperCase()}</h3>
+                                <span><b>Address:</b> {company?.address}</span>
+                                <span><b>Phone:</b> {company?.phoneNumber}</span>
+                                <span><b>Email:</b> {company?.companyEmail}</span>
                             </AddressWrapper>
+                        }
                             </LogoWrapper>
                             {/* date */}
                {  customer &&  <DateWrapper>
@@ -434,10 +425,24 @@ const dropdownCustomerName = (customer) => {
                 </ReportHeaderContent>
         </ReportHeaderWrapper>
  
-          {/* Sales Report Table Result */}
+
           {isLoading? 
           <div style={{marginLeft: "50px", marginBottom:'50px'}}><List/></div>
-          : <SaleReportTable data={filteredSaleData} currencySymbol={company[0]?.currencySymbol}/>}  
+          :<div style={{position:'relative'}}> 
+                    
+          {/* Sales Report Table Result */}
+                           <span style={{width: "20%", display: "flex", gap: "5px", alignItems:"center", position: "absolute", right: "20px", top:"-40px"}}>
+                          <SelectInput 
+                              label={'Sort by'}
+                              value={paymentStatusFilter}
+                              onChange={(e)=>setPaymentStatusFilter(e.target.value)}
+                              title={'Sort by'}
+                              options={paymentStatusItems}
+                            />
+                    </span>
+            <SaleReportTable data={filteredSaleData} currencySymbol={company?.currencySymbol}/>
+          </div>
+          }  
           </SalesReportContent>       
     </SalesReportWrapper>
   )

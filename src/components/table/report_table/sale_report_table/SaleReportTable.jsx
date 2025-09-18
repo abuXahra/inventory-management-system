@@ -57,6 +57,7 @@ const getStatusBackgroundColor = (paymentStatus) => {
       name: "Name",
       selector: (row) => row.customer?.name,
       sortable: true,
+        width: '20%',
     },
     {
       name: `Total Amount`,
@@ -75,17 +76,20 @@ const getStatusBackgroundColor = (paymentStatus) => {
     },
     { name: "Status",
                 selector: (row) => row.paymentStatus,
+                  width: '10%',
                 sortable: true,
                 cell: (row) => (
                   <div
                     style={{
                       backgroundColor: getStatusBackgroundColor(row.paymentStatus),
-                      padding: "5px 20px",
+                      padding: "5px 10px",
                       borderRadius: "5px",
                       textAlign: "center",
                       color: "white",
                       fontSize: "8px", 
-                      width:" 75px"
+                      width:" 50px",
+                      marginBottom: "3px",
+                      marginTop: "3px"
                     }}
                   >
                     {row.paymentStatus}

@@ -16,7 +16,7 @@ import Overlay from '../../overlay/Overlay';
 import ToastComponents from '../../toast_message/toast_component/ToastComponents';
 
 
-const ProductTable = ({ data, onDeleteProd }) => {
+const ProductTable = ({ data, onDeleteProd, currencySymbol }) => {
 
   const navigate = useNavigate();
 
@@ -149,7 +149,9 @@ const ProductTable = ({ data, onDeleteProd }) => {
     },
     {
       name: 'Price',
-      selector: (row) => row.price,
+      selector: (row) =><div>
+         <span dangerouslySetInnerHTML={{ __html: currencySymbol }}/>{row.price.toLocaleString()}
+       </div>,
       sortable: true,        
       width: '10%', // Set a different width
 
