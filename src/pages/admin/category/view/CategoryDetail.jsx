@@ -14,6 +14,7 @@ import ButtonLoader from '../../../../components/clicks/button/button_loader/But
 import ToastComponents from '../../../../components/toast_message/toast_component/ToastComponents'
 import { toast } from 'react-toastify'
 import { PictureWrapper } from '../../../user/detail/userDetail.style'
+import CategoryTable from '../../../../components/table/category_table/category_product_table/CatProdTable'
 
 
 
@@ -22,13 +23,26 @@ export default function CategoryDetail() {
   const navigate = useNavigate();
   const {categoryId} = useParams();
   const [catData, setCatData] = useState('');
+   const [catProducts, setCatProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
     const [showDeleteCard, setShowDeleteCard] = useState(false);
-    const [grabId, setGrabId] = useState('');
     const [grabTitle, setGrabTitle] = useState('');
+      const [company, setCompany] = useState('') 
 
   // Fetch category detail
   useEffect(()=>{
+
+           const fetchCompany = async () =>{
+                              try {
+                                  const res =await axios.get(`${process.env.REACT_APP_URL}/api/company`)
+                                  setCompany(res.data[0]);
+                                  console.log('company:\ln', res.data)
+                              } catch (error) {
+                                  console.log(error)
+                              }
+                          }
+                        fetchCompany()
+
     const fetchCategory = async() =>{
       setIsLoading(true)
         try {
@@ -42,7 +56,23 @@ export default function CategoryDetail() {
         }
   
     }
-    fetchCategory();
+ fetchCategory();
+
+
+    const fetchCategoryProducts = async () => {
+      try {
+        const res = await axios.get(`${process.env.REACT_APP_URL}/api/category/${categoryId}/products`);
+        setCatProducts(res.data.products);
+      } catch (error) {
+        console.error("Error fetching category details:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchCategoryProducts();
+
+   
   },[categoryId])
   
 
@@ -80,13 +110,7 @@ const handleGrabId = (title)=>{
         {isLoading?
           <List/> :
           <CategoryDetailContent>
-            
-            <CategoryDetailPicture>
-              <ItemContainer title={'Category Picture'}> 
-                 <PictureWrapper imgUrl={catData?.imgUrl ? `${process.env.REACT_APP_URL}/images/${catData?.imgUrl}` : catPicture}></PictureWrapper>               
-                {/* <img src={catPicture} alt="" srcset="" /> */}
-              </ItemContainer>
-            </CategoryDetailPicture>
+        
             <CategoryDetailData>
               <ItemContainer title={'Category Detail'}> 
               <AnyItemContainer gap="60px">
@@ -105,6 +129,12 @@ const handleGrabId = (title)=>{
                   <InnerWrapper wd={'100%'}>
                           <span><b>Status</b></span>
                           <span>{catData?.status}</span>
+                       </InnerWrapper>
+                  </AnyItemContainer>
+                  <AnyItemContainer gap="20px"> 
+                  <InnerWrapper wd={'100%'}>
+                          <span><b>Product Quantity</b></span>
+                          <span>{catProducts?.length}</span>
                        </InnerWrapper>
                   </AnyItemContainer>
               </ItemContainer>
@@ -128,7 +158,19 @@ const handleGrabId = (title)=>{
                       </InnerWrapper>
                 </AnyItemContainer>
               </ItemContainer>
+
+              {/* Category Products */}        
+                <ItemContainer title={`${catData.title} Products`}> 
+                  <CategoryTable data={catProducts} currencySymbol={company?.currencySymbol}/>
+                </ItemContainer>
             </CategoryDetailData>
+              
+              <CategoryDetailPicture>
+              <ItemContainer title={'Category Picture'}> 
+                 <PictureWrapper imgUrl={catData?.imgUrl ? `${process.env.REACT_APP_URL}/images/${catData?.imgUrl}` : catPicture}></PictureWrapper>               
+                {/* <img src={catPicture} alt="" srcset="" /> */}
+              </ItemContainer>
+            </CategoryDetailPicture>
           </CategoryDetailContent> 
           } 
           </>

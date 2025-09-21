@@ -1,23 +1,22 @@
 import React, { useContext, useEffect, useState } from 'react'
-import ItemContainer from '../../../../components/item_container/ItemContainer'
-import Input from '../../../../components/input/Input'
-import SelectInput from '../../../../components/input/selectInput/SelectInput'
-import { ProductItemList } from '../../../../data/productItems'
-import Button from '../../../../components/clicks/button/Button'
-import { ItemButtonWrapper } from '../../../../components/item_container/itemContainer.style'
-import TextArea from '../../../../components/input/textArea/TextArea'
-import { FaTrash } from 'react-icons/fa'
-import PageTitle from '../../../../components/page_title/PageTitle'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
-import { UserContext } from '../../../../components/context/UserContext'
+import { UserContext } from '../../../../../components/context/UserContext'
 import { toast } from 'react-toastify'
-import ButtonLoader from '../../../../components/clicks/button/button_loader/ButtonLoader'
-import ToastComponents from '../../../../components/toast_message/toast_component/ToastComponents'
-import { AddSalesContent, AddSalesWrapper, CustomerInfoWrapper, HrStyled, ItemListContent, ItemsWrapper, SelectItemContent, TotalChargesWrapper } from './addSale.style'
-import { AnyItemContainer, DropdownItems, DropdownWrapper, InnerWrapper, TableResponsiveWrapper, TableStyled, TdStyled } from '../../purchase/add/addPurchase.style'
+import {FaTrash} from 'react-icons/fa'
+import { AddSaleReturnContent, AddSaleReturnWrapper, AnyItemContainer, CustomerInfoWrapper, HrStyled, InnerWrapper, ItemListContent, ItemsWrapper, SelectItemContent, TableStyled, TdStyled, TotalChargesWrapper } from './addSaleReturn.style'
+import Input from '../../../../../components/input/Input'
+import SelectInput from '../../../../../components/input/selectInput/SelectInput'
+import ItemContainer from '../../../../../components/item_container/ItemContainer'
+import { DropdownItems, DropdownWrapper, TableResponsiveWrapper } from '../../../purchase/add/addPurchase.style'
+import { ItemButtonWrapper } from '../../../../../components/item_container/itemContainer.style'
+import Button from '../../../../../components/clicks/button/Button'
+import PageTitle from '../../../../../components/page_title/PageTitle'
+import TextArea from '../../../../../components/input/textArea/TextArea'
+import ButtonLoader from '../../../../../components/clicks/button/button_loader/ButtonLoader'
+import ToastComponents from '../../../../../components/toast_message/toast_component/ToastComponents'
 
-export default function AddSale() {
+export default function AddSaleReturn() {
 
 // const [productItemList, setProductItemList] = useState(ProductItemList);
 
@@ -27,12 +26,12 @@ export default function AddSale() {
   const {user} = useContext(UserContext);
 
 const [itemList, setItemList] = useState([]);
+const [itemSaleReturnList, setItemSaleReturnList] = useState([]);
 const [productId, setProductId] = useState('');
 
 
 
 const todayDate = new Date().toISOString().split('T')[0]; // Format: YYYY-MM-DD (2025-02-29)
-
 const [searchTitle, setSearchTitle] = useState('');
 const [searchTitleError, setSearchTitleError] = useState(false);
 
@@ -58,27 +57,38 @@ const [amount, setAmount] = useState('');
 const [amountError, setAmountError] = useState(false);
 
 {/* Customer info */}
-const [saleDate, setSaleDate] = useState(todayDate);
+const [saleDate, setSaleDate] = useState('');
 const [saleDateError, setSaleDateError] = useState(false);
+
+const [returnDate, setReturnDate] = useState(todayDate);
+const [returnDateError, setReturnDateError] = useState(false);
 
 const [customer, setCustomer] = useState('');
 const [customerNameError, setCustomerNameError] = useState(false);
 
-const [saleStatus, setSaleStatus] = useState('');
+const [returnAmount, setReturnAmount] = useState('');
+const [returnAmountError, setReturnAmountError] = useState(false);
+
+const [saleAmount, setSaleAmount] = useState(); //
+const [saleAmountError, setSaleAmountError] = useState();
+
+
+const [reason, setReason] = useState('');
+const [reasonError, setReasonError] = useState();
+
+const [saleStatus, setSaleStatus] = useState(''); //
 const [saleStatusError, setSaleStatusError] = useState(false);
 
-const [reference, setReference] = useState('');
-
-const [saleAmount, setSaleAmount] = useState('');
-const [saleAmountError, setSaleAmountError] = useState(false);
+const [reference, setReference] = useState(''); //
 
 const [paymentType, setPaymentType] = useState('');
+
 const [paymentTypeError, setPaymentTypeError] = useState(false);
 
 const [paymentStatus, setPaymentStatus] = useState('');
 const [paymentStatusError, setPaymentStatusError] = useState(false);
 
-const [note, setNote] = useState('');
+const [note, setNote] = useState(''); //
 
 const [showDropdwon, setShowDropdwon] = useState(false);
 
@@ -102,6 +112,15 @@ const [showPartialField, setShowPartialField] = useState(false);
 const [amountPaid, setAmountPaid] = useState('')
 const [amountPaidError, setAmountPaidError] = useState(false);
 const [dueBalance, setDueBalance] = useState('');
+
+const [invoiceNo, setInvoiceNo] = useState('');
+const [invoiceNoSearch, setInvoiceNoSearch] = useState('');
+const [invoiceNoError, setInvoiceNoError] = useState(false);
+
+const [allSales, setAllSales] = useState([]); // all sales
+const [sale, setSale] = useState('');
+const [showReturnComponents, setShowReturnComponents] = useState(false);
+
 
 // onchange handler
 const handleChange = (type, e)=>{
@@ -148,24 +167,33 @@ const handleChange = (type, e)=>{
         }else if(type === 'shipping'){
             setShipping(e.target.value);
         }
-        // supply info
         else if(type === 'sale-date'){
             setSaleDate(e.target.value);
             setSaleDateError(false);
+        }else if(type === 'return-date'){
+            setReturnDate(e.target.value);
+            setReturnDateError(false);
         }else if(type === 'customer-name'){
 
             setCustomer(e.target.value);
             setShowCusDropdown(e.target.value.trim().length > 0);
             setCustomerNameError(false);
 
+        }else if(type === 'invoiceNo'){
+            setInvoiceNo(e.target.value);
+            setInvoiceNoSearch(e.target.value);
+            setInvoiceNoError(false);
+        }else if(type === 'references'){
+            setReference(e.target.value);
         }else if(type === 'sale-status'){
             setSaleStatus(e.target.value);
             setSaleStatusError(false);
-        }else if(type === 'references'){
-            setReference(e.target.value);
         }else if(type === 'sale-amount'){
+            setReturnAmount(e.target.value);
+            setReturnAmountError(false);
+        }else if(type === 'return-amount'){
             setSaleAmount(e.target.value);
-            setSaleAmountError(false);
+            setSaleAmount(false);
         }else if(type === 'payment-status'){
             setPaymentStatus(e.target.value);
             setPaymentStatusError(false);
@@ -183,13 +211,16 @@ const handleChange = (type, e)=>{
             }
         }else if(type === 'amount-paid'){
             setAmountPaid(e.target.value);
-            setDueBalance((saleAmount - Number(e.target.value)).toFixed(2))
+            setDueBalance((returnAmount - Number(e.target.value)).toFixed(2))
             setAmountPaidError(false);
         }else if(type === 'payment-type'){
             setPaymentType(e.target.value);
             setPaymentTypeError(false);
         }else if(type === 'note'){
             setNote(e.target.value);
+        }else if(type === 'reason'){
+            setReason(e.target.value);
+            setReasonError(false)
         }
 }
 
@@ -218,7 +249,7 @@ const TaxItem = [
 
 
 
-// SALE status item name
+// refund status item name
 const saleStatusItem =  [
     {
         title: 'Select',
@@ -289,6 +320,7 @@ const paymentStatusItems = [
   // Fetch sale initial
     const [prefix, setPrefix] = useState('')
     const [currencySymbol, setCurrencySymbol] = useState('')
+    const [isLoadingInvoice, setIsLoadingInvoice] = useState(false)
 
 useEffect(() => {
 
@@ -301,7 +333,7 @@ useEffect(() => {
                 setCurrencySymbol(res.data.currencySymbol)
   
                 if (prefixData) {
-                    setPrefix(prefixData.sale);
+                    setPrefix(prefixData.saleReturn);
                 }
   
                 setIsLoading(false);
@@ -314,7 +346,7 @@ useEffect(() => {
         fetchCompany();
      
             // fetch products data
-            const getProducts = async () => { 
+     const getProducts = async () => { 
                  setIsLoading(true)  
                  try {
                      const res = await axios.get(process.env.REACT_APP_URL + "/api/products")
@@ -328,7 +360,7 @@ useEffect(() => {
                      setIsLoading(false)
                      }
                    }
-                 getProducts();
+         getProducts();
  
             // fetch customer data
             const getCustomers = async () => { 
@@ -338,13 +370,6 @@ useEffect(() => {
                      const res = await axios.get(process.env.REACT_APP_URL + "/api/customers/")
                
                      setCustomerItems(res.data)
-                    //  setCustomerItems([
-                    //     { title: 'Select', value: '' }, 
-                    //     ...res.data.map(customer => ({
-                    //         title: customer.name,
-                    //         value: customer._id,
-                    //     }))
-                    // ]);
                      setIsLoading(false)
                      
                  } catch (err) {
@@ -354,6 +379,23 @@ useEffect(() => {
                    }
                    
                  getCustomers();
+
+                      
+            // fetch products data ==================================================================
+        const getSales = async () => { 
+                 setIsLoading(true)  
+                 try {
+                     const res = await axios.get(process.env.REACT_APP_URL + "/api/sale")
+                     setAllSales(res.data)
+                     setIsLoading(false)
+                     
+                     console.log(res.data)
+                 } catch (err) {
+                     console.log(err)
+                     setIsLoading(false)
+                     }
+                   }
+         getSales();
 
 // for grand total caulacultion
     const totalQty = itemList.reduce((sum, item) => sum + parseFloat(item.quantity || 0), 0);
@@ -379,6 +421,57 @@ useEffect(() => {
 
 
 
+ // handle invoice check
+  const handleCheckInvoice = () => {
+    let isValid = true;
+
+    if(!invoiceNoSearch){
+        setInvoiceNoError(true)
+        isValid = false;
+    }
+
+    if(isValid){
+        setIsLoadingInvoice(true)
+        const match = allSales.find((s) => s.code === invoiceNo.toUpperCase()); 
+        // assuming sale code is stored as s.code (adjust if different)
+        if (match) {
+            setSale(match);
+                
+             const formattedSaleDate = new Date(match.saleDate).toISOString().split('T')[0];
+                     setSaleDate(formattedSaleDate);
+                     setCustomer(match.customer.name) 
+                     setSaleStatus(match.saleStatus)
+                     setReference(match.reference)
+                     setSaleAmount(match.saleAmount)
+                     setPaymentStatus(match.paymentStatus)
+                     setShowPartialField(match.paymentStatus === 'partial');
+                     setPaymentType(match.paymentType)
+                     setAmountPaid(match.amountPaid)
+                     setDueBalance(match.dueBalance)
+                     setNote(match.note);
+                     setSubTotal(match.subTotal);
+                     setOtherCharges(match.otherCharges)
+                     setDiscount(match.discount)
+                     setDiscountValue(match.discountValue)
+                     setShipping(match.shipping)
+                     setItemList(match.saleItems)
+
+                    setItemList(match.saleItems)
+                    setCustomerId(match.customer._id)
+                    setShowReturnComponents(true)
+                    console.log("Matched sale:", match);
+                    setIsLoadingInvoice(false)
+        } else {
+            setSale(null);
+            alert("Invoice not found");
+            setInvoiceNoSearch('')
+            setInvoiceNo('')
+             setIsLoadingInvoice(false)
+        }
+        }
+  }
+
+
 
 // calculating sale price
   const calculateSalePrice = (priceInput, taxInput, quantityInput) => {
@@ -394,10 +487,9 @@ useEffect(() => {
   setTaxAmount(totalTaxAmount.toFixed(2));
   setUnitCost(unitPriceWithTax.toFixed(2));
   setAmount(totalSale.toFixed(2)); //sale price
-
 };
 
-// search dropdownd handler
+// search dropdown handler
 const dropdownHandler = (product) => {
     setShowDropdwon(false)
     setProductId(product._id)
@@ -510,16 +602,37 @@ const hanldeSumbit = async (e) =>{
         setSaleDateError(true)
         isValid = false;
     }
+
     if(!customer){
         setCustomerNameError(true)
         isValid = false;
     }
+
+     if(!invoiceNo){
+        setInvoiceNoError(true)
+        isValid = false;
+     }
+
     if(!saleStatus){
         setSaleStatusError(true)
         isValid = false;
     }
-        if(!saleAmount){
+
+    if(!saleAmount){
         setSaleAmountError(true)
+        isValid = false;
+    }
+    if(!returnDate){
+        setReturnDateError(true)
+        isValid = false;
+    }
+        if(!returnAmount){
+        setReturnAmountError(true)
+        isValid = false;
+    }
+    
+        if(!reason){
+        setReasonError(true)
         isValid = false;
     }
     if(!paymentType){
@@ -540,10 +653,41 @@ const hanldeSumbit = async (e) =>{
     
     if(isValid){
       
-      const newSale = {
+        // add new return sale
+      const newSaleReturn = {
+      returnDate: new Date(returnDate).toISOString(), 
+      saleId: sale?._id,
+      customer: customerId || customer,
+      returnAmount: Number(returnAmount),
+      reason, 
+      paymentStatus,
+      paymentType,
+      amountPaid: Number(amountPaid),
+      dueBalance,
+      subTotal: Number(subTotal),
+      otherCharges: Number(otherCharges),
+      discount: Number(discount),
+      discountValue: Number(discountValue),
+      shipping: Number(shipping),
+      returnItems:
+        itemSaleReturnList.length > 0
+            ? itemSaleReturnList.map((item) => ({
+                productId: item.productId,
+                title: item.title,
+                quantity: Number(item.quantity),
+                price: Number(item.price),
+                unitCost: Number(item.unitCost),
+                amount: Number(item.amount),
+            }))
+            : [],
+      prefix: prefix,
+      userId: user?._id
+    };
+
+
+  const updateSale = {
       saleDate: new Date(saleDate),
-    //   customer: customer._id || customer,
-      customer: customerId,
+      customer: customerId || customer?._id,
       saleStatus,
       reference,
       saleAmount: Number(saleAmount),
@@ -573,15 +717,16 @@ const hanldeSumbit = async (e) =>{
       prefix: prefix,
       userId: user?._id
     };
+
       setIsBtnLoading(true);
-      console.log('======new sale data==========\n', newSale)
+      console.log('======new sale data==========\n', newSaleReturn)
             // alert('form validated triggered')
             try {
           
-              const res = await axios.post(`${process.env.REACT_APP_URL}/api/sale/create`, newSale);
+              const res = await axios.post(`${process.env.REACT_APP_URL}/api/saleReturn/create`, newSaleReturn);
 
               console.log(res.data)
-              navigate(`/sale-invoice/${res.data.newSale._id}`);
+              navigate(`/`);
               
               
                 // toast success message
@@ -591,18 +736,61 @@ const hanldeSumbit = async (e) =>{
                 console.error(err);
                 setIsBtnLoading(false);
             }
+
+            try {
+                          const res = await axios.put(`${process.env.REACT_APP_URL}/api/sale/${sale._id}`, updateSale);
+            
+                            // toast success message
+                             toast.success('Sale added Successfully')
+                               setIsBtnLoading(false);
+                            } catch (err) {
+                            console.error(err);
+                            setIsBtnLoading(false);
+                        }
+
+
     }
 }
 
   return (
-    <AddSalesWrapper>
+    <AddSaleReturnWrapper>
                 {/* Page title */}
-                <PageTitle title={'Sale'} subTitle={'/ Add'}/>
-                due balance {dueBalance}
-        <AddSalesContent>
+                <PageTitle title={'Sales Return'} subTitle={'/ Add'}/>
+        <AddSaleReturnContent>
         <ItemsWrapper>
+
+        {/* Search Invoice */}
+        <SelectItemContent>
+         <ItemContainer title={'Search'}> 
+                        <AnyItemContainer flxDirection="column">
+                             <Input 
+                                value={invoiceNoSearch} 
+                                title={'Search Invoice'}
+                                onChange={(e)=>handleChange('invoiceNo', e)} 
+                                error={invoiceNoError} 
+                                type={'text'} 
+                                label={'Search Invoice'} 
+                                placeholder={'Enter Invoice No...'}
+                                requiredSymbol={'*'}
+                            />  
+                          
+                        </AnyItemContainer>    
+                            
+                        <ItemButtonWrapper btnAlign={'flex-start'}>
+                            <Button
+                                btnText={isLoadingInvoice ? <ButtonLoader text={'Searching...'} /> : 'Search Invoice'}
+                                btnFontSize={'12px'}
+                                btnColor={'green'}
+                                btnTxtClr={'white'}
+                                btnAlign={'flex-end'}
+                                btnOnClick={handleCheckInvoice}                               
+                            />
+                        </ItemButtonWrapper>
+                    </ItemContainer>  
+                </SelectItemContent>
+
             {/* SelectItem */}
-            <SelectItemContent>
+          {showReturnComponents &&  <SelectItemContent>
                     <form>
                     <ItemContainer title={'Select Items'}> 
                         <AnyItemContainer flxDirection="column">
@@ -732,10 +920,11 @@ const hanldeSumbit = async (e) =>{
                         </ItemButtonWrapper>
                     </ItemContainer>              
                         </form>
-                </SelectItemContent>
+                </SelectItemContent>}
   
                    
             {/* ItemList */}
+          {showReturnComponents &&
             <ItemListContent>
                 <ItemContainer title={'Item List'}>
                 <TableResponsiveWrapper>
@@ -789,7 +978,7 @@ const hanldeSumbit = async (e) =>{
                                     flexDirection: 'column', 
                                     gap: '20px'
                                 }}>
-                                   <h3>Sale Items</h3> 
+                                   <h3>Sale Return Items</h3> 
                                    <p>Not Item on the List</p>
                                 </div>)
                 }
@@ -881,10 +1070,14 @@ const hanldeSumbit = async (e) =>{
                 </TotalChargesWrapper>
                 </ItemContainer>       
             </ItemListContent>
+            }
         </ItemsWrapper>
 
+
+        
+
     {/* Customer info */}
-        <CustomerInfoWrapper>
+       {showReturnComponents && <CustomerInfoWrapper>
             <form action="" onSubmit={(e)=>hanldeSumbit(e)}>
                 <ItemContainer title={'Customer Info'}>
                     
@@ -926,6 +1119,7 @@ const hanldeSumbit = async (e) =>{
                                     </DropdownWrapper>
                             )}
 
+
                     <Input 
                                 value={saleDate} 
                                 title={'Date'}
@@ -935,7 +1129,8 @@ const hanldeSumbit = async (e) =>{
                                 error={saleDateError}
                                 requiredSymbol={'*'}
                             /> 
-                        
+
+
                     <SelectInput 
                                 options={saleStatusItem} 
                                 label={'Sale Status'}
@@ -946,6 +1141,7 @@ const hanldeSumbit = async (e) =>{
                                 onChange={(e)=>handleChange('sale-status', e)}
                             />
 
+
                     <Input 
                                 value={reference} 
                                 title={'References'}
@@ -955,12 +1151,13 @@ const hanldeSumbit = async (e) =>{
                                 // error={saleDateError}
                             /> 
 
+
                 </ItemContainer>
                 <ItemContainer title={'Payment Info'}>
-                    <Input 
+               <Input 
                                 value={saleAmount} 
                                 title={'Sale Amount'}
-                                onChange={()=>{}} 
+                                onChange={(e)=>handleChange('sale-amount', e)} 
                                 type={'text'} 
                                 label={'Sale Amount'} 
                                 requiredSymbol={'*'}
@@ -1013,18 +1210,50 @@ const hanldeSumbit = async (e) =>{
                                 title={'Payment Type'}
                                 onChange={(e)=>handleChange('payment-type', e)}
                      />
-
                     <TextArea 
                                 label={'Note'} 
                                 title={'Note'} 
                                 onChange={(e) => handleChange('note', e)} 
                                 value={note} 
                             />
+                </ItemContainer>
+             
+                <ItemContainer title={'Return Info'}>
 
-                    {/* Add to SALE button */}
+
+                    <Input 
+                                value={returnDate} 
+                                title={'Date'}
+                                onChange={(e)=>handleChange('return-date', e)} 
+                                type={'date'} 
+                                label={'Date'} 
+                                error={returnDateError}
+                                requiredSymbol={'*'}
+                            /> 
+
+                    <Input 
+                                value={returnAmount} 
+                                title={'Refund Amount'}
+                                onChange={()=>{}} 
+                                type={'text'} 
+                                label={'Refund Amount'} 
+                                requiredSymbol={'*'}
+                                readOnly 
+                                inputBg='#c4c4c449'
+                                error={returnAmountError}
+                            /> 
+                    <TextArea 
+                                label={'Reason'} 
+                                title={'Reason'} 
+                                onChange={(e) => handleChange('reason', e)} 
+                                value={reason} 
+                                error={reasonError}
+                                requiredSymbol={'*'}
+                            />
+                    {/* Add to SALE RETURN button */}
                     <ItemButtonWrapper btnAlign={'flex-start'}>
                                 <Button
-                                    btnText={isBtnLoading ? <ButtonLoader text={'Adding...'} /> : 'Add Sale'}
+                                    btnText={isBtnLoading ? <ButtonLoader text={'Adding...'} /> : 'Add Return'}
                                     btnFontSize={'12px'}
                                     btnColor={'green'}
                                     btnTxtClr={'white'}
@@ -1033,10 +1262,23 @@ const hanldeSumbit = async (e) =>{
                         </ItemButtonWrapper>
                 </ItemContainer>
             </form>
-        </CustomerInfoWrapper>
-        </AddSalesContent>
+        </CustomerInfoWrapper>}
+        </AddSaleReturnContent>
         {/* Toast messages */}
         <ToastComponents/>
-    </AddSalesWrapper>
+        {customerId}
+    </AddSaleReturnWrapper>
   )
 }
+
+
+
+
+//  returnDate,
+//       saleId,
+//       customer,
+//       returnAmount,
+//       reason,
+//       returnItems = [],
+//       prefix,
+//       userId,

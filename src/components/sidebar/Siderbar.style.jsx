@@ -1,47 +1,41 @@
 import styled from "styled-components";
 
 export const SidebarWrapper  = styled.div`
-    height: 100vh;
-    width: ${({sidebarWidth})=> sidebarWidth || "17%"};
-    background-color: #00032a;
-    color: white;
-    position: fixed;
-    display: ${({deskDisplaySidebar})=> deskDisplaySidebar || 'flex'};
-    flex-direction: column;
-    z-index: 1999;
-  
-
-    @media (max-width: 768px) {
-        width: 45%;
+   
+        height: 100vh;
+        width: 200px; //240
+        background-color: #00032a;
+        color: white;
         position: fixed;
-        z-index: 1999;
-        display: ${({displaySidebar})=> displaySidebar || 'none'};
-    }
+        top: 0;
+        left: ${({ isOpen }) => (isOpen ? "0" : "-200px")};
+        transition: left 0.3s ease;
+        z-index: 2000;
+
+
+        @media (max-width: 768px) {
+        width: 200px;
+        }
 `
 
 
 export const SidebarHeader = styled.div`
-padding: 20px;
-border-bottom: 2px solid white;
-display: flex;
-position: relative;
-    img{
-        height: 70px;
-        cursor: pointer;
-    }
+
+     display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 `
 
 export const HamburgerWrapperi = styled.span`
-    position: absolute;
-    font-size: 25px;
-    right: 10px;
-    top: 20px;
     cursor: pointer;
-    display: flex;
-    
-    @media (max-width: 768px) {
-        display: none;
-    }
+    font-size: 1.5rem;
+    display: none;  //changes
+
+     @media (max-width: 768px) {
+        display: flex;
+    } 
 `
 
 

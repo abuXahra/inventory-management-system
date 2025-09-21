@@ -14,6 +14,8 @@ export const ProductDetailContent = styled.div`
   border: 1px solid #cccccc;
   gap: 5px;
   background-color: white;
+  padding: 10px;
+  border-radius: 10px;
 
   @media (max-width: 768px) {
     width: 100%;

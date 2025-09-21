@@ -12,8 +12,10 @@ export const SupplierDetailContent = styled.div`
   width: 100%;
   display: flex;
   border: 1px solid #cccccc;
-  gap: 20px;
+  gap: 10px;
+  padding: 10px;
   background-color: white;
+  border-radius: 10px;
 
   @media (max-width: 768px) {
     width: 100%;

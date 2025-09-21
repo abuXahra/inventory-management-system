@@ -120,7 +120,7 @@ const SalesTable = ({data, onDeleteSale}) => {
        name: 'Code',
        selector: (row) => row.code,
        sortable: true,
-       width: '13%',
+       width: '8%',
      },
      {
        name: 'Customer',

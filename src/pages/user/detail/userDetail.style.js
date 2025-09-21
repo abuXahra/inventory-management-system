@@ -45,6 +45,7 @@ export const PictureWrapper = styled.div`
   background-size: cover;
   background-repeat: no-repeat;
   cursor: pointer;
+  border-radius: 10px;
 `;
 
 export const UserDetailData = styled.div`

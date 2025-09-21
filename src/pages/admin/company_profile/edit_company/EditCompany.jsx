@@ -135,7 +135,15 @@ export default function EditCompany() {
            // Expenses initial require
         const [expenseInitial, setExpenseInitial] = useState('')
         const [expenseInitialError, setExpenseInitialError] = useState(false);
-             
+    
+                   // saleReturn initial require
+            const [saleReturnInitial, setSaleReturnInitial] = useState('')
+            const [saleReturnInitialError, setSaleReturnInitialError] = useState(false);
+                 
+                       // purchaseReturn initial require
+            const [purchaseReturnInitial, setPurchaseReturnInitial] = useState('')
+            const [purchaseReturnInitialError, setPurchaseReturnInitialError] = useState(false);
+                 
     
     const handleChange = (type, e) =>{
         if(type === 'name'){
@@ -195,6 +203,12 @@ export default function EditCompany() {
         }else if(type === 'expenseInitial'){
             setExpenseInitial(e.target.value);
             setExpenseInitialError(false);
+        }else if(type === 'saleReturnInitial'){
+            setSaleReturnInitial(e.target.value);
+            setSaleReturnInitialError(false);
+        }else if(type === 'purchaseReturnInitial'){
+            setPurchaseReturnInitial(e.target.value);
+            setPurchaseReturnInitialError(false);
         }
     }
 
@@ -232,6 +246,8 @@ export default function EditCompany() {
                     setCustomerInitial(prefix.customer);
                     setSaleInitial(prefix.sale);
                     setExpenseInitial(prefix.expense);
+                    setSaleReturnInitial(prefix.saleReturn);
+                    setPurchaseReturnInitial(prefix.purchaseReturn);
                 }
 
                 setIsLoading(false);
@@ -340,7 +356,19 @@ export default function EditCompany() {
       if(!expenseInitial){
         setExpenseInitialError(true);
             isValid = false;
-        }  
+        } 
+        
+
+     if(!saleReturnInitial){
+            setSaleReturnInitialError(true);
+            isValid = false;
+        }
+
+
+      if(!purchaseReturnInitial){
+        setPurchaseReturnInitialError(true);
+            isValid = false;
+        }
         
         
         if(isValid){
@@ -364,6 +392,8 @@ export default function EditCompany() {
                 customer: customerInitial,
                 sale: saleInitial,
                 expense: expenseInitial,
+                saleReturn: saleReturnInitial,
+                purchaseReturn: purchaseReturnInitial,
                 userId: user._id,
 
                        }
@@ -659,6 +689,24 @@ export default function EditCompany() {
                                 label={'Expense'}
                                 requiredSymbol={'*'}
                             />  
+                            <Input 
+                                value={saleReturnInitial} 
+                                title={'Sale Return'}
+                                onChange={(e)=>handleChange('saleReturnInitial', e)} 
+                                error={saleReturnInitialError} 
+                                type={'text'} 
+                                label={'Sale Return'}
+                                requiredSymbol={'*'}
+                            />  
+                             <Input 
+                                value={purchaseReturnInitial} 
+                                title={'Purchase Return'}
+                                onChange={(e)=>handleChange('purchaseReturnInitial', e)} 
+                                error={purchaseReturnInitialError} 
+                                type={'text'} 
+                                label={'Purchase Return'}
+                                requiredSymbol={'*'}
+                            /> 
                         </AnyItemContainer>
 
                         {/* button */}

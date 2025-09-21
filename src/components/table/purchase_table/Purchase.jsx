@@ -120,12 +120,13 @@ const PurchaseTable = ({data, onDeletePurchase}) => {
       name: 'Code',
       selector: (row) => row.code,
       sortable: true,
-      width: '13%',
+      width: '8%',
     },
     {
       name: 'Supplier',
       selector: (row) => row.supplier?.name,
       sortable: true,
+      width: '20%',
     },
     {
       name: 'Status',

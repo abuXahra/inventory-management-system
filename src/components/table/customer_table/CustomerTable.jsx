@@ -95,37 +95,14 @@ const CustomerTable = ({data, onDeleteCus}) => {
 
   const columns = [
     {
-        name: 'S/N',
-        selector: (row, i) => i + 1,
-        width: '80px',
+        name: 'Code',
+        selector: (row) => row.code,
         sortable: true,
+        width: '100px', // Set a different width
       },
-       {
-            name: 'Photo',
-            width: '80px',
-            selector: (row) => <img
-            src={row.imgUrl ? process.env.REACT_APP_URL+'/images/'+ row.imgUrl : userPicture}
-            alt={row.name}
-            style={{
-              width: '20px',
-              height: '20px',
-              borderRadius: '100%',
-              objectFit: 'cover'
-            }}
-          />,
-            // cell: (row) => <img src={`${process.env.REACT_APP_URL}/images/${row.imgUrl}` || pix} alt={row.name} style={{ width: '20px', borderRadius: '100%', height: '20px', objectFit: 'cover' }} />,
-            // width: '100px',
-          },
-        // {
-        //   name: 'Code',
-        //   selector: (row) => row.code,
-        //   sortable: true,
-        //   style: {
-        //     width: '50px', // Set a different width
-        //   },
-        // },
+        
     {
-      name: 'Name',
+      name: 'Customer Name',
       selector: (row) => row.name,
       sortable: true,
     },
@@ -139,11 +116,11 @@ const CustomerTable = ({data, onDeleteCus}) => {
         selector: (row) => row.email,
         sortable: true,
     },
-    {
-        name: 'Tax Number',
-        selector: (row) => row.taxNumber,
-        sortable: true,
-    },
+    // {
+    //     name: 'Tax Number',
+    //     selector: (row) => row.taxNumber,
+    //     sortable: true,
+    // },
     // {
     //     name: 'Address',
     //     selector: (row) => row.address,

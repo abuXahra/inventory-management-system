@@ -97,7 +97,7 @@ const handleDelete = async (supplierId) => {
         name: 'Code',
         selector: (row) => row.code,
         sortable: true,
-        width: '80px', // Set a different width
+        width: '100px', // Set a different width
       },
     {
         name: 'Supplier Name',
@@ -105,10 +105,10 @@ const handleDelete = async (supplierId) => {
         sortable: true,
       },
     {
-      name: 'Mobile',
+      name: 'Phone No.',
       selector: (row) => row.phoneNumber,
       sortable: true,
-      width: '100px', // Set a different width
+      // width: '100px', // Set a different width
     },
     {
       name: 'Email',
@@ -122,11 +122,11 @@ const handleDelete = async (supplierId) => {
     //   width: '80px', // Set a different width
     
     // },
-    {
-        name: 'Address',
-        selector: (row) => row.address,
-        sortable: true,
-      },
+    // {
+    //     name: 'Address',
+    //     selector: (row) => row.address,
+    //     sortable: true,
+    //   },
     {
       name: 'Actions',
       width: '100px',

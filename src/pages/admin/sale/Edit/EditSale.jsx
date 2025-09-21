@@ -636,6 +636,9 @@ const hanldeSumbit = async (e) =>{
                 console.error(err);
                 setIsBtnLoading(false);
             }
+
+
+            
     }
 }
 
@@ -973,16 +976,6 @@ const hanldeSumbit = async (e) =>{
                                 error={saleDateError}
                                 requiredSymbol={'*'}
                             /> 
-
-                    {/* <SelectInput 
-                                options={customerItems} 
-                                label={'Customer Name'}
-                                value={customer}
-                                error={customerNameError}
-                                requiredSymbol={'*'}
-                                title={'Customer Name'}
-                                onChange={(e)=>handleChange('customer-name', e)}
-                            /> */}
                         
                     <SelectInput 
                                 options={saleStatusItem} 

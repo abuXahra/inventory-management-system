@@ -44,14 +44,14 @@ const getStatusBackgroundColor = (paymentStatus) => {
     return isNaN(date.getTime()) ? "" : date.toLocaleDateString();
   },
   sortable: true,
-  width: '10%',
+  width: '13%',
 },
 
        {
       name: "Invoice No",
       selector: (row) => row.code,
       sortable: true,
-      width: '10%',
+      width: '13%',
     },
     {
       name: "Name",

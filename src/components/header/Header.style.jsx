@@ -2,15 +2,23 @@ import styled from "styled-components";
 
 
 export const  HeadWrapper = styled.div`
- width: 100%;
+ /* width: 100%;
  display: flex;
  position: sticky;
  top: 0; 
  z-index: 100;
  background-color: #80808048;
- /* box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px; */
- padding-right: 5px;
- /* border-bottom: 1px solid #00032a; */
+ padding-right: 5px; */
+
+     width: 100%;
+     height: 60px;
+     display: flex;
+     align-items: center;
+     justify-content: space-between;
+     background: white;
+     border-bottom: 1px solid #eee;
+     padding: 0 1rem;
+
 `
 
 
@@ -25,6 +33,8 @@ export const HeaderContent = styled.div`
      @media (max-width: 786px) {
           width: ${({mwd})=> mwd || '40%'};
      }
+     /* display: flex;
+     align-items: center; */
 `
 
 
@@ -71,13 +81,16 @@ export const ProfileWrapper = styled.div`
 
 
 export const HamburgerWrapperHeader = styled.span`
-    font-size: 25px;
+    /* font-size: 25px;
     cursor: pointer;  
     display: none;
     
     @media (max-width: 768px) {
         display: flex;
-    }
+    } */
+     cursor: pointer;
+     font-size: 1.5rem;
+     margin-right: 1rem;
 `
 
 export const HamburgerWrapperHeaderi = styled.span`

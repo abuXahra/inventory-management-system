@@ -86,11 +86,6 @@ export default function SupplierDetail() {
           <List/> :
           <SupplierDetailContent>
             
-            <SupplierDetailPicture>
-              <ItemContainer title={'Profile Picture'}> 
-                <PictureWrapper imgUrl={supData?.imgUrl ? `${process.env.REACT_APP_URL}/images/${supData?.imgUrl}` : profilePicture}></PictureWrapper>      
-              </ItemContainer>
-            </SupplierDetailPicture>
             <SupplierDetailData>
               <ItemContainer title={'Supplier Detail'}> 
               <AnyItemContainer gap="60px">
@@ -145,6 +140,12 @@ export default function SupplierDetail() {
                 </AnyItemContainer>
               </ItemContainer>
             </SupplierDetailData>
+
+            <SupplierDetailPicture>
+              <ItemContainer title={'Profile Picture'}> 
+                <PictureWrapper imgUrl={supData?.imgUrl ? `${process.env.REACT_APP_URL}/images/${supData?.imgUrl}` : profilePicture}></PictureWrapper>      
+              </ItemContainer>
+            </SupplierDetailPicture>
           </SupplierDetailContent> }</>
 
               {/* overlay popup */}

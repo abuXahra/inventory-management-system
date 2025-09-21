@@ -16,43 +16,24 @@ import axios from 'axios';
 import { UserContext } from '../context/UserContext';
 
 export default function Siderbar({
-  displayShowSidebar,
-  setDisplayShowSidebar,
-  setMainContentWidth,
-  setShowHbg,
-  deskDisplaySidebar,
-  setDeskDisplaySidebar,
-  sidebarWidth
+  // displayShowSidebar,
+  // setDisplayShowSidebar,
+  // setMainContentWidth,
+  // setShowHbg,
+  // deskDisplaySidebar,
+  // setDeskDisplaySidebar,
+  // sidebarWidth,
+  isOpen, 
+  onClose
 }) {
   const location = useLocation();
   const navigate = useNavigate();
   const {setUser } = useContext(UserContext);
 
-    // Track which dropdown is active
+//     // Track which dropdown is active
   const [activeDropdown, setActiveDropdown] = useState(null); // Track the active dropdown index
   
 
-  const handDesHbOnclick = () => {
-    setDeskDisplaySidebar("none")
-    setMainContentWidth('100%')
-    setShowHbg('flex')
-    setActiveDropdown(null); 
-}
-
-const handMobilHbOnclick = () => {
-    setDisplayShowSidebar("none")
-    setActiveDropdown(null); 
-}
-
-  const hideSidebar = (url) => {
-    setDisplayShowSidebar("none");
-    navigate(url);
-  };
-
-  const handleDropdownToggle = (index) => {
-    // If the clicked dropdown is already open, close it
-    setActiveDropdown(activeDropdown === index ? null : index);
-  };
 
   const handleLogout = async () => {
     try {
@@ -66,11 +47,14 @@ const handMobilHbOnclick = () => {
   };
 
   return (
-    <SidebarWrapper displaySidebar={displayShowSidebar} deskDisplaySidebar={deskDisplaySidebar} sidebarWidth={sidebarWidth}>
+
+      <SidebarWrapper isOpen={isOpen}>
       <SidebarHeader>
         <h2>INVENTORY</h2>
-        <HamburgerWrapperi onClick={handDesHbOnclick}><MdOutlineMenuOpen /></HamburgerWrapperi>
-        <HamburgerWrapper onClick={handMobilHbOnclick}><IoMdClose /></HamburgerWrapper>
+        <HamburgerWrapperi onClick={onClose}>
+          <IoMdClose />
+        </HamburgerWrapperi>
+ 
       </SidebarHeader>
       <SidebarBody>
         <SidebarContent>
@@ -84,9 +68,9 @@ const handMobilHbOnclick = () => {
                   title={item.tile}
                   subMenu={item.subMenu}
                   isActive={activeDropdown === i}  // Pass active state to the SidebarItem
-                  handleClick={() => hideSidebar(item.url)}
-                  onToggleDropdown={() => handleDropdownToggle(i)}  // Pass the function to toggle dropdown visibility
-                  setDisplayShowSidebar={setDisplayShowSidebar}
+                  handleClick={() => navigate(item.url)}
+                  onToggleDropdown={() => setActiveDropdown(activeDropdown === i ? null : i)}  // Pass the function to toggle dropdown visibility
+                  setDisplayShowSidebar={()=>setActiveDropdown(null)}
                 />
               ))
             }

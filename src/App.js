@@ -4,7 +4,6 @@ import {
   BrowserRouter as Router,
   Routes,
   Route,
-  Navigate,
   useLocation,
 } from "react-router-dom";
 import { Content, MainContent } from "./pages/admin/home/Home.style";
@@ -67,69 +66,35 @@ import ProtectedRoute from "./components/protected_route/ProtectedRoute";
 import UserHome from "./pages/system_user/home/UserHome";
 import Unauthorized from "./components/unauthorized/Unauthorized";
 import MyCalender from "./pages/MyCalender";
+import DashboardLayout from "./pages/admin/home/DashboardLayout";
+import AddSaleReturn from "./pages/admin/return/sale_return/add/AddSaleReturn";
 
 function App() {
-  const [displayShowSidebar, setDisplayShowSidebar] = useState("none");
-  const [mainContentWidth, setMainContentWidth] = useState("83%");
-  const [showHbg, setShowHbg] = useState("none");
-  const [deskDisplaySidebar, setDeskDisplaySidebar] = useState("flex");
+  const { user } = useContext(UserContext);
+  const location = useLocation();
 
-  const { user } = useContext(UserContext); // Get user and setUser from context
-
-  console.log("=======", user, "========");
-
-  const location = useLocation(); // Get the current location (path)
-
-  // Update mainContentWidth when path is "/"
-  useEffect(() => {
-    if (location.pathname === "/") {
-      setMainContentWidth("100%"); // Set width to 100% when on the homepage
-    } else {
-      setMainContentWidth("83%"); // Set default width to 80%
-    }
-  }, [location.pathname]);
-
-  const showSidebar = () => {
-    setDisplayShowSidebar("flex");
-  };
-
-  const shoDesktopSidebar = () => {
-    setDeskDisplaySidebar("flex");
-    setMainContentWidth("83%");
-    setShowHbg("none");
-  };
+  // ✅ Check if current page is login
+  const isLoginPage = location.pathname === "/";
 
   return (
     <ScrollToTop>
-      <Content>
-        {/* Sidebar */}
-        <HideSidebar>
-          <Siderbar
-            displayShowSidebar={displayShowSidebar}
-            setDisplayShowSidebar={setDisplayShowSidebar}
-            setMainContentWidth={setMainContentWidth}
-            setShowHbg={setShowHbg}
-            deskDisplaySidebar={deskDisplaySidebar}
-            setDeskDisplaySidebar={setDeskDisplaySidebar}
-          />
-        </HideSidebar>
-
-        <MainContent mainContentWidth={mainContentWidth}>
-          {/* Header */}
-          <HiderHeader>
-            <HeaderDashboard
-              showSidebar={showSidebar}
-              showHbg={showHbg}
-              shoDesktopSidebar={shoDesktopSidebar}
-            />
-          </HiderHeader>
-
+      {isLoginPage ? (
+        // ✅ Show only login page, no sidebar/header
+        <Routes>
+          <Route path="/" element={<Login />} />
+        </Routes>
+      ) : (
+        // ✅ Wrap all dashboard pages with layout
+        <DashboardLayout>
+          <Routes>
+            <Route path="/dashboard" element={<DashboardHome />} />
+            {/* Add other protected routes here */}
+          </Routes>
           {/* Routes */}
           <Routes>
             {/* Redirect to Dashboard if logged in */}
             <Route path="/" element={<Login />} />
             <Route path="/dashboard" element={<DashboardHome />} />
-
             {/* // Admin-only route */}
             {/* <Route
               path="/dashboard"
@@ -140,7 +105,6 @@ function App() {
                 />
               }
             /> */}
-
             {/* User-only route */}
             {/* <Route
               path="/user-dashboard"
@@ -151,7 +115,6 @@ function App() {
                 />
               }
             /> */}
-
             {/* Admin and user allowed */}
             {/* <Route
               path="/sales"
@@ -162,10 +125,8 @@ function App() {
                 />
               }
             /> */}
-
             {/* Unauthorized Page */}
             {/* <Route path="/unauthorized" element={<Unauthorized />} /> */}
-
             {/* CATEGORY */}
             <Route path="/categories" element={<CategoryPage />} />
             <Route path="/add-category" element={<AddCategory />} />
@@ -177,7 +138,6 @@ function App() {
               path="/category-detail/:categoryId"
               element={<CategoryDetail />}
             />
-
             {/* PRODUCT */}
             <Route path="/products" element={<ProductPage />} />
             <Route path="/add-product" element={<AddProduct />} />
@@ -191,7 +151,6 @@ function App() {
             <Route path="/add-sale" element={<AddSale />} />
             <Route path="/edit-sale/:saleId" element={<EditSale />} />
             <Route path="/sale-invoice/:saleId" element={<ViewSale />} />
-
             {/* CUSTOMER */}
             <Route path="/customers" element={<CustomerPage />} />
             <Route path="/add-customer" element={<AddCustomer />} />
@@ -222,17 +181,14 @@ function App() {
               path="/edit-supplier/:supplierId"
               element={<EditSupplier />}
             />
-
             {/* PAYMENTS */}
             <Route path="/payments" element={<PaymentPage />} />
             <Route path="/add-payments" element={<AddPayment />} />
             <Route path="/edit-payment/:paymentId" element={<EditPayment />} />
-
             {/* Expenses */}
             <Route path="/expenses" element={<ExpensePage />} />
             <Route path="/add-expense" element={<AddExpenses />} />
             <Route path="/edit-expense/:expenseId" element={<EditExpenses />} />
-
             {/* REPORTS */}
             <Route path="/reports" element={<ReportsPage />} />
             <Route path="/sales-report" element={<SalesReport />} />
@@ -240,22 +196,22 @@ function App() {
             <Route path="/stock-report" element={<StockReport />} />
             <Route path="/expense-report" element={<ExpenseReport />} />
 
+            {/* RETURN/REFUND */}
+            <Route path="/reports" element={<ReportsPage />} />
+            <Route path="/add-sale-return" element={<AddSaleReturn />} />
             {/* TAX */}
             <Route path="/tax" element={<TaxPage />} />
             <Route path="/add-tax" element={<AddTax />} />
             <Route path="/edit-tax/:taxId" element={<EditTax />} />
-
             {/* UNITS */}
             <Route path="/units" element={<UnitsPage />} />
             <Route path="/add-units" element={<AddUnits />} />
             <Route path="/edit-units/:unitId" element={<EditUnits />} />
-
             {/* USERS */}
             <Route path="/users" element={<UserPage />} />
             <Route path="/add-user" element={<AddUser />} />
             <Route path="/edit-user/:userId" element={<EditUser />} />
             <Route path="/users/:userId" element={<UserDetail />} />
-
             {/* COMPANY PROFILE */}
             <Route path="/add-company" element={<AddCompany />} />
             <Route path="/company-profile" element={<CompanyDetail />} />
@@ -266,8 +222,8 @@ function App() {
             <Route path="/edit-company/:companyId" element={<EditCompany />} />
             <Route path="/company-calender" element={<MyCalender />} />
           </Routes>
-        </MainContent>
-      </Content>
+        </DashboardLayout>
+      )}
     </ScrollToTop>
   );
 }

@@ -199,8 +199,8 @@ export default function EditCategory() {
                                 error={catStatusError} 
                                 options={catStatusItems} 
                                 value={catStatus}
-                                label={'Tax Status'}
-                                title={'Tax Status'}
+                                label={'Category Status'}
+                                title={'Category Status'}
                             />
                         </AnyItemContainer>
                        

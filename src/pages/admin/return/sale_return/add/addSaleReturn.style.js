@@ -1,6 +1,6 @@
 import styled from "styled-components";
 
-export const AddSalesWrapper = styled.div`
+export const AddSaleReturnWrapper = styled.div`
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -8,7 +8,7 @@ export const AddSalesWrapper = styled.div`
   padding: 20px;
 `;
 
-export const AddSalesContent = styled.div`
+export const AddSaleReturnContent = styled.div`
   width: 100%;
   display: flex;
   gap: 20px;
@@ -112,13 +112,10 @@ export const TotalChargesWrapper = styled.div`
 `;
 
 export const InnerWrapper = styled.div`
-  background-color: ${({ bgColor }) => bgColor || "rgba(186, 186, 186, 0.07)"};
-  padding: ${({ pd }) => pd || "10px"};
-  width: ${({ wd }) => wd || "45%"};
+  width: 45%;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 12px;
 
   @media (max-width: 768px) {
     width: 100%;

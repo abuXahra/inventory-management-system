@@ -224,8 +224,8 @@ export default function ProductDetail() {
           <ItemContainer title={'Total Sale'}> 
               <AnyItemContainer>
                        <InnerWrapper wd={'100%'}>
-                          <span><h2 style={{color:"green"}}><b>Total  Sale</b></h2></span>
-                          <span><h2 style={{color:"green"}}><span dangerouslySetInnerHTML={{ __html: companyData.currencySymbol }}/>{(prodData?.saleQuantity) + (prodData?.salePrice)}</h2></span>
+                          <span><b style={{color:"green"}}>Sale</b></span>
+                          <span><b style={{color:"green"}}><span dangerouslySetInnerHTML={{ __html: companyData.currencySymbol }}/>{(prodData?.saleQuantity) + (prodData?.salePrice)}</b></span>
                        </InnerWrapper>
                   </AnyItemContainer> 
                 </ItemContainer>

@@ -57,17 +57,12 @@ const CategoryTable = ({data, onDeleteCat}) => {
 
   const columns = [
 
-    {
-      name: 'S/N',
-      selector: (row, i) => i + 1,
-      width: '100px',
-      center: true,
-    },
     // {
-    //     name: 'Code',
-    //     selector: (row) => row.code,
-    //     sortable: true,
-    //   },
+    //   name: 'S/N',
+    //   selector: (row, i) => i + 1,
+    //   width: '100px',
+    //   center: true,
+    // },
      {
           name: 'Photo',
           selector: (row) => <img
@@ -83,7 +78,12 @@ const CategoryTable = ({data, onDeleteCat}) => {
           // cell: (row) => <img src={`${process.env.REACT_APP_URL}/images/${row.imgUrl}` || pix} alt={row.name} style={{ width: '20px', borderRadius: '100%', height: '20px', objectFit: 'cover' }} />,
           width: '100px',
         },
-
+    {
+        name: 'Code',
+        selector: (row) => row.code,
+        sortable: true,
+        width: '100px', // Set a different width
+      },
     {
         name: 'Name',
         selector: (row) => row.title,

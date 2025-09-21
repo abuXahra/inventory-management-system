@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import PageTitle from '../../../../components/page_title/PageTitle'
 import ItemContainer from '../../../../components/item_container/ItemContainer'
 import Input from '../../../../components/input/Input'
@@ -43,6 +43,33 @@ export default function AddCustomer() {
 // address
     const [address, setAddress] = useState('')
     const [addressError, setAddressError] = useState(false);
+
+    // Fetch customer initial
+        const [customerInitial, setCustomerInitial] = useState('')
+        useEffect(()=>{
+          const fetchAllCompany = async() =>{
+            // setIsLoading(true)
+              try {
+                  const res = await axios.get(`${process.env.REACT_APP_URL}/api/company`);
+                                  
+                  const prefix = res.data[0].prefixes?.[0];
+    
+                    
+                  if (prefix) {
+                      setCustomerInitial(prefix.customer);
+                  }
+    
+                //   setIsLoading(false);
+              } catch (error) {
+                  console.log(error);
+                  setIsLoading(false);
+              }
+        
+          }
+          fetchAllCompany();
+        },[])
+
+
 
     const handleChange = (type, e) =>{
         if(type === 'name'){
@@ -90,7 +117,6 @@ export default function AddCustomer() {
         }
         if(isValid){
             setIsLoading(true)
- 
 
             const newCustomer ={
                     name: name,
@@ -98,6 +124,7 @@ export default function AddCustomer() {
                     phoneNumber: phone,
                     taxNumber: tax,
                     address: address,
+                    prefix: customerInitial,
                     userId: user._id,
                             // imgUrl
             }
@@ -120,7 +147,7 @@ export default function AddCustomer() {
             
                         setIsLoading(true)
                         try {
-                            const res = await axios.post(`http://localhost:5000/api/customers/register`, newCustomer)
+                            const res = await axios.post(`${process.env.REACT_APP_URL}/api/customers/register`, newCustomer)
                             console.log(res.data);
                             setIsLoading(false);
                            

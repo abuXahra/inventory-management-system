@@ -2,26 +2,33 @@ import styled from "styled-components";
 
 
 export const Content = styled.div`
-    width: 100%;
+    /* width: 100%;
     display: flex;
     height: auto;
+    position: relative; */
+    width: 100%;
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
     position: relative;
+    background: #f9fafc;
 `
 
-export const ContentSidebar = styled.div`
-    position: fixed;
-`
+// export const ContentSidebar = styled.div`
+//     position: fixed;
+// `
 
 export const MainContent = styled.div`
-    width: ${({mainContentWidth})=> mainContentWidth || '83%'};
-    height: auto;
-    position: absolute;
-    top: 0px;
-    right: 0px;
-    
+    flex: 1;
+    height: 100vh;
+    overflow-y: auto;
+    background: #f9fafc;
+    transition: all 0.3s ease;
+    margin-left: ${({ sidebarOpen }) => (sidebarOpen ? "200px" : "0")};
+
 
     @media (max-width: 768px) {
-        width:  100%;
+    margin-left: 0;
     }
 `
 

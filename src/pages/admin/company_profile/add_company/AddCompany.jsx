@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import PageTitle from '../../../../components/page_title/PageTitle'
 import ItemContainer from '../../../../components/item_container/ItemContainer'
 import Input from '../../../../components/input/Input'
@@ -15,6 +15,8 @@ import { AddCompanyContent, AddCompanyWrapper, ImageWrapper, InputPicture, NameA
 import axios from 'axios'
 import { toast } from 'react-toastify'
 import ToastComponents from '../../../../components/toast_message/toast_component/ToastComponents'
+import { UserContext } from '../../../../components/context/UserContext'
+
 
 export default function AddCompany() {
 
@@ -22,7 +24,7 @@ export default function AddCompany() {
     const navigate = useNavigate();
 
     const [isLoading, setIsLoading] = useState(false);
-
+    const {user} = useContext(UserContext)
     const currencyItems =  [
         {
             title: 'select',
@@ -122,7 +124,14 @@ export default function AddCompany() {
         const [expenseInitial, setExpenseInitial] = useState('EX')
         const [expenseInitialError, setExpenseInitialError] = useState(false);
              
-    
+               // saleReturn initial require
+        const [saleReturnInitial, setSaleReturnInitial] = useState('SR')
+        const [saleReturnInitialError, setSaleReturnInitialError] = useState(false);
+             
+                   // purchaseReturn initial require
+        const [purchaseReturnInitial, setPurchaseReturnInitial] = useState('RP')
+        const [purchaseReturnInitialError, setPurchaseReturnInitialError] = useState(false);
+             
 
 
     const handleChange = (type, e) =>{
@@ -182,6 +191,12 @@ export default function AddCompany() {
         }else if(type === 'expenseInitial'){
             setExpenseInitial(e.target.value);
             setExpenseInitialError(false);
+        }else if(type === 'saleReturnInitial'){
+            setSaleReturnInitial(e.target.value);
+            setSaleReturnInitialError(false);
+        }else if(type === 'purchaseReturnInitial'){
+            setPurchaseReturnInitial(e.target.value);
+            setPurchaseReturnInitialError(false);
         }
     }
 
@@ -279,6 +294,17 @@ export default function AddCompany() {
         setExpenseInitialError(true);
             isValid = false;
         }  
+
+     if(!saleReturnInitial){
+            setSaleReturnInitialError(true);
+            isValid = false;
+        }
+
+
+      if(!purchaseReturnInitial){
+        setPurchaseReturnInitialError(true);
+            isValid = false;
+        }  
         
         
         if(isValid){
@@ -302,7 +328,9 @@ export default function AddCompany() {
                 customer: customerInitial,
                 sale: saleInitial,
                 expense: expenseInitial,
-                userId: '',
+                saleReturn: saleReturnInitial,
+                purchaseReturn: purchaseReturnInitial,            
+                userId: user._id,
 
                        }
                        
@@ -606,6 +634,24 @@ export default function AddCompany() {
                                 error={expenseInitialError} 
                                 type={'text'} 
                                 label={'Expense'}
+                                requiredSymbol={'*'}
+                            />  
+                            <Input 
+                                value={saleReturnInitial} 
+                                title={'Sale Return'}
+                                onChange={(e)=>handleChange('saleReturnInitial', e)} 
+                                error={saleReturnInitialError} 
+                                type={'text'} 
+                                label={'Sale Return'}
+                                requiredSymbol={'*'}
+                            />  
+                             <Input 
+                                value={purchaseReturnInitial} 
+                                title={'Purchase Return'}
+                                onChange={(e)=>handleChange('purchaseReturnInitial', e)} 
+                                error={purchaseReturnInitialError} 
+                                type={'text'} 
+                                label={'Purchase Return'}
                                 requiredSymbol={'*'}
                             />  
                         </AnyItemContainer>

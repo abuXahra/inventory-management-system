@@ -83,13 +83,6 @@ export default function CustomerDetail() {
                   {isLoading?
                     <List/> :
           <CustomerDetailContent>
-            
-            <CustomerDetailPicture>
-              <ItemContainer title={'Profile Picture'}> 
-                <PictureWrapper imgUrl={cusData?.imgUrl ? `${process.env.REACT_APP_URL}/images/${cusData?.imgUrl}` : profilePicture}></PictureWrapper>        
-                {/* <img src={profilePicture} alt="" srcset="" /> */}
-              </ItemContainer>
-            </CustomerDetailPicture>
             <CustomerDetailData>
               <ItemContainer title={'Customer Detail'}> 
               <AnyItemContainer gap="60px">
@@ -144,6 +137,13 @@ export default function CustomerDetail() {
                               </AnyItemContainer>
                             </ItemContainer>
             </CustomerDetailData>
+
+            <CustomerDetailPicture>
+              <ItemContainer title={'Profile Picture'}> 
+                <PictureWrapper imgUrl={cusData?.imgUrl ? `${process.env.REACT_APP_URL}/images/${cusData?.imgUrl}` : profilePicture}></PictureWrapper>        
+                {/* <img src={profilePicture} alt="" srcset="" /> */}
+              </ItemContainer>
+            </CustomerDetailPicture>
           </CustomerDetailContent> 
     }</>
 

@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import PageTitle from '../../../../components/page_title/PageTitle'
 import ItemContainer from '../../../../components/item_container/ItemContainer'
 import Input from '../../../../components/input/Input'
@@ -58,6 +58,34 @@ const catStatusItems =  [
     const [note, setNote] = useState('')
     const [noteError, setNoteError] = useState(false);
 
+
+    // Fetch category initial
+            const [categoryInitial, setCategoryInitial] = useState('')
+            useEffect(()=>{
+              const fetchAllCompany = async() =>{
+                // setIsLoading(true)
+                  try {
+                      const res = await axios.get(`${process.env.REACT_APP_URL}/api/company`);
+                                      
+                      const prefix = res.data[0].prefixes?.[0];
+        
+                        
+                      if (prefix) {
+                          setCategoryInitial(prefix.category);
+                      }
+        
+                    //   setIsLoading(false);
+                  } catch (error) {
+                      console.log(error);
+                      setIsLoading(false);
+                  }
+            
+              }
+              fetchAllCompany();
+            },[])
+    
+
+
     const handleChange = (type, e) =>{
         if(type === 'title'){
             setTitle(e.target.value);
@@ -91,6 +119,7 @@ const catStatusItems =  [
                             title: title,
                             status: catStatus,
                             note: note,
+                            prefix: categoryInitial,
                             userId: user._id,
                         }
                         
@@ -163,8 +192,8 @@ const catStatusItems =  [
                                 error={catStatusError} 
                                 options={catStatusItems} 
                                 value={catStatus}
-                                label={'Tax Status'}
-                                title={'Tax Status'}
+                                label={'Category Status'}
+                                title={'Category Status'}
                             />
 
                         </AnyItemContainer>

@@ -15,37 +15,37 @@ export const customStyles={
         fontWeight: 'bold',
         fontSize: '12px', // Adjust font size if needed
         textAlign: 'center', // Align text in the header cells
-        height: "20px",
+        height: "40px",
       }
     },
     headCells: {
       style: {
         whiteSpace: 'normal', // Allow multi-line headers if needed
-        fontSize: "10px",
+        fontSize: "12px",
         wordWrap: 'break-word', // Ensure long text wraps within the cell
         fontWeight: 'bold',
-        paddingBottom: "0px", // Set padding for header row to 0
+        paddingBottom: "4px", // Set padding for header row to 0
         paddingLeft: "20px",    // Set padding for header row to 0
         paddingRight: "0px",   // Set padding for header row to 0
-        paddingTop: "0px",    // Set padding for header row to 0
+        paddingTop: "4px",    // Set padding for header row to 0
         backgroundColor: '#cccccc47',
-        height: "20px",
+        height: "40px",
       },
     },
     cells: {
       style: {
-        paddingBottom: "2px",
+        paddingBottom: "4px",
         paddingLeft: "20px",
         paddingRight: "2px",
-        paddingTop: "2px",// Reduce padding for cells
+        paddingTop: "4px",// Reduce padding for cells
         wordWrap: 'break-word', // Ensure long text wraps within the cell
         whiteSpace: 'normal', // Allow text to wrap inside cells
       },
     },
     rows: {
       style: {
-        fontSize: '10px', // Smaller font size for rows
-        minHeight: "20px",
+        fontSize: '12px', // Smaller font size for rows
+        minHeight: "30px",
       },
     },
 

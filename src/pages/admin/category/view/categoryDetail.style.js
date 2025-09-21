@@ -9,10 +9,11 @@ export const CategoryDetailWrapper = styled.div`
 `;
 
 export const CategoryDetailContent = styled.div`
+  padding: 10px;
   width: 100%;
   display: flex;
   border: 1px solid #cccccc;
-  gap: 20px;
+  gap: 5px;
   background-color: white;
 
   @media (max-width: 768px) {
