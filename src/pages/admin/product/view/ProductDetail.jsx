@@ -205,7 +205,7 @@ export default function ProductDetail() {
                           <span>{prodData?.purchaseQuantity - prodData?.saleQuantity}</span>
                        </InnerWrapper>
                   </AnyItemContainer> 
-                  <AnyItemContainer>
+                 <AnyItemContainer>
                        <InnerWrapper wd={'100%'}>
                           <span><b>Quantity Sold</b></span>
                           <span>{prodData?.saleQuantity}</span>
