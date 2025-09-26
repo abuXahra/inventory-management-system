@@ -47,4 +47,5 @@ export const QuickLinkItems = styled.span`
   border-radius: 5px;
   border: 1px solid grey;
   cursor: pointer;
+  text-align: center;
 `;

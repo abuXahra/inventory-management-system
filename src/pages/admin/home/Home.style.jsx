@@ -126,6 +126,12 @@ export const TopCard = styled.div`
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
+    transition: all 200ms ease-in-out;
+    transform: scale(1) translateY(0);
+
+    &:hover {
+        transform: scale(1.05) translateY(-4px);
+    }
 
     @media (max-width: 768px) {
        width: 47%;
@@ -137,6 +143,25 @@ export const TopCard = styled.div`
 export const TopCardIcon = styled.div`
         position: absolute;
         top:10px;
+        right: 20px;
+        font-size: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 5px;
+        /* background-color: #00032a; */
+        /* height: 45px;
+        width: 45px; */
+        color: #ffffff5d;
+        border-radius: 5px;
+        img{
+            height: 30px;
+    }
+`
+
+export const TopCardIconB = styled.div`
+        position: absolute;
+        bottom:10px;
         right: 20px;
         font-size: 40px;
         display: flex;

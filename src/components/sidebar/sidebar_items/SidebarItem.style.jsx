@@ -15,7 +15,7 @@ export const SidebarItemContainer = styled.div`
     position: relative;
     
     span:nth-child(1){
-        font-size: 18px;
+        font-size: 14px;
     }
 
     &:hover{

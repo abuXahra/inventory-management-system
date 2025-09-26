@@ -106,9 +106,10 @@ export const HrStyled = styled.div`
 `;
 
 export const TotalChargesWrapper = styled.div`
+  padding: 10px;
   width: 100%;
   flex-direction: column;
-  gap: 10px;
+  gap: 20px;
 `;
 
 export const InnerWrapper = styled.div`

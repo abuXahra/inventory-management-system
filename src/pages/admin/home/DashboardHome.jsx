@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { AuthorContainer, ChartContainer, ChartContent, ChartWrapper, Container, CustomerListContent, CustomerListWrapper, DateTimeWrapper, GreetingCard, GreetingWrapper, HomeWrapper, PostItems, PostItemWrapper, ProductContainer, ProfileDp, RecentPostWrapper, SpaceBtnContainer, TopCard, TopCardContent, TopCardContentWrapper, TopCardIcon, TotalPostContainer, UserContainer, UserWrapper } from './Home.style'
+import { AuthorContainer, ChartContainer, ChartContent, ChartWrapper, Container, CustomerListContent, CustomerListWrapper, DateTimeWrapper, GreetingCard, GreetingWrapper, HomeWrapper, PostItems, PostItemWrapper, ProductContainer, ProfileDp, RecentPostWrapper, SpaceBtnContainer, TopCard, TopCardContent, TopCardContentWrapper, TopCardIcon, TopCardIconB, TotalPostContainer, UserContainer, UserWrapper } from './Home.style'
 import {MdOutlineAdd, MdOutlineDateRange} from 'react-icons/md'
 import { useNavigate } from 'react-router-dom'
 import { TopCardItemList } from '../../../data/TopcardItems'
@@ -9,6 +9,8 @@ import AlertContent from '../../../components/table/alert_content_table/AlertCon
 import HomePurchaseList from '../../../components/table/purchase_table/home_purchase_list/HomePurchaseList'
 import HomeSaleList from '../../../components/table/sale_table/home_salelist/HomeSaleList'
 import { UserContext } from '../../../components/context/UserContext'
+import { ArrowWrapper, ItemDetails } from '../reports/reportsPage.style'
+import { FaLongArrowAltRight } from 'react-icons/fa'
 
 
 
@@ -75,8 +77,9 @@ const {user} = useContext(UserContext);
         {/* <video src={flightVide} autoPlay loop muted></video> */}
         <GreetingWrapper>
           <GreetingCard>
-            <h1>Welcome back</h1>
-            <h5>{user.role}</h5>
+            {user && <h1>Welcome</h1>}         
+            <h4 style={{textTransform: "capitalize"}}>{user && user?.username}</h4>
+            <span style={{textTransform: "capitalize"}}>{user && user?.role}</span>
           </GreetingCard>
 
           <DateTimeWrapper>
@@ -98,6 +101,11 @@ const {user} = useContext(UserContext);
                           </TopCardIcon>
                           <h2>{item.count}</h2>
                           <p>{item.title}</p>
+                      <ItemDetails onClick={()=> navigate(`${item.url}`)}>
+                          <ArrowWrapper>
+                              <FaLongArrowAltRight/>
+                          </ArrowWrapper>
+                      </ItemDetails>
                       </TopCard>
               ))
             }

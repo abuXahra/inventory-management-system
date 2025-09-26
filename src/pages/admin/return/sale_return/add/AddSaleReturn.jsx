@@ -121,6 +121,9 @@ const [allSales, setAllSales] = useState([]); // all sales
 const [sale, setSale] = useState('');
 const [showReturnComponents, setShowReturnComponents] = useState(false);
 
+// Refund 
+const [refundTotal, setRefundTotal] = useState('')
+const [refundQuantity, setRefundQuantity] = useState('')
 
 // onchange handler
 const handleChange = (type, e)=>{
@@ -436,7 +439,7 @@ useEffect(() => {
         // assuming sale code is stored as s.code (adjust if different)
         if (match) {
             setSale(match);
-                
+ 
              const formattedSaleDate = new Date(match.saleDate).toISOString().split('T')[0];
                      setSaleDate(formattedSaleDate);
                      setCustomer(match.customer.name) 
@@ -454,9 +457,16 @@ useEffect(() => {
                      setDiscount(match.discount)
                      setDiscountValue(match.discountValue)
                      setShipping(match.shipping)
-                     setItemList(match.saleItems)
 
-                    setItemList(match.saleItems)
+                    const itemsWithOriginal = match.saleItems.map((item) => ({
+                        ...item,
+                        originalQty: item.quantity,
+                        }));
+                        setItemList(itemsWithOriginal);
+                    
+                                    
+                     //  setItemList(match.saleItems)
+
                     setCustomerId(match.customer._id)
                     setShowReturnComponents(true)
                     console.log("Matched sale:", match);
@@ -561,105 +571,219 @@ const addToList = (e) =>{
         setItemList(updatedList)
       }
 
+    //   delete refund items
+const deleteRefundItem = (index) => {
+  setItemSaleReturnList((prevReturns) => {
+    const deletedItem = prevReturns[index]; // item being deleted
+  
+    const updatedReturns = prevReturns.filter((_, i) => i !== index);
 
-// increment or decreement product quantity  in the list
- const updateQuantity = (index, delta) => {
-  setItemList((prevList) => {
-    return prevList.map((item, i) => {
-      if (i === index) {
-        const newQty = Math.max(1, parseInt(item.quantity) + delta); // ensures qty doesn't go below 1
-        const price = parseFloat(item.price) || 0;
-        const taxRate = parseFloat(item.tax) || 0;
+    // restore quantity back to itemList
+    setItemList((prevItems) =>
+      prevItems.map((item) => {
+        if (item.productId === deletedItem.productId) {
+          const restoredQty = parseInt(item.quantity) + parseInt(deletedItem.quantity);
 
-        const taxAmountPerUnit = price * (taxRate / 100);
-        const unitCost = price + taxAmountPerUnit;
-        const totalTaxAmount = taxAmountPerUnit * newQty;
-        const totalAmount = unitCost * newQty;
+          const price = parseFloat(item.price) || 0;
+          const taxRate = parseFloat(item.tax) || 0;
 
-        return {
-          ...item,
-          quantity: newQty,
-          taxAmount: totalTaxAmount.toFixed(2),
-          unitCost: unitCost.toFixed(2),
-          amount: totalAmount.toFixed(2),
-        };
-      }
-      return item;
-    });
+          const taxAmountPerUnit = price * (taxRate / 100);
+          const unitCost = price + taxAmountPerUnit;
+          const totalTaxAmount = taxAmountPerUnit * restoredQty;
+          const totalAmount = unitCost * restoredQty;
+
+          return {
+            ...item,
+            quantity: restoredQty,
+            taxAmount: totalTaxAmount.toFixed(2),
+            unitCost: unitCost.toFixed(2),
+            amount: totalAmount.toFixed(2),
+          };
+        }
+        return item;
+      })
+    );
+
+        // recalc totals
+    const totalQty = updatedReturns.reduce(
+      (sum, r) => sum + parseFloat(r.quantity || 0),
+      0
+    );
+    const total = updatedReturns.reduce(
+      (sum, r) => sum + parseFloat(r.amount || 0),
+      0
+    );
+
+    setRefundQuantity(totalQty);
+    setRefundTotal(total.toFixed(2));
+    setReturnAmount(total.toFixed(2))
+
+    return updatedReturns;
   });
 };
 
 
 
-//submit handler
-const hanldeSumbit = async (e) =>{
+// increment or decrement product quantity in the list
+  const updateQuantity = (index, delta) => {
+            
+     setItemList((prevList) => {
+      return prevList.map((item, i) => {
+        if (i === index) {
+          const oldQty = parseInt(item.quantity);
+          const newQty = Math.max(1, oldQty + delta); // ensures qty doesn't go below 1
+          const diff = newQty - oldQty; // positive if increment, negative if decrement
 
-    e.preventDefault();
+          const price = parseFloat(item.price) || 0;
+          const taxRate = parseFloat(item.tax) || 0;
 
-    let isValid = true;
+          const taxAmountPerUnit = price * (taxRate / 100);
+          const unitCost = price + taxAmountPerUnit;
+          const totalTaxAmount = taxAmountPerUnit * newQty;
+          const totalAmount = unitCost * newQty;
 
-    if(!saleDate){
-        setSaleDateError(true)
-        isValid = false;
-    }
+          // Handle return list update
+          setItemSaleReturnList((prevReturns) => {
+            const existing = prevReturns.find((r) => r.productId === item.productId);
+            let updatedReturns = [...prevReturns];
 
-    if(!customer){
-        setCustomerNameError(true)
-        isValid = false;
-    }
+            if (diff < 0) {
+              // Decrement → add to return list
+              const reducedQty = Math.abs(diff);
+              if (existing) {
+                updatedReturns = updatedReturns.map((r) =>
+                  r.productId === item.productId
+                    ? {
+                        ...r,
+                        quantity: r.quantity + reducedQty,
+                        amount: (unitCost * (r.quantity + reducedQty)).toFixed(2),
+                        unitCost: unitCost.toFixed(2),
+                        taxAmount: (taxAmountPerUnit * (r.quantity + reducedQty)).toFixed(2),
+                      }
+                    : r
+                );
+              } else {
+                updatedReturns.push({
+                  ...item,
+                  quantity: reducedQty,
+                  amount: (unitCost * reducedQty).toFixed(2),
+                  unitCost: unitCost.toFixed(2),
+                  taxAmount: (taxAmountPerUnit * reducedQty).toFixed(2),
+                });
+              }
+            } else if (diff > 0 && existing) {
+              // Increment → remove from return list
+              const newReturnQty = existing.quantity - diff;
+              if (newReturnQty > 0) {
+                updatedReturns = updatedReturns.map((r) =>
+                  r.productId === item.productId
+                    ? {
+                        ...r,
+                        quantity: newReturnQty,
+                        amount: (unitCost * newReturnQty).toFixed(2),
+                        unitCost: unitCost.toFixed(2),
+                        taxAmount: (taxAmountPerUnit * newReturnQty).toFixed(2),
+                      }
+                    : r
+                );
+              } else {
+                updatedReturns = updatedReturns.filter((r) => r.productId !== item.productId);
+              }
+            }
+            
+            // ✅ update totals AFTER updating the return list
+            const totalQty = updatedReturns.reduce(
+              (sum, r) => sum + parseFloat(r.quantity || 0),
+              0
+            );
+            const total = updatedReturns.reduce(
+              (sum, r) => sum + parseFloat(r.amount || 0),
+              0
+            );
+            setRefundQuantity(totalQty);
+            setRefundTotal(total.toFixed(2));
+            setReturnAmount(total.toFixed(2))
 
-     if(!invoiceNo){
-        setInvoiceNoError(true)
-        isValid = false;
-     }
+            return updatedReturns;
+          });
 
-    if(!saleStatus){
-        setSaleStatusError(true)
-        isValid = false;
-    }
+          // Update the itemList entry
+          return {
+            ...item,
+            quantity: newQty,
+            taxAmount: totalTaxAmount.toFixed(2),
+            unitCost: unitCost.toFixed(2),
+            amount: totalAmount.toFixed(2),
+          };
+        }
+        return item;
+      });
+    });
+  };
 
-    if(!saleAmount){
-        setSaleAmountError(true)
-        isValid = false;
-    }
-    if(!returnDate){
-        setReturnDateError(true)
-        isValid = false;
-    }
-        if(!returnAmount){
-        setReturnAmountError(true)
-        isValid = false;
-    }
-    
-        if(!reason){
-        setReasonError(true)
-        isValid = false;
-    }
-    if(!paymentType){
-        setPaymentTypeError(true)
-        isValid = false;
-    }
-    if(!paymentStatus){
-        setPaymentStatusError(true)
-        isValid = false;
-    }
-     
- if (paymentStatus === 'partial') {
-  if (!amountPaid || parseFloat(amountPaid) <= 0) {
-    setAmountPaidError(true);
+
+// submit handler
+const hanldeSumbit = async (e) => {
+  e.preventDefault();
+
+  let isValid = true;
+
+  if (!saleDate) {
+    setSaleDateError(true);
     isValid = false;
   }
-}
-    
-    if(isValid){
-      
-        // add new return sale
-      const newSaleReturn = {
-      returnDate: new Date(returnDate).toISOString(), 
+  if (!customer) {
+    setCustomerNameError(true);
+    isValid = false;
+  }
+  if (!invoiceNo) {
+    setInvoiceNoError(true);
+    isValid = false;
+  }
+  if (!saleStatus) {
+    setSaleStatusError(true);
+    isValid = false;
+  }
+  if (!saleAmount) {
+    setSaleAmountError(true);
+    isValid = false;
+  }
+  if (!returnDate) {
+    setReturnDateError(true);
+    isValid = false;
+  }
+  if (!returnAmount) {
+    setReturnAmountError(true);
+    isValid = false;
+  }
+  if (!reason) {
+    setReasonError(true);
+    isValid = false;
+  }
+  if (!paymentType) {
+    setPaymentTypeError(true);
+    isValid = false;
+  }
+  if (!paymentStatus) {
+    setPaymentStatusError(true);
+    isValid = false;
+  }
+
+  if (paymentStatus === "partial") {
+    if (!amountPaid || parseFloat(amountPaid) <= 0) {
+      setAmountPaidError(true);
+      isValid = false;
+    }
+  }
+
+  if (isValid) {
+    // 1️⃣ Sale return payload
+    const newSaleReturn = {
+      returnDate: new Date(returnDate).toISOString(),
       saleId: sale?._id,
       customer: customerId || customer,
       returnAmount: Number(returnAmount),
-      reason, 
+      reason,
       paymentStatus,
       paymentType,
       amountPaid: Number(amountPaid),
@@ -671,21 +795,23 @@ const hanldeSumbit = async (e) =>{
       shipping: Number(shipping),
       returnItems:
         itemSaleReturnList.length > 0
-            ? itemSaleReturnList.map((item) => ({
-                productId: item.productId,
-                title: item.title,
-                quantity: Number(item.quantity),
-                price: Number(item.price),
-                unitCost: Number(item.unitCost),
-                amount: Number(item.amount),
+          ? itemSaleReturnList.map((item) => ({
+              productId: item.productId,
+              title: item.title,
+              quantity: Number(item.quantity),
+              price: Number(item.price),
+              tax: Number(item.tax),
+              taxAmount: Number(item.taxAmount),
+              unitCost: Number(item.unitCost),
+              amount: Number(item.amount),
             }))
-            : [],
+          : [],
       prefix: prefix,
-      userId: user?._id
+      userId: user?._id,
     };
 
-
-  const updateSale = {
+    // 2️⃣ Updated sale payload
+    const updateSale = {
       saleDate: new Date(saleDate),
       customer: customerId || customer?._id,
       saleStatus,
@@ -703,54 +829,37 @@ const hanldeSumbit = async (e) =>{
       shipping: Number(shipping),
       saleItems:
         itemList.length > 0
-            ? itemList.map((item) => ({
-                productId: item.productId,
-                title: item.title,
-                quantity: Number(item.quantity),
-                price: Number(item.price),
-                tax: Number(item.tax),
-                taxAmount: Number(item.taxAmount),
-                unitCost: Number(item.unitCost),
-                amount: Number(item.amount),
+          ? itemList.map((item) => ({
+              productId: item.productId,
+              title: item.title,
+              quantity: Number(item.quantity),
+              price: Number(item.price),
+              tax: Number(item.tax),
+              taxAmount: Number(item.taxAmount),
+              unitCost: Number(item.unitCost),
+              amount: Number(item.amount),
             }))
-            : [],
+          : [],
       prefix: prefix,
-      userId: user?._id
+      userId: user?._id,
     };
 
-      setIsBtnLoading(true);
-      console.log('======new sale data==========\n', newSaleReturn)
-            // alert('form validated triggered')
-            try {
-          
-              const res = await axios.post(`${process.env.REACT_APP_URL}/api/saleReturn/create`, newSaleReturn);
+    setIsBtnLoading(true);
+    try {
+      // Call both APIs
+      await axios.post(`${process.env.REACT_APP_URL}/api/saleReturn/create`, newSaleReturn);
+      await axios.put(`${process.env.REACT_APP_URL}/api/sale/${sale._id}`, updateSale);
 
-              console.log(res.data)
-              navigate(`/`);
-              
-              
-                // toast success message
-                 toast.success('Sale added Successfully')
-                   setIsBtnLoading(false);
-                } catch (err) {
-                console.error(err);
-                setIsBtnLoading(false);
-            }
-
-            try {
-                          const res = await axios.put(`${process.env.REACT_APP_URL}/api/sale/${sale._id}`, updateSale);
-            
-                            // toast success message
-                             toast.success('Sale added Successfully')
-                               setIsBtnLoading(false);
-                            } catch (err) {
-                            console.error(err);
-                            setIsBtnLoading(false);
-                        }
-
-
+      toast.success("Sale return processed & sale updated successfully!");
+      setIsBtnLoading(false);
+      navigate(`/sale-return`);
+    } catch (err) {
+      console.error(err);
+      toast.error("Something went wrong while processing return!");
+      setIsBtnLoading(false);
     }
-}
+  }
+};
 
   return (
     <AddSaleReturnWrapper>
@@ -780,7 +889,7 @@ const hanldeSumbit = async (e) =>{
                             <Button
                                 btnText={isLoadingInvoice ? <ButtonLoader text={'Searching...'} /> : 'Search Invoice'}
                                 btnFontSize={'12px'}
-                                btnColor={'green'}
+                                btnColor={'orange'}
                                 btnTxtClr={'white'}
                                 btnAlign={'flex-end'}
                                 btnOnClick={handleCheckInvoice}                               
@@ -789,139 +898,7 @@ const hanldeSumbit = async (e) =>{
                     </ItemContainer>  
                 </SelectItemContent>
 
-            {/* SelectItem */}
-          {showReturnComponents &&  <SelectItemContent>
-                    <form>
-                    <ItemContainer title={'Select Items'}> 
-                        <AnyItemContainer flxDirection="column">
-                             <Input 
-                                value={searchTitle} 
-                                title={'Search name'}
-                                onChange={(e)=>handleChange('searchTitle', e)} 
-                                error={searchTitleError} 
-                                type={'text'} 
-                                label={'Barcode/Item Code/name'} 
-                                placeholder={'search...'}
-                                requiredSymbol={'*'}
-                            />  
-                           { showDropdwon && 
-                          
-                            <DropdownWrapper>
-                                 {/* {
-                                 products && products.map((data, i)=>(
-                                    <DropdownItems key={i} onClick={()=>dropdownHandler(data)}>{data.title}</DropdownItems>
-                                 ))}   */}
-                        {products &&
-                        products
-                            .filter((product) => {
-                            const search = searchTitle.toLowerCase();
-                            return (
-                                product.title.toLowerCase().includes(search) ||
-                                product.barcode?.toLowerCase().includes(search)
-                            );
-                            })
-                            // .slice(0, 10)
-                            .map((data, i) => (
-                            <DropdownItems key={i} onClick={() => dropdownHandler(data)}>
-                                {data.title}
-                            </DropdownItems>
-                            ))}
-                        </DropdownWrapper>
-                        
-                        }
-                        </AnyItemContainer>
-                        <AnyItemContainer>
-                            <Input 
-                                value={title} 
-                                title={'Item Name'}
-                                onChange={(e)=>handleChange('title', e)} 
-                                error={titleError} 
-                                type={'text'} 
-                                label={'Name'} 
-                                requiredSymbol={'*'}
-                            /> 
-                             <Input 
-                                value={quantity} 
-                                title={'Quantity'}
-                                onChange={(e)=>handleChange('quantity', e)} 
-                                error={quantityError} 
-                                type={'text'} 
-                                label={'Quantity'} 
-                                requiredSymbol={'*'}
-                            />                  
-                            
-                            <Input 
-                                value={price} 
-                                title={'Price'}
-                                onChange={()=>{}} 
-                                error={priceError} 
-                                type={'text'} 
-                                label={'Price'} 
-                                requiredSymbol={'*'}
-                                readOnly
-                                inputBg='#c4c4c449'
-                            />                  
-                            
-                            <SelectInput 
-                                options={TaxItem} 
-                                label={'Tax(%)'}
-                                value={tax}
-                                error={taxError}
-                                requiredSymbol={'*'}
-                                title={'Tax'}
-                                readOnly 
-                                onChange={(e)=>handleChange('tax', e)}
-                            />
-
-                            <Input 
-                                value={taxAmount} 
-                                title={'Tax Amount'}
-                                onChange={()=>{}} 
-                                error={taxAmountError} 
-                                type={'number'} 
-                                label={'Tax Amount'} 
-                                requiredSymbol={'*'}
-                                readOnly 
-                                inputBg='#c4c4c449'
-                            /> 
-                            <Input 
-                                value={unitCost} 
-                                title={'Unit Cost'}
-                                onChange={()=>{}} 
-                                type={'number'} 
-                                label={'Unit Cost'} 
-                                requiredSymbol={'*'}
-                                readOnly 
-                                inputBg='#c4c4c449'
-                            /> 
-                            <Input 
-                                value={amount} 
-                                title={'Amount'}
-                                onChange={()=>{}} 
-                                type={'number'} 
-                                label={'Amount'} 
-                                requiredSymbol={'*'}
-                                readOnly 
-                                inputBg='#c4c4c449'
-                            /> 
-                        </AnyItemContainer>    
-                            
-                    
-                        <ItemButtonWrapper btnAlign={'flex-end'}>
-                            <Button
-                                title={'Select Items'}
-                                btnText={'Add to list'}
-                                btnFontSize={'12px'}
-                                btnColor={'orange'}
-                                btnTxtClr={'white'}
-                                btnAlign={'flex-end'}
-                                btnOnClick={addToList}                               
-                            />
-                        </ItemButtonWrapper>
-                    </ItemContainer>              
-                        </form>
-                </SelectItemContent>}
-  
+            {/*removed SelectItem component*/}
                    
             {/* ItemList */}
           {showReturnComponents &&
@@ -929,6 +906,8 @@ const hanldeSumbit = async (e) =>{
                 <ItemContainer title={'Item List'}>
                 <TableResponsiveWrapper>
                {itemList.length > 0 ?
+               <>
+               <h3 style={{textAlign: "center"}}>Sale Items</h3> 
                 <TableStyled>
                     <thead>
                         <TdStyled><b>#</b></TdStyled>
@@ -939,7 +918,7 @@ const hanldeSumbit = async (e) =>{
                         <TdStyled><b>Tax Amount</b></TdStyled>
                         <TdStyled><b>Unit Cost</b></TdStyled>
                         <TdStyled><b>Amount</b></TdStyled>
-                        <TdStyled><b>Action</b></TdStyled>
+                        {/* <TdStyled><b>Action</b></TdStyled> */}
                     </thead>
                     <tbody>
                     {/* // {productItemList.length > 0 ? productItemList.map((data, i)=>( */}
@@ -959,19 +938,22 @@ const hanldeSumbit = async (e) =>{
                                 {data.quantity}
                                 <button
                                  style={{borderRadius: "100%", marginLeft: '5px', border: "none",  cursor: 'pointer'}}
-                                onClick={() => updateQuantity(i, 1)}>+</button>
+                                onClick={() => updateQuantity(i, 1)}
+                                disabled={parseInt(data.quantity) >= parseInt(data.originalQty) }
+                                >+</button>
                             </TdStyled>
                             <TdStyled>{data.tax}</TdStyled>
                             <TdStyled>{data.taxAmount}</TdStyled>
                             <TdStyled>{data.unitCost}</TdStyled>
                             <TdStyled>{data.amount}</TdStyled>
                             {/* <TdStyled>{data.qty + data.price }</TdStyled> */}
-                            <TdStyled><span onClick={()=>deleteItem(i)}><FaTrash/></span></TdStyled>
+                            {/* <TdStyled><span onClick={()=>deleteItem(i)}><FaTrash/></span></TdStyled> */}
                         </tr>
                     ))}
                
                     </tbody>
                 </TableStyled>
+                </>
                      :(<div style={{
                                     alignItems: "center", 
                                     display: 'flex', 
@@ -985,6 +967,7 @@ const hanldeSumbit = async (e) =>{
                 </TableResponsiveWrapper>
 
                 <HrStyled />
+
                 
                 {/* Total ChargesSection */}
                 <TotalChargesWrapper>            
@@ -1068,7 +1051,103 @@ const hanldeSumbit = async (e) =>{
                             </InnerWrapper>
                     </AnyItemContainer>
                 </TotalChargesWrapper>
-                </ItemContainer>       
+
+                <HrStyled/>
+                 {/* =========================================RETURN ITEMS ===========================================*/}
+                <TableResponsiveWrapper>
+               {itemSaleReturnList.length > 0 ?
+                <>
+                <h3 style={{textAlign: "center", marginTop: "30px"}}>Return Items</h3> 
+                <TableStyled>
+                    <thead>
+                        <TdStyled><b>#</b></TdStyled>
+                        <TdStyled><b>Item Name</b></TdStyled>
+                        <TdStyled><b>Price</b></TdStyled>
+                        <TdStyled><b>Qty</b></TdStyled>
+                        <TdStyled><b>Tax(%)</b></TdStyled>
+                        <TdStyled><b>Tax Amount</b></TdStyled>
+                        <TdStyled><b>Unit Cost</b></TdStyled>
+                        <TdStyled><b>Amount</b></TdStyled>
+                        <TdStyled><b>Action</b></TdStyled>
+                    </thead>
+                    <tbody>
+                    {/* // {productItemList.length > 0 ? productItemList.map((data, i)=>( */}
+               {       itemSaleReturnList.map((data, i)=>( 
+                    
+                        <tr key={i}>
+                            <TdStyled>{i+1}</TdStyled>
+                            <TdStyled>{data.title}</TdStyled>
+                            <TdStyled>{data.price}</TdStyled>
+                            {/* <TdStyled>{data.qty}</TdStyled> */}
+                             <TdStyled>
+                                {/* <button
+                                style={{borderRadius: "100%", marginRight: '5px', border: "none", cursor: 'pointer' }}
+                                onClick={() => updateQuantity(i, -1)}
+                                disabled={parseInt(data.quantity) <= 1}
+                                >-</button> */}
+                                {data.quantity}
+                                {/* <button
+                                 style={{borderRadius: "100%", marginLeft: '5px', border: "none",  cursor: 'pointer'}}
+                                onClick={() => updateQuantity(i, 1)}>+</button> */}
+                            </TdStyled>
+                            <TdStyled>{data.tax}</TdStyled>
+                            <TdStyled>{data.taxAmount}</TdStyled>
+                            <TdStyled>{data.unitCost}</TdStyled>
+                            <TdStyled>{data.amount}</TdStyled>
+                            {/* <TdStyled>{data.qty + data.price }</TdStyled> */}
+                            <TdStyled><span onClick={()=>deleteRefundItem(i)}><FaTrash/></span></TdStyled>
+                        </tr>
+                    ))}
+               
+                    </tbody>
+                </TableStyled>
+                </>
+                     :(<div style={{
+                                    alignItems: "center", 
+                                    display: 'flex', 
+                                    flexDirection: 'column', 
+                                    marginTop: "20px",
+                                    gap: "10px",
+                                    marginBottom: "20px"
+                                }}>
+                                   <h3>Return Items</h3> 
+                                   <p>Not Item on the List</p>
+                                </div>)
+                }
+                </TableResponsiveWrapper>
+
+{/* ====================================================RETURN ITEMS END ========================================== */}
+             {  itemSaleReturnList.length > 0 &&  <HrStyled/>}
+                  {/* Total ChargesSection */}
+{       itemSaleReturnList.length > 0 &&
+         <TotalChargesWrapper>            
+                   {/* Total quantities */}
+                    <AnyItemContainer justifyContent={'space-between'}>
+                        <InnerWrapper>
+                            {/* <span><b>Sub Total</b></span>
+                            <span><span dangerouslySetInnerHTML={{ __html: currencySymbol }}/>{Number(subTotal).toLocaleString()}</span> */}
+                        </InnerWrapper>
+                          <InnerWrapper>
+                            <span><b>Total Quantities</b></span>
+                            <span>{refundQuantity}</span>
+                        </InnerWrapper>
+                    </AnyItemContainer>
+                   
+
+                    {/* Grand Total */}
+                     <AnyItemContainer justifyContent={'space-between'}>
+        
+                            <InnerWrapper>
+                                <span><b>Total Refund</b></span>
+                                <span><b><span dangerouslySetInnerHTML={{ __html: currencySymbol }}/>{refundTotal? refundTotal : 0}</b></span>
+                            </InnerWrapper>                    
+                            <InnerWrapper>
+                               
+                            </InnerWrapper>
+                    </AnyItemContainer>
+                </TotalChargesWrapper>  
+                }
+                </ItemContainer>     
             </ItemListContent>
             }
         </ItemsWrapper>
@@ -1266,7 +1345,6 @@ const hanldeSumbit = async (e) =>{
         </AddSaleReturnContent>
         {/* Toast messages */}
         <ToastComponents/>
-        {customerId}
     </AddSaleReturnWrapper>
   )
 }
@@ -1282,3 +1360,136 @@ const hanldeSumbit = async (e) =>{
 //       returnItems = [],
 //       prefix,
 //       userId,
+
+
+//    {showReturnComponents &&  <SelectItemContent>
+//                     <form>
+//                     <ItemContainer title={'Select Items'}> 
+//                         <AnyItemContainer flxDirection="column">
+//                              <Input 
+//                                 value={searchTitle} 
+//                                 title={'Search name'}
+//                                 onChange={(e)=>handleChange('searchTitle', e)} 
+//                                 error={searchTitleError} 
+//                                 type={'text'} 
+//                                 label={'Barcode/Item Code/name'} 
+//                                 placeholder={'search...'}
+//                                 requiredSymbol={'*'}
+//                             />  
+//                            { showDropdwon && 
+                          
+//                             <DropdownWrapper>
+//                                  {/* {
+//                                  products && products.map((data, i)=>(
+//                                     <DropdownItems key={i} onClick={()=>dropdownHandler(data)}>{data.title}</DropdownItems>
+//                                  ))}   */}
+//                         {products &&
+//                         products
+//                             .filter((product) => {
+//                             const search = searchTitle.toLowerCase();
+//                             return (
+//                                 product.title.toLowerCase().includes(search) ||
+//                                 product.barcode?.toLowerCase().includes(search)
+//                             );
+//                             })
+//                             // .slice(0, 10)
+//                             .map((data, i) => (
+//                             <DropdownItems key={i} onClick={() => dropdownHandler(data)}>
+//                                 {data.title}
+//                             </DropdownItems>
+//                             ))}
+//                         </DropdownWrapper>
+                        
+//                         }
+//                         </AnyItemContainer>
+//                         <AnyItemContainer>
+//                             <Input 
+//                                 value={title} 
+//                                 title={'Item Name'}
+//                                 onChange={(e)=>handleChange('title', e)} 
+//                                 error={titleError} 
+//                                 type={'text'} 
+//                                 label={'Name'} 
+//                                 requiredSymbol={'*'}
+//                             /> 
+//                              <Input 
+//                                 value={quantity} 
+//                                 title={'Quantity'}
+//                                 onChange={(e)=>handleChange('quantity', e)} 
+//                                 error={quantityError} 
+//                                 type={'text'} 
+//                                 label={'Quantity'} 
+//                                 requiredSymbol={'*'}
+//                             />                  
+                            
+//                             <Input 
+//                                 value={price} 
+//                                 title={'Price'}
+//                                 onChange={()=>{}} 
+//                                 error={priceError} 
+//                                 type={'text'} 
+//                                 label={'Price'} 
+//                                 requiredSymbol={'*'}
+//                                 readOnly
+//                                 inputBg='#c4c4c449'
+//                             />                  
+                            
+//                             <SelectInput 
+//                                 options={TaxItem} 
+//                                 label={'Tax(%)'}
+//                                 value={tax}
+//                                 error={taxError}
+//                                 requiredSymbol={'*'}
+//                                 title={'Tax'}
+//                                 readOnly 
+//                                 onChange={(e)=>handleChange('tax', e)}
+//                             />
+
+//                             <Input 
+//                                 value={taxAmount} 
+//                                 title={'Tax Amount'}
+//                                 onChange={()=>{}} 
+//                                 error={taxAmountError} 
+//                                 type={'number'} 
+//                                 label={'Tax Amount'} 
+//                                 requiredSymbol={'*'}
+//                                 readOnly 
+//                                 inputBg='#c4c4c449'
+//                             /> 
+//                             <Input 
+//                                 value={unitCost} 
+//                                 title={'Unit Cost'}
+//                                 onChange={()=>{}} 
+//                                 type={'number'} 
+//                                 label={'Unit Cost'} 
+//                                 requiredSymbol={'*'}
+//                                 readOnly 
+//                                 inputBg='#c4c4c449'
+//                             /> 
+//                             <Input 
+//                                 value={amount} 
+//                                 title={'Amount'}
+//                                 onChange={()=>{}} 
+//                                 type={'number'} 
+//                                 label={'Amount'} 
+//                                 requiredSymbol={'*'}
+//                                 readOnly 
+//                                 inputBg='#c4c4c449'
+//                             /> 
+//                         </AnyItemContainer>    
+                            
+                    
+//                         <ItemButtonWrapper btnAlign={'flex-end'}>
+//                             <Button
+//                                 title={'Select Items'}
+//                                 btnText={'Add to list'}
+//                                 btnFontSize={'12px'}
+//                                 btnColor={'orange'}
+//                                 btnTxtClr={'white'}
+//                                 btnAlign={'flex-end'}
+//                                 btnOnClick={addToList}                               
+//                             />
+//                         </ItemButtonWrapper>
+//                     </ItemContainer>              
+//                         </form>
+//                 </SelectItemContent>}

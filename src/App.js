@@ -68,6 +68,8 @@ import Unauthorized from "./components/unauthorized/Unauthorized";
 import MyCalender from "./pages/MyCalender";
 import DashboardLayout from "./pages/admin/home/DashboardLayout";
 import AddSaleReturn from "./pages/admin/return/sale_return/add/AddSaleReturn";
+import SaleReturnPage from "./pages/admin/return/sale_return/SaleReturnPage";
+import SaleReturnView from "./pages/admin/return/sale_return/view/SaleReturnView";
 
 function App() {
   const { user } = useContext(UserContext);
@@ -89,12 +91,10 @@ function App() {
           <Routes>
             <Route path="/dashboard" element={<DashboardHome />} />
             {/* Add other protected routes here */}
-          </Routes>
-          {/* Routes */}
-          <Routes>
+
             {/* Redirect to Dashboard if logged in */}
             <Route path="/" element={<Login />} />
-            <Route path="/dashboard" element={<DashboardHome />} />
+
             {/* // Admin-only route */}
             {/* <Route
               path="/dashboard"
@@ -197,8 +197,9 @@ function App() {
             <Route path="/expense-report" element={<ExpenseReport />} />
 
             {/* RETURN/REFUND */}
-            <Route path="/reports" element={<ReportsPage />} />
+            <Route path="/sale-return" element={<SaleReturnPage />} />
             <Route path="/add-sale-return" element={<AddSaleReturn />} />
+            <Route path="/sale-return/:returnId" element={<SaleReturnView />} />
             {/* TAX */}
             <Route path="/tax" element={<TaxPage />} />
             <Route path="/add-tax" element={<AddTax />} />

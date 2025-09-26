@@ -202,7 +202,7 @@ export default function ProductDetail() {
                   <AnyItemContainer>
                        <InnerWrapper wd={'100%'}>
                           <span><b>Quantity In stock</b></span>
-                          <span>{prodData?.purchaseQuantity}</span>
+                          <span>{prodData?.purchaseQuantity - prodData?.saleQuantity}</span>
                        </InnerWrapper>
                   </AnyItemContainer> 
                   <AnyItemContainer>
@@ -210,13 +210,13 @@ export default function ProductDetail() {
                           <span><b>Quantity Sold</b></span>
                           <span>{prodData?.saleQuantity}</span>
                        </InnerWrapper>
-                  </AnyItemContainer>  
-                  <AnyItemContainer>
+                  </AnyItemContainer>                 
+                   <AnyItemContainer>
                        <InnerWrapper wd={'100%'}>
-                          <span><b>Total Quantity Purchased</b></span>
-                          <span>{(prodData?.saleQuantity) + (prodData?.purchaseQuantity)}</span>
+                          <span><b>Quantity Purchased</b></span>
+                          <span>{prodData?.purchaseQuantity}</span>
                        </InnerWrapper>
-                  </AnyItemContainer> 
+                  </AnyItemContainer>
                 </ItemContainer>
             </ProductDetailData>
 

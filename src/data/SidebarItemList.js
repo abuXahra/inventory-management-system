@@ -56,6 +56,23 @@ export const SidebarItemLists = [
     icon: <FaCartPlus />,
   },
   {
+    tile: "Return/Refund",
+    url: "#",
+    icon: <FaCartPlus />,
+    subMenu: [
+      {
+        title: "Sale Return",
+        url: "/sale-return",
+        icon: <IoMicOffCircle />,
+      },
+      {
+        title: "Purchase Return",
+        url: "/purchase-return",
+        icon: <FaUsers />,
+      },
+    ],
+  },
+  {
     tile: "Reports",
     url: "/reports",
     icon: <BsCartX />,
