@@ -23,31 +23,15 @@ export default function ViewSale() {
     const {saleId} = useParams();
     const [customerId, setCustomerId] = useState('')
     const [saleData, setSaleData] = useState('');
+    const [saleReturnData, setSaleReturnData] = useState([]);
     const [customerData, setCustomerData] = useState('');
     const [companyData, setCompanyData] = useState('');
-
     const [isLoading, setIsLoading] = useState(false);
     const [isBtnLoading, setIsBtnLoading] = useState(false);
   
 
 // Fetch invoice detail
-                useEffect(()=>{
-                  const fetchInvoice = async() =>{
-                    setIsLoading(true)
-                      try {
-                          const res = await axios.get(`${process.env.REACT_APP_URL}/api/sale/${saleId}`);        
-                          console.log('====== sale data: \n', res.data, '==================')
-                          setSaleData(res.data);
-                          setCustomerId(res.data.customer._id)
-                          setIsLoading(false);
-                      } catch (error) {
-                          console.log(error);
-                          setIsLoading(false);
-                      }
-                
-                  }
-                  fetchInvoice();
-                             
+
 
                  const fetchCompany = async() =>{
                     // setIsLoading(true)
@@ -62,13 +46,47 @@ export default function ViewSale() {
                 
                   }
                   fetchCompany();
-                },[saleId])
 
                
+                 const fetchInvoice = async() =>{
+                    setIsLoading(true)
+                      try {
+                          const res = await axios.get(`${process.env.REACT_APP_URL}/api/sale/${saleId}`);        
+                          console.log('====== sale data: \n', res.data, '==================')
+                          setSaleData(res.data);
+                          setCustomerId(res.data.customer._id)
+                          setIsLoading(false);
+                      } catch (error) {
+                          console.log(error);
+                          setIsLoading(false);
+                      }
+                
+                  }
 
-        useEffect(()=>{
-                 
-          // if (!customerId) return;
+
+                 const fetchSaleReturn = async() =>{
+                    // setIsLoading(true)
+                      try {
+                          const res = await axios.get(`${process.env.REACT_APP_URL}/api/saleReturn`);
+                                  
+                      
+                                                
+
+                          const returnForThisSale = res.data.find(
+                              (r) => r.sale?._id === saleId || r.sale?.id === saleId
+                            );
+
+                          if (returnForThisSale) {
+                              console.log("All sale returns:", res.data); // ✅ always logs  
+                            setSaleReturnData(returnForThisSale);
+                          }   
+                                                    // setIsLoading(false);
+                            } catch (error) {
+                                console.log(error);
+                                // setIsLoading(false);
+                            }
+                      
+                        }
 
                 const fetchCustomer = async() =>{
                     try {
@@ -83,10 +101,17 @@ export default function ViewSale() {
                     }
               
                 }
-            fetchCustomer()
-                },[customerId])
 
-               
+
+        useEffect(()=>{     
+          // if (!customerId) return;
+                  fetchCompany();
+                  fetchInvoice();
+                  fetchCustomer()
+                  fetchSaleReturn();
+                },[saleId, customerId])
+
+
                 
   // for printing
   const contentRef = useRef(null)
@@ -190,7 +215,7 @@ export default function ViewSale() {
            </div>
 
            {/* customer info */}
-           <div>
+             <div>
               <h3>BILLING TO</h3>
               <hr />
               <div>
@@ -203,6 +228,14 @@ export default function ViewSale() {
         </InfoBillWrapper>
 <br/>
       {/* /* table of items */}
+                         <InfoBillWrapper>
+                              {/* our info */}
+                              <div>
+                                  <h3>SALE ITEMS</h3>
+                                  <hr />
+                              </div>
+                      </InfoBillWrapper>
+               
                  <TableStyled>
                                   <thead>
                                       <TdStyled><b>#</b></TdStyled>
@@ -230,7 +263,7 @@ export default function ViewSale() {
                               }
                                   </tbody>
                               </TableStyled>  
- <br/>
+
                 {/* Total Charges */}
                             <ChargesWrapper>
                               <div>
@@ -318,14 +351,104 @@ export default function ViewSale() {
                                                         
                               
                         </PartialPaymentWrapper>
-                    }
+                    }    
 
-<br/>
-              {/* Note */}
-              <NoteWrapper>
-                <span>Note: {saleData?.note}</span>
+                           
+                  {/* Note */}
+                <br/>
+                <NoteWrapper>
+                  <b>Note: </b> 
+                  <div>{saleData?.note}</div>
+                  <hr />
+                </NoteWrapper>
+              
+              <br/>
+     
+    {  saleReturnData && saleReturnData.returnItems?.length > 0 && (
+    <>          <br/>
+                    <InfoBillWrapper>
+                              {/* our info */}
+                              <div>
+                                  <h3>RETURN ITEMS</h3>
+                                  <hr />
+                              </div>
+                      </InfoBillWrapper>
+      
+                          {/* /* table of items */}
+                                <TableStyled>
+                                  <thead>
+                                      <TdStyled><b>#</b></TdStyled>
+                                      <TdStyled><b>Item Name</b></TdStyled>
+                                      <TdStyled><b>Quantity</b></TdStyled>
+                                      <TdStyled><b>Price</b></TdStyled>
+                                      <TdStyled><b>Tax(%)</b></TdStyled>
+                                      <TdStyled><b>Tax Amount </b></TdStyled>
+                                      <TdStyled><b>Unit Cost </b></TdStyled>
+                                      <TdStyled><b>Amount </b></TdStyled>
+                                  </thead>
+                                  <tbody>
+                                  {saleReturnData.returnItems?.map((data, i)=>(
+                                      <tr key={i}>
+                                          <TdStyled>{i+1}</TdStyled>
+                                          <TdStyled>{data.title}</TdStyled>
+                                          <TdStyled>{data.quantity}</TdStyled>
+                                          <TdStyled>{data.price}</TdStyled>
+                                          <TdStyled>{data.tax}%</TdStyled>
+                                          <TdStyled>{data.taxAmount}</TdStyled>
+                                          <TdStyled>{data.unitCost}</TdStyled>
+                                          <TdStyled>{data.amount }</TdStyled>
+                                      </tr>
+                                  ))
+                              }
+                                  </tbody>
+                              </TableStyled>  
+
+                {/* Total Charges */}
+                            <ChargesWrapper>
+                              <div>
+                                <h3>Payment</h3>
+                                <hr />
+                                <TableStyled pd="0px">
+                                          <thead>
+                                              <TdStyled><b>Return Date</b></TdStyled>
+                                              <TdStyled><b>Refund Amount </b></TdStyled>
+                                              <TdStyled><b>Payment Type</b></TdStyled>
+                                          </thead>
+                                          <tbody>
+                                                 <tr>
+                                                      <TdStyled>{new Date(saleReturnData?.returnDate).toDateString()}</TdStyled>
+                                                      <TdStyled>{saleReturnData?.returnAmount}</TdStyled>
+                                                      <TdStyled>{saleReturnData?.paymentType}</TdStyled>
+                                                  </tr>
+                                          </tbody>
+                                      </TableStyled>
+                              </div>
+              
+                             
+                              {/* Total Charges */}
+                              <div>
+                              <h3>Charges</h3>
+                              <hr />
+                              <div>
+                                  <span><b>Total Refund</b></span>
+                                  <span><b><span dangerouslySetInnerHTML={{ __html: companyData.currencySymbol }}/>
+                                  {saleReturnData?.returnAmount?.toLocaleString('en-NG', { 
+                                    minimumFractionDigits: 2, 
+                                    maximumFractionDigits: 2 
+                                  })}</b></span>
+                                </div>
+                              </div>
+
+
+                            </ChargesWrapper>
+ <br/>
+                <NoteWrapper>
+                <b>Reason: </b> 
+                <div>{saleReturnData?.reason}</div>
                 <hr />
               </NoteWrapper>
+               <br/>
+</>)}
       </InvoiceWrapper>
   
     {/* Action buttons */}
@@ -381,3 +504,8 @@ export default function ViewSale() {
 </ViewSalesWrapper>
   )
 }
+
+
+
+
+

@@ -1,11 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
-// import PageTitle from '../../../../components/page_title/PageTitle'
-// import { ButtonsWrapper, ChargesWrapper, DateWrapper, InfoBillWrapper, InvoiceWrapper, LogoDateWrapper, LogoWrapper, NoteWrapper, PartialPaymentWrapper, TableStyled, TdStyled, ViewSalesContent, ViewSalesWrapper } from './viewSale.style'
-
 import CompanyLogo from '../../../../../images/product_placeholder.jpg'  
-import { SiPantheon } from 'react-icons/si'
-// import { ProductItemList } from '../../../../data/productItems'
-// import Button from '../../../../components/clicks/button/Button'
 import { FaEdit, FaPrint } from 'react-icons/fa'
 import { FaDownload } from 'react-icons/fa6'
 import { useNavigate, useParams } from 'react-router-dom'
@@ -14,21 +8,20 @@ import { useReactToPrint } from 'react-to-print'
 import html2canvas from 'html2canvas'
 import jsPDF from 'jspdf'
 import { List } from 'react-content-loader'
-import { ButtonsWrapper, ChargesWrapper, DateWrapper, InfoBillWrapper, InvoiceWrapper, LogoDateWrapper, LogoWrapper, NoteWrapper, PartialPaymentWrapper, SaleReturnViewContent, SaleReturnViewWrapper, TableStyled, TdStyled } from './saleReturnView.style'
+import { ButtonsWrapper, ChargesWrapper, DateWrapper, InfoBillWrapper, InvoiceWrapper, LogoDateWrapper, LogoWrapper, NoteWrapper, PartialPaymentWrapper, PurchaseReturnViewContent, PurchaseReturnViewWrapper, SaleReturnViewContent, SaleReturnViewWrapper, TableStyled, TdStyled } from './purchaseReturnView.style'
 import PageTitle from '../../../../../components/page_title/PageTitle'
 import Button from '../../../../../components/clicks/button/Button'
 import ButtonLoader from '../../../../../components/clicks/button/button_loader/ButtonLoader'
-// import ButtonLoader from '../../../../components/clicks/button/button_loader/ButtonLoader'
-// import { SaleReturnViewContent, SaleReturnViewWrapper } from './saleReturnView.style'
 
-export default function SaleReturnView() {
+
+export default function PurchaseReturnView() {
   
 
   const navigate = useNavigate();
     const {returnId} = useParams();
-    const [customerId, setCustomerId] = useState('')
-    const [saleReturnData, setSaleReturnData] = useState('');
-    const [customerData, setCustomerData] = useState('');
+    const [supplierId, setSupplierId] = useState('')
+    const [purchaseReturnData, setPurchaseReturnData] = useState('');
+    const [supplierData, setSupplierData] = useState('');
     const [companyData, setCompanyData] = useState('');
 
     const [isLoading, setIsLoading] = useState(false);
@@ -40,10 +33,9 @@ export default function SaleReturnView() {
                   const fetchInvoice = async() =>{
                     setIsLoading(true)
                       try {
-                          const res = await axios.get(`${process.env.REACT_APP_URL}/api/saleReturn/${returnId}`);        
-                          console.log('====== sale data: \n', res.data, '==================')
-                          setSaleReturnData(res.data);
-                          setCustomerId(res.data.customer._id)
+                          const res = await axios.get(`${process.env.REACT_APP_URL}/api/purchaseReturn/${returnId}`);        
+                          setPurchaseReturnData(res.data);
+                          setSupplierId(res.data.supplier._id)
                           setIsLoading(false);
                       } catch (error) {
                           console.log(error);
@@ -74,11 +66,11 @@ export default function SaleReturnView() {
                  
           // if (!customerId) return;
 
-                const fetchCustomer = async() =>{
+                const fetchSupplier = async() =>{
                     try {
-                        const res = await axios.get(`${process.env.REACT_APP_URL}/api/customers/${customerId}`);        
+                        const res = await axios.get(`${process.env.REACT_APP_URL}/api/suppliers/${supplierId}`);        
                         console.log('====== customer data: \n', res.data, '==================')
-                        setCustomerData(res.data);
+                        setSupplierData(res.data);
                         console.log('customer data; ', res.data)
 
                     } catch (error) {
@@ -87,8 +79,8 @@ export default function SaleReturnView() {
                     }
               
                 }
-            fetchCustomer()
-                },[customerId])
+            fetchSupplier()
+                },[supplierId])
 
                
                 
@@ -127,16 +119,16 @@ export default function SaleReturnView() {
 
   }
   return (
-    <SaleReturnViewWrapper>
+    <PurchaseReturnViewWrapper>
     {/* Page title */}
-    <PageTitle title={'Sale Return'} subTitle={'/ View'}/>
+    <PageTitle title={'Purchase Return'} subTitle={'/ View'}/>
 
     {/* content */}
     <>
       {isLoading?
        <List/> :
 
-    <SaleReturnViewContent>
+    <PurchaseReturnViewContent>
       {/* invoice wrapper */}
         
     <InvoiceWrapper ref={(el) => {
@@ -156,24 +148,24 @@ export default function SaleReturnView() {
             </LogoWrapper>
             {/* date */}
             <DateWrapper>
-              <h3>SALE RETURN</h3>
+              <h3>PURCHASE RETURN</h3>
               <hr />
               <div>
                   <div>
                       <span><b>RETURN NO.:</b></span>
-                      <span>{saleReturnData?.code}</span>                  
+                      <span>{purchaseReturnData?.code}</span>                  
                   </div>
                   <div>
                       <span><b>RETURN DATE:</b></span>
-                      <span>{new Date(saleReturnData?.returnDate).toDateString()}</span>                                    
+                      <span>{new Date(purchaseReturnData?.returnDate).toDateString()}</span>                                    
                   </div>
                   {/* <div>
                       <span><b>RETURN STATUS:</b></span>
-                      <span>{saleReturnData?.saleStatus}</span>                  
+                      <span>{purchaseReturnData?.purchaseStatus}</span>                  
                   </div> */}
                   <div>
                       <span><b>PAYMENT STATUS:</b></span>
-                      <span><div>{saleReturnData?.paymentStatus}</div></span>                  
+                      <span><div>{purchaseReturnData?.paymentStatus}</div></span>                  
                   </div>
               </div>
              
@@ -193,15 +185,15 @@ export default function SaleReturnView() {
               </div>
            </div>
 
-           {/* customer info */}
+           {/* Supplier info */}
            <div>
-              <h3>RETURN FROM</h3>
+              <h3>RETURN TO</h3>
               <hr />
               <div>
-                  <span><b>{customerData?.name?.toUpperCase()}</b></span>
-                  <span>Address: {customerData?.address}</span>
-                  <span>Phone: {customerData?.phoneNumber}</span>
-                  <span>Email: {customerData?.email}</span>
+                  <span><b>{supplierData?.name?.toUpperCase()}</b></span>
+                  <span>Address: {supplierData?.address}</span>
+                  <span>Phone: {supplierData?.phoneNumber}</span>
+                  <span>Email: {supplierData?.email}</span>
               </div>
            </div>
         </InfoBillWrapper>
@@ -219,7 +211,7 @@ export default function SaleReturnView() {
                                       <TdStyled><b>Amount </b></TdStyled>
                                   </thead>
                                   <tbody>
-                                  {saleReturnData.returnItems?.map((data, i)=>(
+                                  {purchaseReturnData.returnItems?.map((data, i)=>(
                                       <tr key={i}>
                                           <TdStyled>{i+1}</TdStyled>
                                           <TdStyled>{data.title}</TdStyled>
@@ -248,9 +240,9 @@ export default function SaleReturnView() {
                                           </thead>
                                           <tbody>
                                                  <tr>
-                                                      <TdStyled>{new Date(saleReturnData?.returnDate).toDateString()}</TdStyled>
-                                                      <TdStyled>{saleReturnData?.returnAmount}</TdStyled>
-                                                      <TdStyled>{saleReturnData?.paymentType}</TdStyled>
+                                                      <TdStyled>{new Date(purchaseReturnData?.returnDate).toDateString()}</TdStyled>
+                                                      <TdStyled>{purchaseReturnData?.returnAmount}</TdStyled>
+                                                      <TdStyled>{purchaseReturnData?.paymentType}</TdStyled>
                                                   </tr>
                                           </tbody>
                                       </TableStyled>
@@ -266,32 +258,32 @@ export default function SaleReturnView() {
                                 {/* subtotal */}
                                 {/* <div>
                                   <span><b>Sub Total</b></span>
-                                  <span><span dangerouslySetInnerHTML={{ __html: companyData.currencySymbol }}/>{saleReturnData?.subTotal}</span>
+                                  <span><span dangerouslySetInnerHTML={{ __html: companyData.currencySymbol }}/>{purchaseReturnData?.subTotal}</span>
                                 </div> */}
                                       {/* Other Charges */}
                                 {/* <div>
                                   <span>Other Charges</span>
-                                  <span><span dangerouslySetInnerHTML={{ __html: companyData.currencySymbol }}/>{saleReturnData?.otherCharges}</span>
+                                  <span><span dangerouslySetInnerHTML={{ __html: companyData.currencySymbol }}/>{purchaseReturnData?.otherCharges}</span>
                                 </div> */}
               
                                       {/* Disacount*/}
                                 {/* <div>
-                                  <span>Discount ({saleReturnData?.discount})%</span>
-                                  <span><span dangerouslySetInnerHTML={{ __html: companyData.currencySymbol }}/>{saleReturnData?.discountValue}</span>
+                                  <span>Discount ({purchaseReturnData?.discount})%</span>
+                                  <span><span dangerouslySetInnerHTML={{ __html: companyData.currencySymbol }}/>{purchaseReturnData?.discountValue}</span>
                                 </div> */}
                 
               
                                       {/* Shipping*/}
                                 {/* <div>
                                   <span>Shipping</span>
-                                  <span><span dangerouslySetInnerHTML={{ __html: companyData.currencySymbol }}/>{saleReturnData?.shipping}</span>
+                                  <span><span dangerouslySetInnerHTML={{ __html: companyData.currencySymbol }}/>{purchaseReturnData?.shipping}</span>
                                 </div> */}
               
                                   {/* Refund Total*/}
                                 <div>
                                   <span><b>Refund Total</b></span>
                                   <span><b><span dangerouslySetInnerHTML={{ __html: companyData.currencySymbol }}/>
-                                  {saleReturnData?.returnAmount?.toLocaleString('en-NG', { 
+                                  {purchaseReturnData?.returnAmount?.toLocaleString('en-NG', { 
                                     minimumFractionDigits: 2, 
                                     maximumFractionDigits: 2 
                                   })}</b></span>
@@ -300,13 +292,13 @@ export default function SaleReturnView() {
 
                             </ChargesWrapper>
 
-                          {  saleReturnData.paymentStatus === 'partial' && 
+                          {  purchaseReturnData.paymentStatus === 'partial' && 
                                                         
                               <PartialPaymentWrapper>
                                   <h3>Advance payment</h3> <hr />
                                      <div>                                   
                                         <span>Amount Paid</span>
-                                        <span><span dangerouslySetInnerHTML={{ __html: companyData.currencySymbol }}/>{saleReturnData?.amountPaid.toLocaleString('en-NG', { 
+                                        <span><span dangerouslySetInnerHTML={{ __html: companyData.currencySymbol }}/>{purchaseReturnData?.amountPaid.toLocaleString('en-NG', { 
                                               minimumFractionDigits: 2, 
                                               maximumFractionDigits: 2 
                                             })}</span>
@@ -314,7 +306,7 @@ export default function SaleReturnView() {
                                                    
                                      <div>
                                         <span><b>Balance</b></span>
-                                        <span><b><span dangerouslySetInnerHTML={{ __html: companyData.currencySymbol }}/>{saleReturnData.dueBalance?.toLocaleString('en-NG', { 
+                                        <span><b><span dangerouslySetInnerHTML={{ __html: companyData.currencySymbol }}/>{purchaseReturnData.dueBalance?.toLocaleString('en-NG', { 
                                     minimumFractionDigits: 2, 
                                     maximumFractionDigits: 2 
                                   })}</b></span>
@@ -327,7 +319,7 @@ export default function SaleReturnView() {
 <br/>
               {/* Note */}
               <NoteWrapper>
-                <span>Refund Reason: {saleReturnData?.reason}</span>
+                <span>Refund Reason: {purchaseReturnData?.reason}</span>
                 <hr />
               </NoteWrapper>
       </InvoiceWrapper>
@@ -343,7 +335,7 @@ export default function SaleReturnView() {
                   btnFontSize={'12px'}
                   btnLeftIcon={<FaEdit/>}
                   btnBdRd={'2px'}
-                  btnOnClick={()=>navigate(`/edit-sale-return/${saleReturnData?._id}`)}
+                  btnOnClick={()=>navigate(`/edit-sale-return/${purchaseReturnData?._id}`)}
                 /> */}
         
                 {/* print */}
@@ -376,7 +368,7 @@ export default function SaleReturnView() {
                   btnFontSize={'12px'}
                   btnLeftIcon={isBtnLoading? "" : <FaDownload/>}
                   btnBdRd={'2px'}
-                  btnOnClick={()=>navigate(`/sale-invoice/${saleReturnData.sale?._id}`)}
+                  btnOnClick={()=>navigate(`/sale-invoice/${purchaseReturnData.purchase?._id}`)}
                 />
         
                 {/* <Button
@@ -389,9 +381,9 @@ export default function SaleReturnView() {
                   btnOnClick={()=>{}}
                 /> */}
       </ButtonsWrapper>
-    </SaleReturnViewContent>
+    </PurchaseReturnViewContent>
         }
           </>
-</SaleReturnViewWrapper>
+</PurchaseReturnViewWrapper>
   )
 }

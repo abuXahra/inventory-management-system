@@ -7,29 +7,31 @@ import axios from 'axios'
 import { List } from 'react-content-loader'
 // import { SaleReturnPageContent, SaleReturnPageWrapper } from './saleReturnPage.style'
 import SaleReturnTable from '../../../../components/table/sale_table/sale_return_table/SaleReturnTable'
-import { SaleReturnPageContent, SaleReturnPageWrapper } from './saleReturnPage.style'
+
 import PageTitle from '../../../../components/page_title/PageTitle'
 import ListHeader from '../../../../components/page_title/list_header/ListHeader'
-// 
+import { SaleReturnPageContent, SaleReturnPageWrapper } from './purchaseReturnsPage.style'
+import PurchaseReturnTable from '../../../../components/table/purchase_table/purchase_return_table/PurchaseReturnTable'
 
 
 
-export default function SaleReturnPage() {
+
+export default function PurchaseReturnsPage() {
   
   
-     const[saleReturnRecords, setSaleReturnRecords] = useState([]);
-     const [allSaleReturnRecords, setAllSaleReturnRecords] = useState([]);
+     const[purchaseReturnRecords, setPurchaseReturnRecords] = useState([]);
+     const [allPurchaseReturnRecords, setAllPurchaseReturnRecords] = useState([]);
      const [isLoading, setIsLoading] = useState(false);
   
      // fetch expense handler 
                           useEffect(() => {
-                              const getSale = async () => { 
+                              const getPurchase = async () => { 
                                 setIsLoading(true)  
                                 try {
-                                      const res = await axios.get(process.env.REACT_APP_URL + "/api/saleReturn/")
+                                      const res = await axios.get(process.env.REACT_APP_URL + "/api/purchaseReturn/")
                                      
-                                      setSaleReturnRecords(res.data)
-                                      setAllSaleReturnRecords(res.data);
+                                      setPurchaseReturnRecords(res.data)
+                                      setAllPurchaseReturnRecords(res.data);
                                       setIsLoading(false)
                     
                                       console.log(res.data)
@@ -39,23 +41,23 @@ export default function SaleReturnPage() {
                                   }
                           
                               }
-                              getSale();
+                              getPurchase();
                           }, [])
 
 
 
-           // handle sale return delete
-          const deleteSaleReturn = async (returnId,  updatedList = null) => {
+           // handle Purchase return delete
+          const deletePurchaseReturn = async (returnId,  updatedList = null) => {
             
             if (updatedList) {
-              setSaleReturnRecords(updatedList);
+              setPurchaseReturnRecords(updatedList);
               return { success: true };
             }
             
             try {
-              await axios.delete(`${process.env.REACT_APP_URL}/api/saleReturn/${returnId}`);
-              const updatedSale = saleReturnRecords.filter(saleReturn => saleReturn._id !== returnId);
-              setSaleReturnRecords(updatedSale);
+              await axios.delete(`${process.env.REACT_APP_URL}/api/purchaseReturn/${returnId}`);
+              const updatedPurchase = purchaseReturnRecords.filter(purchaseReturn => purchaseReturn._id !== returnId);
+              setPurchaseReturnRecords(updatedPurchase);
               return { success: true };
             } catch (error) {
               return { success: false, message: error.message };
@@ -67,14 +69,14 @@ export default function SaleReturnPage() {
               let query = e.target.value.trim().toLowerCase();
               //  if query is empty, reset to all record
               if(query === ''){
-                setSaleReturnRecords(allSaleReturnRecords);
+                setPurchaseReturnRecords(allPurchaseReturnRecords);
               }else{
                 // Filter records based on query
-                const filterRecords = allSaleReturnRecords.filter(item =>
-                  item.customer?.name.toLocaleLowerCase().includes(query.toLocaleLowerCase())||
+                const filterRecords = allPurchaseReturnRecords.filter(item =>
+                  item.supplier?.name.toLocaleLowerCase().includes(query.toLocaleLowerCase())||
                   item.code?.toLowerCase().includes(query)
                 );
-                setSaleReturnRecords(filterRecords)
+                setPurchaseReturnRecords(filterRecords)
               }
             }
 
@@ -82,24 +84,24 @@ export default function SaleReturnPage() {
   const navigate = useNavigate();
   return (
     <SaleReturnPageWrapper>
-        <PageTitle title={'Sale Return'}/>
+        <PageTitle title={'Purchase Return'}/>
 
         {/* content */}
       {isLoading? <List/> :
         <SaleReturnPageContent>
           <ListHeader 
-            title={'Add Sale Return'} 
+            title={'Add Purchase Return'} 
             btnOnClick={()=>navigate('/add-sale-return')}
             searQuery={'Customer or code'}
             onChange={handleSearchQueryOnChange}
             type={'text'}
-            dataLength={saleReturnRecords.length}
+            dataLength={purchaseReturnRecords.length}
           />
           
-          {/* Sales Return Table */}
-            <SaleReturnTable 
-              data={saleReturnRecords}
-              onDeleteSale={deleteSaleReturn}
+          {/* Purchase Return Table */}
+            <PurchaseReturnTable 
+              data={purchaseReturnRecords}
+              onDeletePurchase={deletePurchaseReturn}
             />
         </SaleReturnPageContent>
 

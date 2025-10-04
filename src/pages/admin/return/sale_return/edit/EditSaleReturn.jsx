@@ -1,10 +1,12 @@
+
+import { useParams } from 'react-router-dom';
 import React, { useContext, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { UserContext } from '../../../../../components/context/UserContext'
 import { toast } from 'react-toastify'
 import {FaTrash} from 'react-icons/fa'
-import { AddSaleReturnContent, AddSaleReturnWrapper, AnyItemContainer, CustomerInfoWrapper, HrStyled, InnerWrapper, ItemListContent, ItemsWrapper, SelectItemContent, TableStyled, TdStyled, TotalChargesWrapper } from './addSaleReturn.style'
+import { AddSaleReturnContent, AddSaleReturnWrapper, AnyItemContainer, CustomerInfoWrapper, EditSaleReturnContent, EditSaleReturnWrapper, HrStyled, InnerWrapper, ItemListContent, ItemsWrapper, SelectItemContent, TableStyled, TdStyled, TotalChargesWrapper } from './editSaleReturn.style'
 import Input from '../../../../../components/input/Input'
 import SelectInput from '../../../../../components/input/selectInput/SelectInput'
 import ItemContainer from '../../../../../components/item_container/ItemContainer'
@@ -15,6 +17,7 @@ import PageTitle from '../../../../../components/page_title/PageTitle'
 import TextArea from '../../../../../components/input/textArea/TextArea'
 import ButtonLoader from '../../../../../components/clicks/button/button_loader/ButtonLoader'
 import ToastComponents from '../../../../../components/toast_message/toast_component/ToastComponents'
+import { List } from 'react-content-loader'
 
 export default function AddSaleReturn() {
 
@@ -119,7 +122,7 @@ const [invoiceNoError, setInvoiceNoError] = useState(false);
 
 const [allSales, setAllSales] = useState([]); // all sales
 const [sale, setSale] = useState('');
-const [showReturnComponents, setShowReturnComponents] = useState(false);
+const [showReturnComponents, setShowReturnComponents] = useState(true);
 
 // Refund 
 const [refundTotal, setRefundTotal] = useState('')
@@ -325,10 +328,43 @@ const paymentStatusItems = [
     const [currencySymbol, setCurrencySymbol] = useState('')
     const [isLoadingInvoice, setIsLoadingInvoice] = useState(false)
 
+
+    const {returnId} = useParams();
+    const [saleReturnData, setSaleReturnData] = useState();
+
+    useEffect(()=>{
+          const fetchSaleReturn = async() =>{
+                  // setIsLoading(true)
+                    try {
+                        const res = await axios.get(`${process.env.REACT_APP_URL}/api/saleReturn/${returnId}`);
+                        
+                        const formattedReturnDate = new Date(res.data.returnDate).toISOString().split('T')[0];                      
+                        setInvoiceNo(res.data?.invoiceNo)
+                        // setInvoiceNoSearch(res.data?.invoiceNo);
+                        setReturnAmount(res.data.returnAmount)
+                        setReturnDate(formattedReturnDate)
+                        setReason(res.data.reason)
+                        setItemSaleReturnList(res.data?.returnItems)
+
+                        console.log(res.data)
+                        
+                        // setIsLoading(false);
+                    } catch (error) {
+                        console.log(error);
+                        setIsLoading(false);
+                    }
+              
+                }
+                fetchSaleReturn();
+           
+    },[returnId])
+
 useEffect(() => {
 
+
+
      const fetchCompany = async() =>{
-          setIsLoading(true)
+        //   setIsLoading(true)
             try {
                 const res = await axios.get(`${process.env.REACT_APP_URL}/api/company`);
               
@@ -339,10 +375,10 @@ useEffect(() => {
                     setPrefix(prefixData.saleReturn);
                 }
   
-                setIsLoading(false);
+                // setIsLoading(false);
             } catch (error) {
                 console.log(error);
-                setIsLoading(false);
+                // setIsLoading(false);
             }
       
         }
@@ -350,34 +386,34 @@ useEffect(() => {
      
             // fetch products data
      const getProducts = async () => { 
-                 setIsLoading(true)  
+                //  setIsLoading(true)  
                  try {
                      const res = await axios.get(process.env.REACT_APP_URL + "/api/products")
                      console.log(res.data)
                      setProducts(res.data)
-                     setIsLoading(false)
+                    //  setIsLoading(false)
                      
                      console.log(res.data)
                  } catch (err) {
                      console.log(err)
-                     setIsLoading(false)
+                    //  setIsLoading(false)
                      }
                    }
          getProducts();
  
             // fetch customer data
             const getCustomers = async () => { 
-                 setIsLoading(true)  
+                //  setIsLoading(true)  
                  try {
             
                      const res = await axios.get(process.env.REACT_APP_URL + "/api/customers/")
                
                      setCustomerItems(res.data)
-                     setIsLoading(false)
+                    //  setIsLoading(false)
                      
                  } catch (err) {
                      console.log(err)
-                     setIsLoading(false)
+                    //  setIsLoading(false)
                      }
                    }
                    
@@ -385,20 +421,61 @@ useEffect(() => {
 
                       
             // fetch products data ==================================================================
-        const getSales = async () => { 
-                 setIsLoading(true)  
-                 try {
-                     const res = await axios.get(process.env.REACT_APP_URL + "/api/sale")
-                     setAllSales(res.data)
-                     setIsLoading(false)
-                     
-                     console.log(res.data)
-                 } catch (err) {
-                     console.log(err)
-                     setIsLoading(false)
-                     }
-                   }
-         getSales();
+
+            const getSales = async () => { 
+  setIsLoading(true);  
+  try {
+    const res = await axios.get(`${process.env.REACT_APP_URL}/api/sale`);
+
+    console.log("All sales:", invoiceNo, res.data);
+
+    const match = res.data.find((s) => s?.code === invoiceNo);
+
+    // if (!match) {
+    //   console.warn("No sale found for invoice:", invoiceNo);
+    //   setIsLoading(false);
+    //   return;
+    // }
+
+    const formattedSaleDate = new Date(match?.saleDate).toISOString().split('T')[0];
+    setSaleDate(formattedSaleDate);
+    setCustomer(match?.customer?.name || ""); 
+    setSaleStatus(match?.saleStatus);
+    setReference(match?.reference);
+    setSaleAmount(match?.saleAmount);
+    setPaymentStatus(match?.paymentStatus);
+    setShowPartialField(match?.paymentStatus === 'partial');
+    setPaymentType(match?.paymentType);
+    setAmountPaid(match?.amountPaid);
+    setDueBalance(match?.dueBalance);
+    setNote(match?.note);
+    setSubTotal(match?.subTotal);
+    setOtherCharges(match?.otherCharges);
+    setDiscount(match?.discount);
+    setDiscountValue(match?.discountValue);
+    setShipping(match?.shipping);
+
+    // const itemsWithOriginal = (match.saleItems || []).map((item) => ({
+    //   ...item,
+    //   originalQty: item.quantity,
+    // }));
+
+    setItemList(match?.saleItems);
+
+    setCustomerId(match.customer?._id || "");
+    setShowReturnComponents(true);
+
+    console.log("Matched sale:", match);
+
+    setIsLoading(false);
+  } catch (err) {
+    console.error("Error fetching sales:", err);
+    setIsLoading(false);
+  }
+};
+
+getSales();
+
 
 // for grand total caulacultion
     const totalQty = itemList.reduce((sum, item) => sum + parseFloat(item.quantity || 0), 0);
@@ -418,66 +495,10 @@ useEffect(() => {
     setGrandTotal(grand.toFixed(2));
     // Total Amount
     setSaleAmount(grand.toFixed(2));
- 
+    // setSleAmountError(false)
 
 }, [price, quantity, tax, itemList, otherCharges, discount, shipping]);
 
-
-
- // handle invoice check
-  const handleCheckInvoice = () => {
-    let isValid = true;
-
-    if(!invoiceNoSearch){
-        setInvoiceNoError(true)
-        isValid = false;
-    }
-
-    if(isValid){
-        setIsLoadingInvoice(true)
-        const match = allSales.find((s) => s.code === invoiceNo.toUpperCase()); 
-        // assuming sale code is stored as s.code (adjust if different)
-        if (match) {
-            setSale(match);
- 
-             const formattedSaleDate = new Date(match.saleDate).toISOString().split('T')[0];
-                     setSaleDate(formattedSaleDate);
-                     setCustomer(match.customer.name) 
-                     setSaleStatus(match.saleStatus)
-                     setReference(match.reference)
-                     setSaleAmount(match.saleAmount)
-                     setPaymentStatus(match.paymentStatus)
-                     setShowPartialField(match.paymentStatus === 'partial');
-                     setPaymentType(match.paymentType)
-                     setAmountPaid(match.amountPaid)
-                     setDueBalance(match.dueBalance)
-                     setNote(match.note);
-                     setSubTotal(match.subTotal);
-                     setOtherCharges(match.otherCharges)
-                     setDiscount(match.discount)
-                     setDiscountValue(match.discountValue)
-                     setShipping(match.shipping)
-
-                    const itemsWithOriginal = match.saleItems.map((item) => ({
-                        ...item,
-                        originalQty: item.quantity,
-                        }));
-                        setItemList(itemsWithOriginal);
-                    
-
-                    setCustomerId(match.customer._id)
-                    setShowReturnComponents(true)
-                    console.log("Matched sale:", match);
-                    setIsLoadingInvoice(false)
-        } else {
-            setSale(null);
-            alert("Invoice not found");
-            setInvoiceNoSearch('')
-            setInvoiceNo('')
-             setIsLoadingInvoice(false)
-        }
-        }
-  }
 
 
 
@@ -498,18 +519,18 @@ useEffect(() => {
 };
 
 // search dropdown handler
-// const dropdownHandler = (product) => {
-//     setShowDropdwon(false)
-//     setProductId(product._id)
-//     setSearchTitle('');
-//     setTitle(product.title)
-//     setQuantity();
-//     setPrice(product.salePrice)
-//     setTax(product.tax)
-//     setTaxAmount()
-//     setUnitCost()
-//     setAmount()
-// }
+const dropdownHandler = (product) => {
+    setShowDropdwon(false)
+    setProductId(product._id)
+    setSearchTitle('');
+    setTitle(product.title)
+    setQuantity();
+    setPrice(product.salePrice)
+    setTax(product.tax)
+    setTaxAmount()
+    setUnitCost()
+    setAmount()
+}
 
 
 
@@ -524,50 +545,50 @@ const dropdownCustomerName = (customer) => {
 
 
 // add to array list
-// const addToList = (e) =>{
+const addToList = (e) =>{
 
-//     e.preventDefault();
+    e.preventDefault();
 
-//     let isValid = true;
+    let isValid = true;
 
-//     if(!title){
-//         setTitleError(true)
-//         isValid = false;
-//     }
-//     if(!quantity){
-//         setQuantityError(true)
-//         isValid = false;
-//     }
-//     if(!price){
-//         setPriceError(true)
-//         isValid = false;
-//     }
-//     if(isValid){
+    if(!title){
+        setTitleError(true)
+        isValid = false;
+    }
+    if(!quantity){
+        setQuantityError(true)
+        isValid = false;
+    }
+    if(!price){
+        setPriceError(true)
+        isValid = false;
+    }
+    if(isValid){
        
-//         const newItem = {productId, title, quantity, price, tax, taxAmount, unitCost, amount};
-//         setItemList((prevItems)=>[...prevItems, newItem]);
+        const newItem = {productId, title, quantity, price, tax, taxAmount, unitCost, amount};
+        setItemList((prevItems)=>[...prevItems, newItem]);
 
-//         console.log(itemList?.productId);
+        console.log(itemList?.productId);
 
-//     setSearchTitle('');
-//     setTitle('')
-//     setQuantity('');
-//     setPrice('')
-//     setTax('')
-//     setTaxAmount('')
-//     setUnitCost('')
-//     setAmount('')
-//     setProductId('')
-//     }
+    setSearchTitle('');
+    setTitle('')
+    setQuantity('');
+    setPrice('')
+    setTax('')
+    setTaxAmount('')
+    setUnitCost('')
+    setAmount('')
+    setProductId('')
+    }
 
-// }
+}
 
 
       // delete item from list
-    //   const deleteItem = (index) => {
-    //     const updatedList =  itemList.filter((_, i) => i !== index);
-    //     setItemList(updatedList)
-    //   }
+      const deleteItem = (index) => {
+        const updatedList =  itemList.filter((_, i) => i !== index);
+        setItemList(updatedList)
+      }
 
     //   delete refund items
 const deleteRefundItem = (index) => {
@@ -776,7 +797,7 @@ const hanldeSumbit = async (e) => {
 
   if (isValid) {
     // 1️⃣ Sale return payload
-    const newSaleReturn = {
+    const updateSaleReturn = {
       returnDate: new Date(returnDate).toISOString(),
       saleId: sale?._id,
       customer: customerId || customer,
@@ -812,7 +833,7 @@ const hanldeSumbit = async (e) => {
     setIsBtnLoading(true);
     try {
       // Call both APIs
-      await axios.post(`${process.env.REACT_APP_URL}/api/saleReturn/create`, newSaleReturn);
+      await axios.put(`${process.env.REACT_APP_URL}/api/saleReturn/${returnId}`, updateSaleReturn);
    
       toast.success("Sale return processed & sale updated successfully!");
       setIsBtnLoading(false);
@@ -826,14 +847,16 @@ const hanldeSumbit = async (e) => {
 };
 
   return (
-    <AddSaleReturnWrapper>
+
+    <EditSaleReturnWrapper>
                 {/* Page title */}
                 <PageTitle title={'Sales Return'} subTitle={'/ Add'}/>
-        <AddSaleReturnContent>
+        
+        {isLoading? <List/>: (<EditSaleReturnContent>
         <ItemsWrapper>
 
         {/* Search Invoice */}
-        <SelectItemContent>
+        {/* <SelectItemContent>
          <ItemContainer title={'Search'}> 
                         <AnyItemContainer flxDirection="column">
                              <Input 
@@ -860,7 +883,7 @@ const hanldeSumbit = async (e) => {
                             />
                         </ItemButtonWrapper>
                     </ItemContainer>  
-                </SelectItemContent>
+                </SelectItemContent> */}
 
             {/*removed SelectItem component*/}
                    
@@ -924,7 +947,7 @@ const hanldeSumbit = async (e) => {
                                     flexDirection: 'column', 
                                     gap: '20px'
                                 }}>
-                                   <h3>Sale Return Items</h3> 
+                                   <h3>Sale Items</h3> 
                                    <p>Not Item on the List</p>
                                 </div>)
                 }
@@ -1262,6 +1285,8 @@ const hanldeSumbit = async (e) => {
                 </ItemContainer>
              
                 <ItemContainer title={'Return Info'}>
+
+
                     <Input 
                                 value={returnDate} 
                                 title={'Date'}
@@ -1294,7 +1319,7 @@ const hanldeSumbit = async (e) => {
                     {/* Add to SALE RETURN button */}
                     <ItemButtonWrapper btnAlign={'flex-start'}>
                                 <Button
-                                    btnText={isBtnLoading ? <ButtonLoader text={'Adding...'} /> : 'Add Return'}
+                                    btnText={isBtnLoading ? <ButtonLoader text={'Updating...'} /> : 'Update Return'}
                                     btnFontSize={'12px'}
                                     btnColor={'green'}
                                     btnTxtClr={'white'}
@@ -1304,10 +1329,10 @@ const hanldeSumbit = async (e) => {
                 </ItemContainer>
             </form>
         </CustomerInfoWrapper>}
-        </AddSaleReturnContent>
+        </EditSaleReturnContent>)}
         {/* Toast messages */}
         <ToastComponents/>
-    </AddSaleReturnWrapper>
+    </EditSaleReturnWrapper>
   )
 }
 

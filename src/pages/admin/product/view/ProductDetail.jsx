@@ -31,6 +31,10 @@ export default function ProductDetail() {
     const [showProdImage, setShowProdImage] = useState(false);
     const [companyData, setCompanyData] = useState('')
     
+    let totalProdSale = (prodData?.saleQuantity) * (prodData?.salePrice)
+    let totalProdPurchase = (prodData?.purchaseQuantity) * (prodData?.purchasePrice)
+    let netProfit = totalProdSale - totalProdPurchase;
+    
       // Fetch product detail
               useEffect(()=>{
                 const fetchProduct = async() =>{
@@ -202,7 +206,7 @@ export default function ProductDetail() {
                   <AnyItemContainer>
                        <InnerWrapper wd={'100%'}>
                           <span><b>Quantity In stock</b></span>
-                          <span>{prodData?.purchaseQuantity - prodData?.saleQuantity}</span>
+                          <span>{prodData?.stockQuantity}</span>
                        </InnerWrapper>
                   </AnyItemContainer> 
                  <AnyItemContainer>
@@ -221,13 +225,37 @@ export default function ProductDetail() {
             </ProductDetailData>
 
             <ProductDetailPicture>
-          <ItemContainer title={'Total Sale'}> 
+          <ItemContainer title={'Total Summary'}> 
               <AnyItemContainer>
                        <InnerWrapper wd={'100%'}>
-                          <span><b style={{color:"green"}}>Sale</b></span>
-                          <span><b style={{color:"green"}}><span dangerouslySetInnerHTML={{ __html: companyData.currencySymbol }}/>{(prodData?.saleQuantity) + (prodData?.salePrice)}</b></span>
+                          <span>Sale</span>
+                          <span><span dangerouslySetInnerHTML={{ __html: companyData.currencySymbol }}/>{totalProdSale.toLocaleString('en-NG', { 
+                                                  minimumFractionDigits: 2, 
+                                                  maximumFractionDigits: 2 
+                                                })}</span>
                        </InnerWrapper>
                   </AnyItemContainer> 
+                  <AnyItemContainer>
+                       <InnerWrapper wd={'100%'}>
+                          <span>Purchase</span>
+                          <span><span dangerouslySetInnerHTML={{ __html: companyData.currencySymbol }}/>{totalProdPurchase.toLocaleString('en-NG', { 
+                                                  minimumFractionDigits: 2, 
+                                                  maximumFractionDigits: 2 
+                                                })}</span>
+                       </InnerWrapper>
+                  </AnyItemContainer>               
+      
+         {     netProfit >= 0 &&
+             <AnyItemContainer>
+                       <InnerWrapper wd={'100%'}>
+                          <span><b style={{color:"green"}}>Profit</b></span>
+                          <span><b style={{color:"green"}}><span dangerouslySetInnerHTML={{ __html: companyData.currencySymbol }}/>{netProfit.toLocaleString('en-NG', { 
+                                                  minimumFractionDigits: 2, 
+                                                  maximumFractionDigits: 2 
+                                                })}</b></span>
+                       </InnerWrapper>
+                  </AnyItemContainer> }
+                  
                 </ItemContainer>
 
                 <ItemContainer title={'Product Picture'}> 

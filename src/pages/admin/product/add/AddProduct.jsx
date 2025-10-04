@@ -80,9 +80,14 @@ export default function AddProduct() {
     const fetCategoryItem = async() => {
       try {
          const res = await axios.get(`${process.env.REACT_APP_URL}/api/category`)
+
+         const dbResponse = res.data;
+
+         const activeCategories = dbResponse.filter(cat => cat.status === "ON");
+
          setCategoryItem([
           { title: 'Select', value: '' }, 
-          ...res.data.map(cat => ({
+          ...activeCategories.map(cat => ({
             title: cat.title,
             value: cat._id
           }))
@@ -97,9 +102,13 @@ export default function AddProduct() {
     const fetchUnitItem = async() => {
       try {
          const res = await axios.get(`${process.env.REACT_APP_URL}/api/units`)
+
+         const dbResponse = res.data;
+         const activeUnits = dbResponse.filter(unit => unit.status === "ON");
+
          setUnitItem([
           { title: 'Select', value: '' }, 
-             ...res.data.map(unit => ({
+             ...activeUnits.map(unit => ({
               title: unit.title,
               value: unit._id
             }))
@@ -505,30 +514,3 @@ const calculatePurchasePrice = (price, tax, quantity) => {
     </AddProductWrapper>
   );
 }
-
-
-  // const [categoryItem, setCategoryItem] = useState([
-  //   // { title: 'Necklace', value: 'necklace' },
-  //   // { title: 'Bungles', value: 'bungles' }
-  // ]);
-
-  // const [unitItem, setUnitItem] = useState([
-  //   // { title: 'Piece', value: 'piece' },
-  //   // { title: 'M', value: 'm' }
-  // ]);
-
-  // const [taxItem, setTaxItem] = useState([
-    // { 
-    //   title: 'None', 
-    //   value: 0 
-    // },
-    // { title: 
-    //   'TAX(5%)', 
-    //   value: 5 
-    // },
-    // { 
-    //   title: 'TAX(7%)', 
-    //   value: 7 
-    // }
-  // ]);
-  

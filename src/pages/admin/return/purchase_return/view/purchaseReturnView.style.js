@@ -1,7 +1,7 @@
 import { StyledEngineProvider } from "@mui/material";
 import styled from "styled-components";
 
-export const ViewSalesWrapper = styled.div`
+export const PurchaseReturnViewWrapper = styled.div`
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -9,7 +9,7 @@ export const ViewSalesWrapper = styled.div`
   padding: 20px;
 `;
 
-export const ViewSalesContent = styled.div`
+export const PurchaseReturnViewContent = styled.div`
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -98,7 +98,7 @@ export const DateWrapper = styled.div`
 export const InfoBillWrapper = styled.div`
   width: 100%;
   display: flex;
-  justify-content: ${({ jsc }) => jsc || "space-between"};
+  justify-content: space-between;
   gap: 20px;
 
   div {

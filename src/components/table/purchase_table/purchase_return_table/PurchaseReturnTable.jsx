@@ -1,27 +1,22 @@
 
 import React, { useEffect, useState } from 'react';
 import DataTable from 'react-data-table-component';
-// import { ActionButton, ActionButtons, Container, TableWrapper, Title } from './saleReturnTable.style';
 import { FaEdit, FaEnvelope, FaEye, FaFileInvoice, FaTrash } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
-
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import { ActionButton, ActionButtons, Container, TableWrapper } from './saleReturnTable.style';
-import { customStyles } from '../../TableCustomStyle.style';
+import { ActionButton, ActionButtons, Container, TableWrapper } from './purchaseReturnTable.style';
+import { SlideUpButton } from '../../expense_table/Expense.style';
 import Button from '../../../clicks/button/Button';
 import ButtonLoader from '../../../clicks/button/button_loader/ButtonLoader';
-import { SlideUpButton } from '../../expense_table/Expense.style';
+import { customStyles } from '../../TableCustomStyle.style';
 import Overlay from '../../../overlay/Overlay';
 import ToastComponents from '../../../toast_message/toast_component/ToastComponents';
-// import { SlideUpButton } from '../../expense_table/Expense.style';
-// import Button from '../../../clicks/button/Button';
-// import ButtonLoader from '../../../clicks/button/button_loader/ButtonLoader';
-// import Overlay from '../../../overlay/Overlay';
-// import ToastComponents from '../../../toast_message/toast_component/ToastComponents';
 
 
-const SaleReturnTable = ({data, onDeleteSale}) => {
+
+
+const PurchaseReturnTable = ({data, onDeletePurchase}) => {
   
   const navigate = useNavigate();
 
@@ -43,24 +38,24 @@ const SaleReturnTable = ({data, onDeleteSale}) => {
      const [showDeleteCard, setShowDeleteCard] = useState(false);
      const [grabId, setGrabId] = useState('');
      const [grabCode, setGrabCode] = useState('');
-    //  const [grabSaleName, setGrabSaleName] = useState('');
+     const [grabSupplierName, setGrabSupplierName] = useState('');
      const [isLoading, setIsLoading] = useState(false);
     
-     const handleGrabId = (returnId, saleName, saleCode)=>{
+     const handleGrabId = (returnId, supplierName, purchaseCode)=>{
                 setShowDeleteCard(true);
                 setGrabId(returnId);
-                // setGrabSaleName(saleName); 
-                setGrabCode(saleCode) 
+                setGrabSupplierName(supplierName); 
+                setGrabCode(purchaseCode) 
             }
   
   // Handle delete
                  const handleSaleDelete = async (returnId) => {
                     setIsLoading(true);
                     try {
-                      const response = await onDeleteSale(returnId); // call parent function
+                      const response = await onDeletePurchase(returnId); // call parent function
                   
                       if (response.success) {
-                        toast.success('Sale Return deleted successfully');
+                        toast.success('Purchase Return deleted successfully');
                         setShowDeleteCard(false); // Close modal
                       } else {
                         toast.error('Error deleting message: ' + response.message);
@@ -76,7 +71,7 @@ const SaleReturnTable = ({data, onDeleteSale}) => {
   
                   
                          // Handle bulk delete
-                         const [selectedSaleReturn, setSelectedSaleReturn] = useState([]);
+                         const [selectedPurchaseReturn, setSelectedPurchaseReturn] = useState([]);
                          const [isDeleting, setIsDeleting] = useState(false);
                          const [showBulkDeleteCard, setShowBulkDeleteCard] = useState(false);
                          
@@ -89,20 +84,20 @@ const SaleReturnTable = ({data, onDeleteSale}) => {
                         const confirmBulkDelete = async () => {
                           setIsDeleting(true);
                           try {
-                            await axios.delete(`${process.env.REACT_APP_URL}/api/saleReturn/bulk-delete`, {
-                              data: { ids: selectedSaleReturn.map((e) => e._id) },
+                            await axios.delete(`${process.env.REACT_APP_URL}/api/purchaseReturn/bulk-delete`, {
+                              data: { ids: selectedPurchaseReturn.map((e) => e._id) },
                             });
-                            toast.success(`${selectedSaleReturn.length} sales Return deleted successfully`);
+                            toast.success(`${selectedPurchaseReturn.length} purchase Return deleted successfully`);
                         
                             // remove deleted from UI
-                              const deletedIds = selectedSaleReturn.map((e) => e._id);
-                              const updatedList = data.filter(saleReturn => !deletedIds.includes(saleReturn._id));
-                              setSelectedSaleReturn([]);
-                              onDeleteSale(null, updatedList); // pass updated list to parent
+                              const deletedIds = selectedPurchaseReturn.map((e) => e._id);
+                              const updatedList = data.filter(purchaseReturn => !deletedIds.includes(purchaseReturn._id));
+                              setSelectedPurchaseReturn([]);
+                              onDeletePurchase(null, updatedList); // pass updated list to parent
                               setShowBulkDeleteCard(false);
                             } catch (err) {
                             console.error(err);
-                            toast.error('Failed to delete selected sale Returns');
+                            toast.error('Failed to delete selected purchase Returns');
                           } finally {
                             setIsDeleting(false);
                           }
@@ -129,16 +124,10 @@ const SaleReturnTable = ({data, onDeleteSale}) => {
       //  width: '8%',
      },
      {
-       name: 'Customer',
-       selector: (row) => row.customer?.name,
+       name: 'Supplier',
+       selector: (row) => row.supplier?.name,
        sortable: true,
      },
-    //  {
-    //    name: 'Status',
-    //    selector: (row) => row.saleStatus,
-    //    sortable: true,
-    //    width: '13%',
-    //  },
       {
        name: 'Total Refund',
        selector: (row) => <div>
@@ -151,10 +140,10 @@ const SaleReturnTable = ({data, onDeleteSale}) => {
        name: 'Actions',
        cell: (row) => (
          <ActionButtons>
-           <ActionButton clr='green' onClick={() => navigate(`/sale-return/${row._id}`)}><FaEye/></ActionButton>
-            <ActionButton clr='green' onClick={() => navigate(`/sale-invoice/${row.sale?._id}`)}><FaFileInvoice/></ActionButton>
+           <ActionButton clr='green' onClick={() => navigate(`/purchase-return/${row._id}`)}><FaEye/></ActionButton>
+            <ActionButton clr='green' onClick={() => navigate(`/purchase-invoice/${row.purchase?._id}`)}><FaFileInvoice/></ActionButton>
            {/* <ActionButton clr='blue' onClick={() => navigate(`/edit-return/${row._id}`)}><FaEdit/></ActionButton> */}
-           <ActionButton clr="red" onClick={() => handleGrabId(row._id, row.customer.name, row.code)}><FaTrash/></ActionButton>
+           <ActionButton clr="red" onClick={() => handleGrabId(row._id, row.supplier.name, row.code)}><FaTrash/></ActionButton>
          </ActionButtons>
        ),
      },
@@ -175,18 +164,18 @@ const SaleReturnTable = ({data, onDeleteSale}) => {
             responsive
             customStyles={customStyles}
             selectableRows
-            onSelectedRowsChange={({ selectedRows }) => setSelectedSaleReturn(selectedRows)}
+            onSelectedRowsChange={({ selectedRows }) => setSelectedPurchaseReturn(selectedRows)}
             selectableRowHighlight
         />
       </TableWrapper>
 
        {/* sliding button for delete bulk list */}
-          {selectedSaleReturn.length > 0 && (
+          {selectedPurchaseReturn.length > 0 && (
           <SlideUpButton>
             <Button 
               btnColor={'red'} 
               btnOnClick={handleBulkDelete} 
-              btnText= {isDeleting ? <ButtonLoader text="Deleting..." /> : `Delete Selected (${selectedSaleReturn.length})`} 
+              btnText= {isDeleting ? <ButtonLoader text="Deleting..." /> : `Delete Selected (${selectedPurchaseReturn.length})`} 
               disabled={isDeleting}>             
             </Button>
           </SlideUpButton>
@@ -201,7 +190,7 @@ const SaleReturnTable = ({data, onDeleteSale}) => {
                                 btnText1={isLoading ? <ButtonLoader text={'Deleting...'}/> : 'Yes'}
                               >
                                 <p style={{margin: "40px", textAlign:"center", fontSize:"12px", lineHeight: "25px"}}>
-                                        Are you sure You want to delete the Sale Return items with the  code <strong>{grabCode}</strong> from the customer <b>customerSaleName </b> 
+                                        Are you sure You want to delete the Purchase Return items with the  code <strong>{grabCode}</strong> to the Supplier <b>{grabSupplierName} </b> 
                                   </p>                              </Overlay>
                             }
             
@@ -214,7 +203,7 @@ const SaleReturnTable = ({data, onDeleteSale}) => {
         btnText1={isDeleting ? <ButtonLoader text={'Deleting...'} /> : 'Yes'}
       >
         <p style={{ margin: "40px", textAlign: "center", fontSize: "12px", lineHeight: "25px" }}>
-          Are you sure you want to delete <b>{selectedSaleReturn.length}</b> selected sale Returns?
+          Are you sure you want to delete <b>{selectedPurchaseReturn.length}</b> selected Purchase Returns?
         </p>
       </Overlay>
     )}
@@ -225,4 +214,4 @@ const SaleReturnTable = ({data, onDeleteSale}) => {
   );
 };
 
-export default SaleReturnTable;
+export default PurchaseReturnTable;

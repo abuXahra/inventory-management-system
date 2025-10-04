@@ -248,7 +248,7 @@ const paymentTypeItems =  [
 
                 const newPayment = {
                     paymentDate,
-                    paymentFor,
+                    paymentFor: paymentFor,
                     invoiceNo,
                     dueBalance: Number(dueBalance),
                     payableAmount: Number(payableAmount),

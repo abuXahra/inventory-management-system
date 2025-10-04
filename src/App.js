@@ -70,6 +70,10 @@ import DashboardLayout from "./pages/admin/home/DashboardLayout";
 import AddSaleReturn from "./pages/admin/return/sale_return/add/AddSaleReturn";
 import SaleReturnPage from "./pages/admin/return/sale_return/SaleReturnPage";
 import SaleReturnView from "./pages/admin/return/sale_return/view/SaleReturnView";
+import EditSaleReturn from "./pages/admin/return/sale_return/edit/EditSaleReturn";
+import AddPurchaseReturn from "./pages/admin/return/purchase_return/add/AddPurchaseReturn";
+import PurchaseReturnsPage from "./pages/admin/return/purchase_return/PurchaseReturnsPage";
+import PurchaseReturnView from "./pages/admin/return/purchase_return/view/PurchaseReturnView";
 
 function App() {
   const { user } = useContext(UserContext);
@@ -91,10 +95,8 @@ function App() {
           <Routes>
             <Route path="/dashboard" element={<DashboardHome />} />
             {/* Add other protected routes here */}
-
             {/* Redirect to Dashboard if logged in */}
             <Route path="/" element={<Login />} />
-
             {/* // Admin-only route */}
             {/* <Route
               path="/dashboard"
@@ -195,11 +197,21 @@ function App() {
             <Route path="/purchase-report" element={<PurchaseReport />} />
             <Route path="/stock-report" element={<StockReport />} />
             <Route path="/expense-report" element={<ExpenseReport />} />
-
-            {/* RETURN/REFUND */}
+            {/* SALE RETURN/REFUND */}
             <Route path="/sale-return" element={<SaleReturnPage />} />
             <Route path="/add-sale-return" element={<AddSaleReturn />} />
             <Route path="/sale-return/:returnId" element={<SaleReturnView />} />
+            <Route path="/edit-return/:returnId" element={<EditSaleReturn />} />
+            {/* PURCHASE RETURN/REFUND */}
+            <Route path="/purchase-return" element={<PurchaseReturnsPage />} />
+            <Route
+              path="/add-purchase-return"
+              element={<AddPurchaseReturn />}
+            />{" "}
+            <Route
+              path="/purchase-return/:returnId"
+              element={<PurchaseReturnView />}
+            />
             {/* TAX */}
             <Route path="/tax" element={<TaxPage />} />
             <Route path="/add-tax" element={<AddTax />} />
