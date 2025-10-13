@@ -16,6 +16,7 @@ import { toast } from 'react-toastify'
 import ButtonLoader from '../../../../../components/clicks/button/button_loader/ButtonLoader'
 import ToastComponents from '../../../../../components/toast_message/toast_component/ToastComponents'
 import { AddPurchaseReturnContent, AddPurchaseReturnWrapper, AnyItemContainer, DropdownItems, DropdownWrapper, HrStyled, InnerWrapper, ItemListContent, ItemsWrapper, SelectItemContent, SupplierInfoWrapper, TableResponsiveWrapper, TableStyled, TdStyled, TotalChargesWrapper } from './addPurchaseReturn.style'
+import { List } from 'react-content-loader'
 
 export default function AddPurchaseReturn() {
 
@@ -473,7 +474,6 @@ export default function AddPurchaseReturn() {
                     setIsLoadingInvoice(false)
         } else {
             setPurchase(null);
-            alert("Invoice not found");
             setInvoiceNoSearch('')
             setInvoiceNo('')
              setIsLoadingInvoice(false)
@@ -520,54 +520,6 @@ export default function AddPurchaseReturn() {
         setSupplierId(supplier._id)
         setSupplier(supplier.name)
     }
-
-
-
-    // add to array list
-    // const addToList = (e) => {
-
-    //     e.preventDefault();
-
-    //     let isValid = true;
-
-    //     if (!title) {
-    //         setTitleError(true)
-    //         isValid = false;
-    //     }
-    //     if (!quantity) {
-    //         setQuantityError(true)
-    //         isValid = false;
-    //     }
-    //     if (!price) {
-    //         setPriceError(true)
-    //         isValid = false;
-    //     }
-    //     if (isValid) {
-
-    //         const newItem = { productId, title, quantity, price, tax, taxAmount, unitCost, amount };
-    //         setItemList((prevItems) => [...prevItems, newItem]);
-
-    //         console.log(itemList?.productId);
-
-    //         setSearchTitle('');
-    //         setTitle('')
-    //         setQuantity('');
-    //         setPrice('')
-    //         setTax('')
-    //         setTaxAmount('')
-    //         setUnitCost('')
-    //         setAmount('')
-    //         setProductId('')
-    //     }
-
-    // }
-
-
-    // delete item from list
-    // const deleteItem = (index) => {
-    //     const updatedList = itemList.filter((_, i) => i !== index);
-    //     setItemList(updatedList)
-    // }
 
  //   delete refund items
 const deleteRefundItem = (index) => {
@@ -622,8 +574,8 @@ const deleteRefundItem = (index) => {
 
  
 // increment or decrement product quantity in the list
-  const updateQuantity = (index, delta) => {
-            
+  const updateQuantity = (index, delta,) => {
+        
      setItemList((prevList) => {
       return prevList.map((item, i) => {
         if (i === index) {
@@ -721,7 +673,7 @@ const deleteRefundItem = (index) => {
 
 
     //submit handler
-    const hanldeSumbit = async (e) => {
+    const handleSubmit = async (e) => {
 
         e.preventDefault();
 
@@ -834,11 +786,11 @@ const deleteRefundItem = (index) => {
             try {
 
                 const res = await axios.post(`${process.env.REACT_APP_URL}/api/purchaseReturn/create`, newPurchaseReturn);
-
-                navigate(`/purchase-return`);
+                
                 // toast success message
                 toast.success('Purchase Return added Successfully')
                 setIsBtnLoading(false);
+                navigate(`/purchase-return`);
             } catch (err) {
                 console.error(err);
                  toast.error("Something went wrong while processing return!");
@@ -851,7 +803,8 @@ const deleteRefundItem = (index) => {
         <AddPurchaseReturnWrapper>
             {/* Page title */}
             <PageTitle title={'Purchase Return'} subTitle={'/ Add'} />
-            <AddPurchaseReturnContent>
+            {/* {isLoading ? <List/> : */}
+         <AddPurchaseReturnContent>
                 <ItemsWrapper>
                     
 
@@ -879,7 +832,7 @@ const deleteRefundItem = (index) => {
                                 btnColor={'orange'}
                                 btnTxtClr={'white'}
                                 btnAlign={'flex-end'}
-                                btnOnClick={handleCheckInvoice}                               
+                                btnOnClick={(e)=>handleCheckInvoice(e)}                               
                             />
                         </ItemButtonWrapper>
                     </ItemContainer>  
@@ -917,13 +870,13 @@ const deleteRefundItem = (index) => {
                                                  <TdStyled>
                                                     <button
                                                     style={{borderRadius: "100%", marginRight: '5px', border: "none", cursor: 'pointer' }}
-                                                    onClick={() => updateQuantity(i, -1)}
+                                                    onClick={() => updateQuantity( i, -1,)}
                                                     disabled={parseInt(data.quantity) <= 1}
                                                     >-</button>
                                                     {data.quantity}
                                                     <button
                                                      style={{borderRadius: "100%", marginLeft: '5px', border: "none",  cursor: 'pointer'}}
-                                                    onClick={() => updateQuantity(i, 1)}
+                                                    onClick={() => updateQuantity( i, 1,)}
                                                     disabled={parseInt(data.quantity) >= parseInt(data.originalQty) }
                                                     >+</button>
                                                 </TdStyled>
@@ -1142,7 +1095,7 @@ const deleteRefundItem = (index) => {
 
                 {/* Supply info */}
                {showReturnComponents &&  <SupplierInfoWrapper>
-                    <form action="" onSubmit={(e) => hanldeSumbit(e)}>
+                    <form action="" onSubmit={(e) => handleSubmit(e)}>
                         <ItemContainer title={'Supply Info'}>
 
                             <Input
@@ -1327,6 +1280,7 @@ const deleteRefundItem = (index) => {
                     </form>
                 </SupplierInfoWrapper>}
             </AddPurchaseReturnContent>
+            {/* } */}
             {/* Toast messages */}
             <ToastComponents />
         </AddPurchaseReturnWrapper>

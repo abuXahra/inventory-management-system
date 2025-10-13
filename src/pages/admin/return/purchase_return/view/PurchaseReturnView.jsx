@@ -368,7 +368,7 @@ export default function PurchaseReturnView() {
                   btnFontSize={'12px'}
                   btnLeftIcon={isBtnLoading? "" : <FaDownload/>}
                   btnBdRd={'2px'}
-                  btnOnClick={()=>navigate(`/sale-invoice/${purchaseReturnData.purchase?._id}`)}
+                  btnOnClick={()=>navigate(`/purchase-invoice/${purchaseReturnData.purchase?._id}`)}
                 />
         
                 {/* <Button

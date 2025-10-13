@@ -471,7 +471,6 @@ useEffect(() => {
                     setIsLoadingInvoice(false)
         } else {
             setSale(null);
-            alert("Invoice not found");
             setInvoiceNoSearch('')
             setInvoiceNo('')
              setIsLoadingInvoice(false)
@@ -520,54 +519,6 @@ const dropdownCustomerName = (customer) => {
     setCustomerId(customer._id)
     setCustomer(customer.name)    
 }
-
-
-
-// add to array list
-// const addToList = (e) =>{
-
-//     e.preventDefault();
-
-//     let isValid = true;
-
-//     if(!title){
-//         setTitleError(true)
-//         isValid = false;
-//     }
-//     if(!quantity){
-//         setQuantityError(true)
-//         isValid = false;
-//     }
-//     if(!price){
-//         setPriceError(true)
-//         isValid = false;
-//     }
-//     if(isValid){
-       
-//         const newItem = {productId, title, quantity, price, tax, taxAmount, unitCost, amount};
-//         setItemList((prevItems)=>[...prevItems, newItem]);
-
-//         console.log(itemList?.productId);
-
-//     setSearchTitle('');
-//     setTitle('')
-//     setQuantity('');
-//     setPrice('')
-//     setTax('')
-//     setTaxAmount('')
-//     setUnitCost('')
-//     setAmount('')
-//     setProductId('')
-//     }
-
-// }
-
-
-      // delete item from list
-    //   const deleteItem = (index) => {
-    //     const updatedList =  itemList.filter((_, i) => i !== index);
-    //     setItemList(updatedList)
-    //   }
 
     //   delete refund items
 const deleteRefundItem = (index) => {
@@ -721,7 +672,7 @@ const deleteRefundItem = (index) => {
 
 
 // submit handler
-const hanldeSumbit = async (e) => {
+const handleSubmit = async (e) => {
   e.preventDefault();
 
   let isValid = true;
@@ -1121,7 +1072,7 @@ const hanldeSumbit = async (e) => {
 
     {/* Customer info */}
        {showReturnComponents && <CustomerInfoWrapper>
-            <form action="" onSubmit={(e)=>hanldeSumbit(e)}>
+            <form action="" onSubmit={(e)=>handleSubmit(e)}>
                 <ItemContainer title={'Customer Info'}>
                     
                   <Input 

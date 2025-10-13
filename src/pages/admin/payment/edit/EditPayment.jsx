@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import PageTitle from '../../../../components/page_title/PageTitle'
 import ItemContainer from '../../../../components/item_container/ItemContainer'
 import Input from '../../../../components/input/Input'
@@ -6,14 +6,18 @@ import SelectInput from '../../../../components/input/selectInput/SelectInput'
 import TextArea from '../../../../components/input/textArea/TextArea'
 import { ItemButtonWrapper } from '../../../../components/item_container/itemContainer.style'
 import Button from '../../../../components/clicks/button/Button'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { AnyItemContainer } from '../../sale/Add/addSale.style'
 import ButtonLoader from '../../../../components/clicks/button/button_loader/ButtonLoader'
 import { EditPaymentContent, EditPaymentWrapper } from '../../payment/edit/EditPayment.style'
+import axios from 'axios'
+import { UserContext } from '../../../../components/context/UserContext'
+import { List } from 'react-content-loader';
 
 export default function EditPayment() {
 
-
+    const {paymentId} = useParams();
+    console.log('id:======= ',paymentId)
 // Payment For
 const paymentForItems =  [
     {
@@ -59,36 +63,38 @@ const paymentTypeItems =  [
     },
 ]
 
-
     const navigate = useNavigate();
+    const {user} = useContext(UserContext)
 
     const [isLoading, setIsLoading] = useState(false);
+    const [isBtnLoading, setIsBtnLoading] = useState(false);
     
     // Date 2025-02-04 (year-month-day) 
-    const [date, setDate] = useState('2025-02-20');
-    const [dateError, setDateError] = useState(false);
+      const [paymentDate, setPaymentDate] = useState('');
+      const [dateError, setDateError] = useState(false);
+   
 
     // Payment For
-    const [paymentFor, setPaymentFor] = useState(paymentForItems[1].value);
+    const [paymentFor, setPaymentFor] = useState('');
     console.log('==========================\n', paymentForItems[1].value, '==========================\n');
     const [paymentForError, setPaymentForError] = useState(false);
 
     // Invoice No.
-    const [invoiceNo, setInvoiceNo] = useState(paymentForItems[1].value);
+    const [invoiceNo, setInvoiceNo] = useState(null);
     const [invoiceNoError, setInvoiceNoError] = useState(false);
 
     // Due Amount
-    const [dueAmount, setDueAmount] = useState('35000');
+    const [dueBalance, setDueBalance] = useState(null);
     const [dueAmountError, setDueAmountError] = useState(false);
 
   
     // Payment Type
-    const [paymentType, setPaymentType] = useState(paymentTypeItems[1].value)
+    const [paymentType, setPaymentType] = useState(null)
     const [paymentTypeError, setPaymentTypeError] = useState(false);
 
 
     // Payable amount
-    const [payableAmount, setPayableAmount] = useState('35000')
+    const [payableAmount, setPayableAmount] = useState(null)
     const [payableAmountError, setPayableAmountError] = useState(false);
 
 
@@ -98,14 +104,14 @@ const paymentTypeItems =  [
     
     const handleChange = (type, e) =>{
         if(type === 'date'){
-            setDate(e.target.value);
+            setPaymentDate(e.target.value);
             setDateError(false);
         }else if(type === 'payment-for'){
             setPaymentFor(e.target.value);
             setInvoiceNo(e.target.value)
             setPaymentForError(false);
         }else if(type === 'due-amount'){
-            setDueAmount(e.target.value);
+            setDueBalance(e.target.value);
             setDueAmountError(false);
         }else if(type === 'payment-type'){
             setPaymentType(e.target.value);
@@ -118,19 +124,37 @@ const paymentTypeItems =  [
         }
     }
 
+useEffect(()=>{
+const fetchPayment = async () => {
 
-        // { 
-            // else if(type === 'invoice')
-            // setInvoiceNo(e.target.value)
-            // setInvoiceNoError(false)
-        // } 
+    setIsLoading(true);
+    try {
+        const res = await axios.get(`${process.env.REACT_APP_URL}/api/payment/${paymentId}`)
+        const formattedPaymentDate = new Date(res.data.paymentDate).toISOString().split('T')[0];
+        setPaymentDate(formattedPaymentDate);
+        setPaymentFor(res.data.paymentFor)
+        setInvoiceNo(res.data.invoiceNo)
+        setDueBalance(res.data.dueBalance)
+        setPaymentType(res.data.paymentType)
+        setPayableAmount(res.data.payableAmount)
+        setNote(res.data.note)
+        
+        setIsLoading(false);
+    
+    } catch (error) {
+        console.log(error)
+        setIsLoading(false);
+    }
+}
 
+fetchPayment();
+},[paymentId])
 
-    const submitHandler = (e) => {
+    const submitHandler = async (e) => {
         e.preventDefault();
         let isValid = true;
 
-        if(!date){
+        if(!paymentDate){
             setDateError(true);
             isValid = false;
         }
@@ -146,7 +170,7 @@ const paymentTypeItems =  [
         }
 
         
-        if(!dueAmount){
+        if(!dueBalance){
             setDueAmountError(true);
             isValid = false;
         }
@@ -164,7 +188,27 @@ const paymentTypeItems =  [
 
         if(isValid){
             setIsLoading(true)
-            navigate(`/payments`)
+                 
+            try {
+
+                const updatePayment = {
+                    paymentDate,
+                    paymentFor: paymentFor,
+                    invoiceNo,
+                    dueBalance: Number(dueBalance),
+                    payableAmount: Number(payableAmount),
+                    paymentType,
+                    note,
+                    useId: user?._id
+                }
+
+                const res = await axios.put(`${process.env.REACT_APP_URL}/api/payment/${paymentId}`, updatePayment) 
+                console.log(res.data)
+                navigate(`/payments`)
+                
+            } catch (error) {
+              console.log(error)   
+            }
         }
     }
 
@@ -172,14 +216,15 @@ const paymentTypeItems =  [
     <EditPaymentWrapper>
     {/* Page title */}
         <PageTitle title={'Payment'} subTitle={'/ Edit'}/>
-
+    <>
+      {isLoading? <List/> :
         <EditPaymentContent>
             <form action="" onSubmit={submitHandler}>
                     <ItemContainer title={'Edit Payment'}>
                         <AnyItemContainer justifyContent={'space-between'}>
                             {/* date */}
                             <Input 
-                                value={date} 
+                                value={paymentDate} 
                                 title={'Date'}
                                 onChange={(e)=>handleChange('date', e)} 
                                 error={dateError} 
@@ -188,33 +233,40 @@ const paymentTypeItems =  [
                             />
 
                             {/* Payment for */}
-                            <SelectInput 
-                                onChange={(e)=>handleChange('payment-for', e)} 
+                            <Input 
+                                // onChange={(e)=>handleChange('payment-for', e)} 
                                 error={paymentForError} 
-                                options={paymentForItems} 
                                 label={'Payment For'}
                                 title={'Payment For'}
                                 value={paymentFor}
+                                readOnly 
+                                inputBg='#c4c4c449' 
+                                onChange={()=>{}}
                             />
                       
                         {/* Invoice Number */}
                             <Input 
                                 value={invoiceNo} 
-                                title={'Invoice No'}
-                                // onChange={(e)=>handleChange('due-amount', e)}  
+                                title={'Invoice No'}  
                                 type={'text'} 
-                                label={'Invoice No.'} 
+                                label={'Invoice No.'}
+                                readOnly 
+                                inputBg='#c4c4c449' 
+                                onChange={()=>{}}
                             />     </AnyItemContainer>
 
                         <AnyItemContainer justifyContent={'space-between'}>
                             
                             {/* Due Amount */}
                             <Input 
-                                value={dueAmount} 
+                                value={dueBalance} 
                                 title={'Due Amount (N)'}
-                                onChange={(e)=>handleChange('due-amount', e)}  
+                                // onChange={(e)=>handleChange('due-amount', e)}  
                                 type={'text'} 
                                 label={'Due Amount'} 
+                                readOnly 
+                                inputBg='#c4c4c449' 
+                                onChange={()=>{}}
                             />
 
                              {/* Payment Type */}
@@ -266,7 +318,7 @@ const paymentTypeItems =  [
                         </ItemButtonWrapper>
                     </ItemContainer>
                 </form>
-        </EditPaymentContent>
+        </EditPaymentContent>}</>
     </EditPaymentWrapper>
   )
 }

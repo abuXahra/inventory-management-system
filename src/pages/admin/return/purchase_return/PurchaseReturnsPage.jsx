@@ -91,7 +91,7 @@ export default function PurchaseReturnsPage() {
         <SaleReturnPageContent>
           <ListHeader 
             title={'Add Purchase Return'} 
-            btnOnClick={()=>navigate('/add-sale-return')}
+            btnOnClick={()=>navigate('/add-purchase-return')}
             searQuery={'Customer or code'}
             onChange={handleSearchQueryOnChange}
             type={'text'}

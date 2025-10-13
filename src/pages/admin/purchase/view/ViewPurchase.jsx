@@ -23,6 +23,7 @@ export default function ViewPurchase() {
   const {purchaseId} = useParams();
   const [supplierId, setSupplierId] = useState('')
   const [purchaseData, setPurchaseData] = useState('');
+  const [purchaseReturnData, setPurchaseReturnData] = useState([]);
   const [supplierData, setSupplierData] = useState('');
   const [companyData, setCompanyData] = useState('');
 
@@ -47,6 +48,30 @@ export default function ViewPurchase() {
                   }
                   fetchInvoice();               
 
+    const fetchPurchaseReturn = async() =>{
+                    // setIsLoading(true)
+                      try {
+                          const res = await axios.get(`${process.env.REACT_APP_URL}/api/purchaseReturn`);
+                                  
+                                                                     
+
+                          const returnForThisPurchase = res.data.find(
+                              (r) => r.purchase?._id === purchaseId || r.purchase?.id === purchaseId
+                            );
+
+                          if (returnForThisPurchase) {
+                              console.log("All purchase returns:", res.data); // ✅ always logs  
+                            setPurchaseReturnData(returnForThisPurchase);
+                          }   
+                                                    // setIsLoading(false);
+                            } catch (error) {
+                                console.log(error);
+                                // setIsLoading(false);
+                            }
+                      
+                        }
+
+              fetchPurchaseReturn()
                  const fetchCompany = async() =>{
                     // setIsLoading(true)
                       try {
@@ -199,6 +224,15 @@ export default function ViewPurchase() {
            </div>
         </InfoBillWrapper>
 <br/>
+
+      {/* /* table of items */}
+                         <InfoBillWrapper>
+                              {/* our info */}
+                              <div>
+                                  <h3>PURCHASE ITEMS</h3>
+                                  <hr />
+                              </div>
+                      </InfoBillWrapper>
         {/* table of items */}
            <TableStyled>
                             <thead>
@@ -322,8 +356,101 @@ export default function ViewPurchase() {
                 <span>Note: {purchaseData?.note}</span>
                 <hr /> 
               </NoteWrapper>
+
+ <br/>
+     
+    {  purchaseReturnData && purchaseReturnData.returnItems?.length > 0 && (
+    <>          <br/>
+                    <InfoBillWrapper>
+                              {/* our info */}
+                              <div>
+                                  <h3>RETURN ITEMS</h3>
+                                  <hr />
+                              </div>
+                      </InfoBillWrapper>
+      
+                          {/* /* table of items */}
+                                <TableStyled>
+                                  <thead>
+                                      <TdStyled><b>#</b></TdStyled>
+                                      <TdStyled><b>Item Name</b></TdStyled>
+                                      <TdStyled><b>Quantity</b></TdStyled>
+                                      <TdStyled><b>Price</b></TdStyled>
+                                      <TdStyled><b>Tax(%)</b></TdStyled>
+                                      <TdStyled><b>Tax Amount </b></TdStyled>
+                                      <TdStyled><b>Unit Cost </b></TdStyled>
+                                      <TdStyled><b>Amount </b></TdStyled>
+                                  </thead>
+                                  <tbody>
+                                  {purchaseReturnData.returnItems?.map((data, i)=>(
+                                      <tr key={i}>
+                                          <TdStyled>{i+1}</TdStyled>
+                                          <TdStyled>{data.title}</TdStyled>
+                                          <TdStyled>{data.quantity}</TdStyled>
+                                          <TdStyled>{data.price}</TdStyled>
+                                          <TdStyled>{data.tax}%</TdStyled>
+                                          <TdStyled>{data.taxAmount}</TdStyled>
+                                          <TdStyled>{data.unitCost}</TdStyled>
+                                          <TdStyled>{data.amount }</TdStyled>
+                                      </tr>
+                                  ))
+                              }
+                                  </tbody>
+                              </TableStyled>  
+
+                {/* Total Charges */}
+                            <ChargesWrapper>
+                              <div>
+                                <h3>Payment</h3>
+                                <hr />
+                                <TableStyled pd="0px">
+                                          <thead>
+                                              <TdStyled><b>Return Date</b></TdStyled>
+                                              <TdStyled><b>Refund Amount </b></TdStyled>
+                                              <TdStyled><b>Payment Type</b></TdStyled>
+                                          </thead>
+                                          <tbody>
+                                                 <tr>
+                                                      <TdStyled>{new Date(purchaseReturnData?.returnDate).toDateString()}</TdStyled>
+                                                      <TdStyled>{purchaseReturnData?.returnAmount}</TdStyled>
+                                                      <TdStyled>{purchaseReturnData?.paymentType}</TdStyled>
+                                                  </tr>
+                                          </tbody>
+                                      </TableStyled>
+                              </div>
+              
+                             
+                              {/* Total Charges */}
+                              <div>
+                              <h3>Charges</h3>
+                              <hr />
+                              <div>
+                                  <span><b>Total Refund</b></span>
+                                  <span><b><span dangerouslySetInnerHTML={{ __html: companyData.currencySymbol }}/>
+                                  {purchaseReturnData?.returnAmount?.toLocaleString('en-NG', { 
+                                    minimumFractionDigits: 2, 
+                                    maximumFractionDigits: 2 
+                                  })}</b></span>
+                                </div>
+                              </div>
+
+
+                            </ChargesWrapper>
+ <br/>
+                <NoteWrapper>
+                <b>Reason: </b> 
+                <div>{purchaseReturnData?.reason}</div>
+                <hr />
+              </NoteWrapper>
+               <br/>
+</>)}
+              
       </InvoiceWrapper>
   
+  
+
+
+
     {/* Action buttons */}
       <ButtonsWrapper>
 

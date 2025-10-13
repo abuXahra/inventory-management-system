@@ -13,6 +13,14 @@ import { IoIosPeople } from "react-icons/io";
 import { IoBagSharp, IoPricetagsSharp } from "react-icons/io5";
 import { HiMiniReceiptRefund } from "react-icons/hi2";
 
+// Sales Invoice
+// Suppliers
+// Purchase Invoice
+// Items
+// Items Category
+// Return Items
+// Expenses
+
 export const TopCardItemList = [
   {
     title: "Customer",

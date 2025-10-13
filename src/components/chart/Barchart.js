@@ -1,76 +1,49 @@
-import axios from "axios";
-import React, { useEffect, useState } from "react";
-
+// Import necessary libraries
+import React from "react";
 import {
   BarChart,
   Bar,
-  ResponsiveContainer,
   XAxis,
   YAxis,
+  CartesianGrid,
   Tooltip,
   Legend,
-  CartesianGrid,
+  ResponsiveContainer,
 } from "recharts";
 
-export default function BarChartComponent() {
-  const [chartData, setChartData] = useState([]);
+// Sample data
+const data = [
+  { name: "January", sales: 4000, profit: 2400 },
+  { name: "February", sales: 3000, profit: 1398 },
+  { name: "March", sales: 2000, profit: 9800 },
+  { name: "April", sales: 2780, profit: 3908 },
+  { name: "May", sales: 1890, profit: 4800 },
+  { name: "June", sales: 2390, profit: 3800 },
+  { name: "July", sales: 3490, profit: 4300 },
+];
 
-  const fetchData = async () => {
-    try {
-      const res = await axios.get(
-        `${process.env.REACT_APP_URL}/api/chart/bar-chart-data`
-      );
-      setChartData(res.data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  const CustomToolTip = ({ active, payload }) => {
-    if (active && payload && payload.length) {
-      return (
-        <div
-          style={{
-            padding: "4px",
-            backgroundColor: "#0f172a",
-            borderRadius: "10px",
-            color: "#fff",
-          }}
-        >
-          <p
-            style={{ textTransform: "capitalize" }}
-          >{`User: ${payload[0].payload.username}`}</p>
-          <p>{`Posts: ${payload[0].value}`}</p>
-        </div>
-      );
-    }
-    return null;
-  };
-
+const MyBarChart = () => {
   return (
-    <ResponsiveContainer width={"100%"} height={300}>
+    <ResponsiveContainer width="100%" height={300}>
       <BarChart
-        data={chartData}
-        margin={{ right: 30, top: 30, bottom: 20, left: -10 }}
+        data={data}
+        margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
       >
-        <CartesianGrid strokeDasharray="5 5" />
-        <XAxis dataKey="username" />
+        {/* Add grid lines */}
+        <CartesianGrid strokeDasharray="3 3" />
+        {/* X-axis and Y-axis */}
+        <XAxis dataKey="name" />
         <YAxis />
-        <Tooltip content={<CustomToolTip />} />
+        {/* Tooltip for hover details */}
+        <Tooltip />
+        {/* Legend for bar descriptions */}
         <Legend />
-        <Bar dataKey="posts" fill="#00032a" name="Number of Posts" />
-        <Bar
-          type="monotone"
-          dataKey="posts"
-          stroke="#2563eb"
-          fill="#2563eb"
-          name="Username"
-        />
+        {/* Bars for sales and profit */}
+        <Bar dataKey="sales" fill="#8884d8" name="Sales" />
+        <Bar dataKey="profit" fill="#82ca9d" name="Profit" />
       </BarChart>
     </ResponsiveContainer>
   );
-}
+};
+
+export default MyBarChart;
