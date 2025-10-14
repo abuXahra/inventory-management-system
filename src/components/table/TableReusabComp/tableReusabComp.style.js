@@ -16,4 +16,14 @@ export const TableReusableHeader = styled.div`
   border-top-left-radius: 10px;
   color: #000;
   border-bottom: 1px solid grey;
+  display: flex;
+  justify-content: space-between;
+
+  span {
+    color: blue;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
 `;

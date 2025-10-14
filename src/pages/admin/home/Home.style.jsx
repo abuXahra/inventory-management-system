@@ -182,7 +182,7 @@ export const Container = styled.div`
     width: 100%;
     display: flex;
     gap: 10px;
-
+    
     
     @media (max-width: 768px) {
         flex-direction: column;
