@@ -74,6 +74,7 @@ import EditSaleReturn from "./pages/admin/return/sale_return/edit/EditSaleReturn
 import AddPurchaseReturn from "./pages/admin/return/purchase_return/add/AddPurchaseReturn";
 import PurchaseReturnsPage from "./pages/admin/return/purchase_return/PurchaseReturnsPage";
 import PurchaseReturnView from "./pages/admin/return/purchase_return/view/PurchaseReturnView";
+import LowStock from "./pages/admin/product_low_stock/LowStock";
 
 function App() {
   const { user } = useContext(UserContext);
@@ -148,6 +149,7 @@ function App() {
               path="/product-detail/:productId"
               element={<ProductDetail />}
             />
+            <Route path="/low-stock" element={<LowStock />} />
             {/* SALE */}
             <Route path="/sales" element={<SalePage />} />
             <Route path="/add-sale" element={<AddSale />} />

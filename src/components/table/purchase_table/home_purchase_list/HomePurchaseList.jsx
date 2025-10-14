@@ -7,11 +7,12 @@ import TabeReusabComp from '../../TableReusabComp/TableReusabComp';
 import { HomePurchaseListWrapper } from './homePurchaseList.style';
 import { ProductItemList } from '../../../../data/productItems';
 import axios from 'axios';
+import HomePurchaseTable from './home_purchase_table/HomePurchaseTable';
 
 
 
 const HomePurchaseList = () => {
-  
+
 
   const [data, setData] = useState([])
    const [isLoading, setIsLoading] = useState([])
@@ -20,9 +21,11 @@ const HomePurchaseList = () => {
                        const getPurchase = async () => { 
                        setIsLoading(true)  
                        try {
-                        const res = await axios.get(process.env.REACT_APP_URL + "/api/purchase/")
+                        const res = await axios.get(process.env.REACT_APP_URL + "/api/sale/")
+                        // Sort by saleAmount descending
+                        const sortedData = res.data.sort((a, b) => b.saleAmount - a.saleAmount);
                                 
-                                        setData(res.data)
+                                        setData(sortedData)
                                         setIsLoading(false)
                       
                                         console.log(res.data)
@@ -36,9 +39,12 @@ const HomePurchaseList = () => {
   
   return (
     <HomePurchaseListWrapper>
-        <TabeReusabComp productData={data} header={'Purchase Items'}/>
+        <HomePurchaseTable productData={data} header={'Sale Items'}/>
     </HomePurchaseListWrapper>
   );
 };
 
 export default HomePurchaseList;
+
+
+

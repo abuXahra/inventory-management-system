@@ -318,6 +318,8 @@ const {user} = useContext(UserContext);
         <AlertContent/>
         <HomePurchaseList/>
       </Container>  
+
+      <HomePurchaseList/>
     </HomeWrapper>
   )
 }

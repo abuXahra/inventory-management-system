@@ -16,7 +16,7 @@ import Overlay from '../../overlay/Overlay';
 import ToastComponents from '../../toast_message/toast_component/ToastComponents';
 
 
-const ProductTable = ({ data, onDeleteProd, currencySymbol }) => {
+const ProductTable = ({ data, onDeleteProd, currencySymbol, show = true }) => {
 
   const navigate = useNavigate();
 
@@ -130,14 +130,9 @@ const ProductTable = ({ data, onDeleteProd, currencySymbol }) => {
       sortable: true,
                     width: '10%', // Set a different width
     },
-    // {
-    //   name: 'SKU',
-    //   selector: (row) => row.sku,
-    //   sortable: true,
-    // },
     {
       name: 'In stock',
-      selector: (row) => row.purchaseQuantity,
+      selector: (row) => row.stockQuantity,
       sortable: true,
       width: '10%', // Set a different width
     },
@@ -156,12 +151,12 @@ const ProductTable = ({ data, onDeleteProd, currencySymbol }) => {
       width: '10%', // Set a different width
 
     },
-    {
+   show && {
       name: 'Alert',
       selector: (row) => row.quantityAlert,
       width: '10%',
-},
-    {
+    },
+    show && {
       name: 'Actions',
       width: '10%',
       cell: (row) => (
