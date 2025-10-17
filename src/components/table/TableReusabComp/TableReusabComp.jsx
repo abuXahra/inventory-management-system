@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import { Paper, TableBody, TableCell, TableContainer, TableRow } from '@mui/material'
 import { TableReusableHeader, TableReusableWrapper } from './tableReusabComp.style'
-import { TableStyled, TdStyled } from '../../../pages/admin/sale/Add/addSale.style'
+import { TableStyled, TdStyled } from '../../../pages/sale/Add/addSale.style'
 import { FaLongArrowAltRight } from 'react-icons/fa'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 
-export default function TabeReusabComp({productData, header, tableHeaderData}) {
+export default function TabeReusabComp({productData, header, tableHeaderData, isLoading}) {
 
     const navigate = useNavigate();
           // fetching currency from db
@@ -29,8 +29,13 @@ export default function TabeReusabComp({productData, header, tableHeaderData}) {
            <TableReusableWrapper>
                           <TableReusableHeader>
                               {header}
-                              <span onClick={()=>navigate('/low-stock')}>View <FaLongArrowAltRight /></span>
-                          </TableReusableHeader>
+                              <span onClick={()=>navigate('/low-stock')}>View All <FaLongArrowAltRight /></span>
+                        </TableReusableHeader>
+              {isLoading ? (
+                    <div style={{height: "250px", width: "100%", display: 'flex', justifyContent: "center", alignItems: "center" }}>
+                        <p>Loading</p>
+                    </div>
+                    ) : (         
               <TableStyled>
                   <thead>
                   
@@ -55,6 +60,7 @@ export default function TabeReusabComp({productData, header, tableHeaderData}) {
                          }
                   </tbody>
               </TableStyled>
+               )}
               </TableReusableWrapper> 
         </TableReusableWrapper>
   )

@@ -12,6 +12,7 @@ import Overlay from '../../overlay/Overlay';
 import ButtonLoader from '../../clicks/button/button_loader/ButtonLoader';
 import ToastComponents from '../../toast_message/toast_component/ToastComponents';
 import Button from '../../clicks/button/Button';
+import { token } from '../../context/UserToken';
 
 
 
@@ -25,7 +26,11 @@ const ExpensesTable = ({ data, onDeleteExpense }) => {
         const fetchAllCompany = async() =>{
           
             try {
-                const res = await axios.get(`${process.env.REACT_APP_URL}/api/company`);
+                const res = await axios.get(`${process.env.REACT_APP_URL}/api/company`, {
+                                    headers: {
+                                      Authorization: `Bearer ${token}`
+                                    }
+                              });
              
                 setCurrencySymbol(res.data[0].currencySymbol)
   
@@ -91,7 +96,11 @@ const ExpensesTable = ({ data, onDeleteExpense }) => {
         try {
           await axios.delete(`${process.env.REACT_APP_URL}/api/expense/bulk-delete`, {
             data: { ids: selectedExpenses.map((e) => e._id) },
-          });
+          }, {
+                                    headers: {
+                                      Authorization: `Bearer ${token}`
+                                    }
+                              });
           toast.success(`${selectedExpenses.length} expenses deleted successfully`);
       
           // remove deleted from UI

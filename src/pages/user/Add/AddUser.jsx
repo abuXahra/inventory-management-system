@@ -5,7 +5,7 @@ import { AiFillPicture } from 'react-icons/ai'
 import { ImageWrapper, InputPicture, NameAndFileInput, UserContent, UserWrapper } from './addUser.style'
 import PageTitle from '../../../components/page_title/PageTitle'
 import ItemContainer from '../../../components/item_container/ItemContainer'
-import { AnyItemContainer } from '../../admin/sale/Add/addSale.style'
+import { AnyItemContainer } from '../../sale/Add/addSale.style'
 import Input from '../../../components/input/Input'
 import TextArea from '../../../components/input/textArea/TextArea'
 import { ItemButtonWrapper } from '../../../components/item_container/itemContainer.style'
@@ -15,6 +15,7 @@ import SelectInput from '../../../components/input/selectInput/SelectInput'
 import axios from 'axios'
 import { ToastContainer, toast } from 'react-toastify';
 import "react-toastify/ReactToastify.css"
+import { token } from '../../../components/context/UserToken'
 
 export default function AddUser() {
 
@@ -148,7 +149,7 @@ export default function AddUser() {
 
                 // img upload
                 try {
-                    const imgUpload = await axios.post('http://localhost:5000/api/upload', data)
+                    const imgUpload = await axios.post(`${process.env.REACT_APP_URL}/api/upload`, data)
                     console.log(imgUpload.data)
                 } catch (err) {
                     console.log(err)
@@ -157,7 +158,11 @@ export default function AddUser() {
 
             setIsLoading(true)
             try {
-                const res = await axios.post(`http://localhost:5000/api/auth/register`, user)
+                const res = await axios.post(`${process.env.REACT_APP_URL}/api/auth/register`, user, {
+                                    headers: {
+                                      Authorization: `Bearer ${token}`
+                                    }
+                              });
                 console.log(res.data);
                 setIsLoading(false);
                

@@ -4,6 +4,7 @@ import TableReusabComp from '../TableReusabComp/TableReusabComp'
 import { ProductItemList } from '../../../data/productItems'
 import { AlertContentTableWrapper } from './alertContent.style'
 import axios from 'axios'
+import { token } from '../../context/UserToken'
 
 export default function AlertContent() {
 
@@ -14,7 +15,11 @@ export default function AlertContent() {
     setIsLoading(true);
     try {
       // Fetch only products with stockQuantity <= quantityAlert
-      const res = await axios.get(process.env.REACT_APP_URL + "/api/products/low-stock");
+      const res = await axios.get(process.env.REACT_APP_URL + "/api/products/low-stock", {
+                                                                            headers: {
+                                                                              Authorization: `Bearer ${token}`
+                                                                            }
+                                                                      }) 
       console.log('low stocks: \n', res.data)
       setProductData(res.data);
       setIsLoading(false);
@@ -33,7 +38,7 @@ export default function AlertContent() {
 
   return (
     <AlertContentTableWrapper>
-        <TableReusabComp productData={productData} header={'Low Stock Items'}/>
+        <TableReusabComp isLoading={isLoading} productData={productData} header={'Low Stock Items'}/>
     </AlertContentTableWrapper>
   )
 }

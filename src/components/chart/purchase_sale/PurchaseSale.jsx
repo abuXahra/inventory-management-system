@@ -11,6 +11,7 @@ import {
     CartesianGrid,
   } from 'recharts';
 import axios from 'axios';
+import { token } from '../../context/UserToken';
 
 
 export default function PurchaseSale() {
@@ -34,7 +35,11 @@ export default function PurchaseSale() {
       setLoading(true);
       try {
         // const res = await axios.get('/api/reports/salePurchase');
-        const res = await axios.get('http://localhost:5000/api/reports/salePurchase');
+        const res = await axios.get(`${process.env.REACT_APP_URL}/api/reports/salePurchase`, {
+                                                            headers: {
+                                                              Authorization: `Bearer ${token}`
+                                                            }
+                                                      }); 
         console.log(res.data)
         setData(res.data);
         setLoading(false);
@@ -56,7 +61,9 @@ export default function PurchaseSale() {
         {/* chart */}
         <BarChatWrapper>
            {loading ? (
-          <p>Loading chart...</p>
+          <div style={{height: "100%", width: "100%", display: 'flex', justifyContent: "center", alignItems: "center" }}>
+            <p>Loading</p>
+          </div>
         ) : (
             <ResponsiveContainerStyled>
                 <BarChart data={data}>

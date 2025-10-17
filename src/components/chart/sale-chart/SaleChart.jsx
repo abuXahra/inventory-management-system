@@ -24,6 +24,7 @@ import { SaleChartContWrapper, SaleChartHeader, SaleChartWrapper } from "./saleC
 import { useState } from "react";
 import { useEffect } from "react";
 import axios from "axios";
+import { token } from "../../context/UserToken";
 
 // Sample data
 // const data = [
@@ -46,7 +47,11 @@ const SaleChart = () => {
         setLoading(true);
         try {
    
-          const res = await axios.get(`${process.env.REACT_APP_URL}/api/reports/sale`);
+          const res = await axios.get(`${process.env.REACT_APP_URL}/api/reports/sale`, {
+                                                                      headers: {
+                                                                        Authorization: `Bearer ${token}`
+                                                                      }
+                                                                }) 
           console.log('Sale Data: \n ', res.data)
           setData(res.data);
           setLoading(false);
@@ -58,8 +63,6 @@ const SaleChart = () => {
       fetchChartData();
     }, []);
 
-  if (loading) return <div>Loading chart...</div>;
-  if (!data.length) return <div>No chart data available</div>;
 
   return (
      <SaleChartWrapper>
@@ -67,6 +70,11 @@ const SaleChart = () => {
                 Sales
             </SaleChartHeader>
     <SaleChartContWrapper>
+      {loading ? (
+                <div style={{height: "100%", width: "100%", display: 'flex', justifyContent: "center", alignItems: "center" }}>
+                  <p>Loading</p>
+                </div>
+              ) : (
     <ResponsiveContainer width="100%" height={200}>
       <BarChart
         data={data}
@@ -86,6 +94,7 @@ const SaleChart = () => {
         <Bar dataKey="purchase" fill="#82ca9d" name="Profit" />
       </BarChart>
     </ResponsiveContainer>
+     )}
     </SaleChartContWrapper>
 </SaleChartWrapper>
   );

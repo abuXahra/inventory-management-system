@@ -12,6 +12,7 @@ import ButtonLoader from '../../../clicks/button/button_loader/ButtonLoader';
 import { customStyles } from '../../TableCustomStyle.style';
 import Overlay from '../../../overlay/Overlay';
 import ToastComponents from '../../../toast_message/toast_component/ToastComponents';
+import { token } from '../../../context/UserToken';
 
 
 
@@ -25,7 +26,11 @@ const PurchaseReturnTable = ({data, onDeletePurchase}) => {
       useEffect(()=>{
           const fetchAllCompany = async() =>{
               try {
-                  const res = await axios.get(`${process.env.REACT_APP_URL}/api/company`);
+                  const res = await axios.get(`${process.env.REACT_APP_URL}/api/company`, {
+                                                      headers: {
+                                                        Authorization: `Bearer ${token}`
+                                                      }
+                                                })
                   setCurrencySymbol(res.data[0].currencySymbol)
               } catch (error) {
                 console.log(error)
@@ -86,7 +91,11 @@ const PurchaseReturnTable = ({data, onDeletePurchase}) => {
                           try {
                             await axios.delete(`${process.env.REACT_APP_URL}/api/purchaseReturn/bulk-delete`, {
                               data: { ids: selectedPurchaseReturn.map((e) => e._id) },
-                            });
+                            }, {
+                                                                headers: {
+                                                                  Authorization: `Bearer ${token}`
+                                                                }
+                                                          })
                             toast.success(`${selectedPurchaseReturn.length} purchase Return deleted successfully`);
                         
                             // remove deleted from UI

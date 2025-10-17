@@ -11,6 +11,7 @@ import Button from "../../clicks/button/Button";
 import ButtonLoader from "../../clicks/button/button_loader/ButtonLoader";
 import Overlay from "../../overlay/Overlay";
 import ToastComponents from "../../toast_message/toast_component/ToastComponents";
+import { token } from "../../context/UserToken";
 
 
 
@@ -24,7 +25,11 @@ const PurchaseTable = ({data, onDeletePurchase}) => {
     useEffect(()=>{
         const fetchAllCompany = async() =>{
             try {
-                const res = await axios.get(`${process.env.REACT_APP_URL}/api/company`);
+                const res = await axios.get(`${process.env.REACT_APP_URL}/api/company`, {
+                                                    headers: {
+                                                      Authorization: `Bearer ${token}`
+                                                    }
+                                              })
                 setCurrencySymbol(res.data[0].currencySymbol)
             } catch (error) {
               console.log(error)
@@ -85,7 +90,11 @@ const PurchaseTable = ({data, onDeletePurchase}) => {
                         try {
                           await axios.delete(`${process.env.REACT_APP_URL}/api/purchase/bulk-delete`, {
                             data: { ids: selectedPurchase.map((e) => e._id) },
-                          });
+                          }, {
+                                                              headers: {
+                                                                Authorization: `Bearer ${token}`
+                                                              }
+                                                        })
                           toast.success(`${selectedPurchase.length} purchases deleted successfully`);
                       
                           // remove deleted from UI

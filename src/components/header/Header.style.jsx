@@ -104,3 +104,48 @@ export const HamburgerWrapperHeaderi = styled.span`
         display: none;
     }
 `
+
+
+
+
+
+export const HeaderDropdown = styled.div`
+    width: 150px;
+    background-color: white;
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+    border-radius: 10px;
+    padding: 10px;
+    position: absolute;
+    top: 50px;
+    right: -60px;
+    color: black;
+    display: flex;
+    flex-direction: column;
+    z-index: 9999;
+    
+
+    @media (max-width: 768px) {
+        /* right: -152px; */
+    }
+`
+
+export const HeaderDropdownItem = styled.div`
+    width: 100%;
+    border-radius: 10px;
+    background-color: ${({bg}) => bg || ''};
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    font-size: 11px;
+    color: black;
+    padding: 5px;
+    gap: 10px;
+
+
+
+    &:hover{
+        background-color: #6161f9c9;
+        color: white
+    }
+      
+`

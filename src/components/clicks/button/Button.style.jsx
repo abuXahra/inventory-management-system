@@ -11,6 +11,7 @@ export const ButtonWrapper = styled.button`
     border-radius: ${({btnBdRd})=> btnBdRd || "10px"};
     cursor: pointer;
     font-size: ${({btnFontSize}) => btnFontSize || ''};
+    justify-content: center;
 
     @media (max-width: 768px) {
     display: flex;

@@ -5,7 +5,7 @@ import { AiFillPicture } from 'react-icons/ai'
 import { ImageWrapper, InputPicture, NameAndFileInput, EditUserContent, EditUserWrapper } from './editUser.style'
 import PageTitle from '../../../components/page_title/PageTitle'
 import ItemContainer from '../../../components/item_container/ItemContainer'
-import { AnyItemContainer } from '../../admin/sale/Add/addSale.style'
+import { AnyItemContainer } from '../../sale/Add/addSale.style'
 import Input from '../../../components/input/Input'
 import TextArea from '../../../components/input/textArea/TextArea'
 import { ItemButtonWrapper } from '../../../components/item_container/itemContainer.style'
@@ -19,6 +19,7 @@ import ToastComponents from '../../../components/toast_message/toast_component/T
 import ContentLoader, {
   List, 
 } from 'react-content-loader'
+import { token } from '../../../components/context/UserToken'
 
 export default function AddUser() {
 
@@ -113,7 +114,11 @@ export default function AddUser() {
         const fetchUser = async() =>{
             setIsLoading(true)
             try {
-                const res = await axios.get(`${process.env.REACT_APP_URL}/api/users/${userId}`);
+                const res = await axios.get(`${process.env.REACT_APP_URL}/api/users/${userId}`, {
+                                    headers: {
+                                      Authorization: `Bearer ${token}`
+                                    }
+                              });
                 console.log(res.data);
                 setName(res.data.username)
                 setEmail(res.data.email)
@@ -202,7 +207,11 @@ export default function AddUser() {
           
                       setIsBtnLoading(true)
                       try {
-                          const res = await axios.put(`${process.env.REACT_APP_URL}/api/users/${userId}`, user)
+                          const res = await axios.put(`${process.env.REACT_APP_URL}/api/users/${userId}`, user, {
+                                    headers: {
+                                      Authorization: `Bearer ${token}`
+                                    }
+                              });
                           console.log(res.data);
                           setIsBtnLoading(false)
                          

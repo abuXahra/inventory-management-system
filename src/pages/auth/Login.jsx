@@ -1,6 +1,6 @@
 
 import React, { useContext, useEffect, useState } from 'react'
-import { LoginWrapper } from './Login.style'
+import { LoginWrapper, LoginContentLeft, FormWrapper } from './Login.style'
 import Input from '../../components/input/Input'
 import Button from '../../components/clicks/button/Button';
 // import ButtonLoader from '../../components/clicks/button/button_loader/ButtonLoader';
@@ -10,6 +10,9 @@ import { useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import "react-toastify/ReactToastify.css"
 import ButtonLoader from '../../components/clicks/button/button_loader/ButtonLoader';
+import loginPicture from '../../images/icons/login-cover.svg'
+import loginIcon from '../../images/icons/icon.png'
+
 
 export default function Login() {
 
@@ -44,8 +47,10 @@ export default function Login() {
 
         if (email === null || email === '') {
             setEmailError(true);
+            toast.error('Email is required');
             return;
         }else if(password === null || password === '') {
+            toast.error('Password is required');
             setPasswordError(true);
             return;
         }else{
@@ -80,51 +85,48 @@ export default function Login() {
 
 
 
-    
-    // useEffect to navigate after user context is updated
-    // useEffect(() => {
-    //     if (user) {
-    //         if (user.role === "admin") {
-    //             navigate('/dashboard');
-    //         } else if (user.role === "user") {
-    //             navigate('/user-dashboard');
-    //         } 
-    //     }
-    // }, [user, navigate])
-
-
 
 
   return (
     <LoginWrapper>
-        <h1>Login</h1>
+        <LoginContentLeft>
+            <img src={loginPicture} alt="" srcset="" />
+        </LoginContentLeft>
+       <FormWrapper>
+        <img src={loginIcon} alt="" srcset="" />
+         <h3>Inventory Managment Software</h3>
+         <p>Please log in to your account</p>
         <form onSubmit={onSubmitHandler}>
             <Input
+                label={"Email"}
                 type={'email'}
                 title={"Email"}
                 value={email}
                 placeholder={"email"}
-                error={emailError}
+                // error={emailError}
                 onChange={(e)=>onChangeHandler('email', e)}
                 inputPadding={"15px"}
-                bdColor={'white'}
-                
+                bdColor={'grey'}
+                inputWidth={"100%"}
             />
 
              <Input
+                label={'Password'}
                 type={"password"}
                 title={"Password"}
                 value={password}
                 placeholder={"password"}
-                error={passwordError}
+                // error={passwordError}
                 onChange={(e)=>onChangeHandler('password', e)}
                 inputPadding={"15px"}
-                bdColor={'white'}
-                     />
+                inputWidth={"100%"}
+                bdColor={'grey'}
+                    />
                 
-            <div><Button btnColor={'green'} btnPd={'15px 20px'} btnText={isLoading? <ButtonLoader text="Processing..." />  : 'Login'}/></div>
+         <Button btnColor={'blue'} btnPd={'15px 30px'} btnText={isLoading? <ButtonLoader text="Processing..." />  : 'Login'}/>
                 {loginError && 'Incorrect password or email'}
         </form>
+        </FormWrapper>
         
          {/* ===================Toast Message ================= */}
                  <ToastContainer

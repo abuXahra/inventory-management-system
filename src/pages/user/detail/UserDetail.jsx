@@ -4,7 +4,7 @@ import { UserDetailContent, UserDetailData, UserDetailPicture, UserDetailWrapper
 import { FaEdit, FaTrash } from 'react-icons/fa'
 import { useNavigate, useParams } from 'react-router-dom'
 import ItemContainer from '../../../components/item_container/ItemContainer'
-import { AnyItemContainer, InnerWrapper } from '../../admin/sale/Add/addSale.style'
+import { AnyItemContainer, InnerWrapper } from '../../sale/Add/addSale.style'
 import axios from 'axios'
 import profilPiture from '../../../images/placeholder_image.png'
 import Overlay from '../../../components/overlay/Overlay'
@@ -17,6 +17,7 @@ import ContentLoader, {
   Facebook,
   Instagram
 } from 'react-content-loader'
+import { token } from '../../../components/context/UserToken'
 
 
 
@@ -39,7 +40,11 @@ useEffect(()=>{
   const fetchUser = async() =>{
     setIsLoading(true)
       try {
-          const res = await axios.get(`${process.env.REACT_APP_URL}/api/users/${userId}`);
+          const res = await axios.get(`${process.env.REACT_APP_URL}/api/users/${userId}`, {
+                                    headers: {
+                                      Authorization: `Bearer ${token}`
+                                    }
+                              });
           console.log(res.data);          
           setUserData(res.data);
           setIsLoading(false);
@@ -65,7 +70,11 @@ const handleGrabId = (userName)=>{
           setIsLoading(true);
           try {
              
-            await axios.delete(`${process.env.REACT_APP_URL}/api/users/${userId}`);
+            await axios.delete(`${process.env.REACT_APP_URL}/api/users/${userId}`, {
+                                    headers: {
+                                      Authorization: `Bearer ${token}`
+                                    }
+                              });
            
               toast.success('User deleted successfully');
               setShowDeleteCard(false); // Close modal

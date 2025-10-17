@@ -63,6 +63,7 @@ const ProductTable = ({ data, onDeleteProd, currencySymbol, show = true }) => {
             const [selectedProduct, setSelectedProduct] = useState([]);
             const [isDeleting, setIsDeleting] = useState(false);
             const [showBulkDeleteCard, setShowBulkDeleteCard] = useState(false);
+            const token = localStorage.getItem('token');
             
         //  to show bulk popup delete card
             const handleBulkDelete = async () => {
@@ -73,9 +74,11 @@ const ProductTable = ({ data, onDeleteProd, currencySymbol, show = true }) => {
             const confirmBulkDelete = async () => {
               setIsDeleting(true);
               try {
-                await axios.delete(`${process.env.REACT_APP_URL}/api/products/bulk-delete`, {
-              data: { ids: selectedProduct.map((e) => e._id) },
-            });
+                await axios.delete(`${process.env.REACT_APP_URL}/api/products/bulk-delete`, {data: { ids: selectedProduct.map((e) => e._id) }}, {
+                             headers: {
+                                  Authorization: `Bearer ${token}`
+                                }
+                              });
                 toast.success(`${selectedProduct.length} products deleted successfully`);
                               
                 // remove deleted from UI

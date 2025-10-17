@@ -98,7 +98,7 @@ export function UserContextProvider({ children }) {
   const fetchUser = async () => {
     const token = localStorage.getItem("token");
     if (!token) {
-      setLoading(false);
+      setLoading(false)
       return;
     }
 

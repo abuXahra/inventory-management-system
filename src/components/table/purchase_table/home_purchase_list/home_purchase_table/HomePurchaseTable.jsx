@@ -1,19 +1,26 @@
 import React, { useEffect, useState } from 'react'
 import { TableReusableHeader, TableReusableWrapper } from '../../../TableReusabComp/tableReusabComp.style';
 import { FaLongArrowAltRight } from 'react-icons/fa';
-import { TableStyled, TdStyled } from '../../../../../pages/admin/sale/Add/addSale.style';
+import { TableStyled, TdStyled } from '../../../../../pages/sale/Add/addSale.style';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
-const HomePurchaseTable = ({productData, header, tableHeaderData}) => {
 
-    const navigate = useNavigate();
+const HomePurchaseTable = ({productData, header, tableHeaderData, isLoading}) => {
+
+
+     const navigate = useNavigate();
+     const token = localStorage.getItem('token');
       // fetching currency from db
       const [currencySymbol, setCurrencySymbol] =  useState('');
         useEffect(()=>{
             const fetchAllCompany = async() =>{
                 try {
-                    const res = await axios.get(`${process.env.REACT_APP_URL}/api/company`);
+                    const res = await axios.get(`${process.env.REACT_APP_URL}/api/company` , {
+                                    headers: {
+                                      Authorization: `Bearer ${token}`
+                                    }
+                              });
                     setCurrencySymbol(res.data[0]?.currencySymbol)
                 } catch (error) {
                   console.log(error)
@@ -26,8 +33,13 @@ const HomePurchaseTable = ({productData, header, tableHeaderData}) => {
            <TableReusableWrapper>
                           <TableReusableHeader>
                               {header}
-                              <span onClick={()=>navigate('/sales')}>View <FaLongArrowAltRight /></span>
+                              <span onClick={()=>navigate('/sales')}>View Sales <FaLongArrowAltRight /></span>
                           </TableReusableHeader>
+          {isLoading ? (
+                    <div style={{height: "250px", width: "100%", display: 'flex', justifyContent: "center", alignItems: "center" }}>
+                        <p>Loading</p>
+                    </div>
+                    ) : (  
               <TableStyled>
                   <thead>
                   
@@ -54,6 +66,7 @@ const HomePurchaseTable = ({productData, header, tableHeaderData}) => {
                          }
                   </tbody>
               </TableStyled>
+            )}
               </TableReusableWrapper> 
         </TableReusableWrapper>
   )

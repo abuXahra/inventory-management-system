@@ -1,7 +1,7 @@
 
 
 
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { HamburgerWrapper, HamburgerWrapperi, SidebarBody, SidebarContent, SidebarHeader, SidebarItemsWrapper, SidebarWrapper, SignOutWrapper } from './Siderbar.style';
 import logo from '../../images/logoz.png';
 import { FiHome, FiMenu } from 'react-icons/fi';
@@ -16,13 +16,6 @@ import axios from 'axios';
 import { UserContext } from '../context/UserContext';
 
 export default function Siderbar({
-  // displayShowSidebar,
-  // setDisplayShowSidebar,
-  // setMainContentWidth,
-  // setShowHbg,
-  // deskDisplaySidebar,
-  // setDeskDisplaySidebar,
-  // sidebarWidth,
   isOpen, 
   onClose
 }) {
@@ -33,6 +26,20 @@ export default function Siderbar({
 //     // Track which dropdown is active
   const [activeDropdown, setActiveDropdown] = useState(null); // Track the active dropdown index
   
+  // 🔍 Track sidebar DOM element
+  const sidebarRef = useRef();
+
+  // ✅ Close dropdown on outside click
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (sidebarRef.current && !sidebarRef.current.contains(event.target)) {
+        setActiveDropdown(null); // Close dropdown
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
 
   const handleLogout = async () => {
@@ -40,6 +47,7 @@ export default function Siderbar({
       const res = await axios.get(process.env.REACT_APP_URL + '/api/auth/logout', { withCredentials: true });
       setUser(null);
       localStorage.removeItem("user"); // ✅ Clear storage
+      localStorage.removeItem("token"); // Clear token
       navigate('/');
     } catch (err) {
       console.log(err);
@@ -58,7 +66,7 @@ export default function Siderbar({
       </SidebarHeader>
       <SidebarBody>
         <SidebarContent>
-          <SidebarItemsWrapper>
+          <SidebarItemsWrapper ref={sidebarRef}>
             {
               SidebarItemLists && SidebarItemLists.map((item, i) => (
                 <SidebarItem

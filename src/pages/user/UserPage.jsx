@@ -8,6 +8,7 @@ import ListHeader from '../../components/page_title/list_header/ListHeader'
 import PageTitle from '../../components/page_title/PageTitle'
 import axios from 'axios'
 import ContentLoader, {List } from 'react-content-loader'
+import { token } from '../../components/context/UserToken'
 
 
 
@@ -26,7 +27,11 @@ export default function UserPage() {
           const getUsers = async () => { // to keep user login when browser refresh
             setIsLoading(true)  
             try {
-                  const res = await axios.get(process.env.REACT_APP_URL + "/api/users")
+                  const res = await axios.get(process.env.REACT_APP_URL + "/api/users", {
+                                    headers: {
+                                      Authorization: `Bearer ${token}`
+                                    }
+                              });
                  
                   // Filter users based on their role
                   const filteredRecords = res.data.filter(user => user.role === 'user' || user.role === 'admin');
@@ -49,7 +54,11 @@ export default function UserPage() {
 // handle user delete
       const deleteUser = async (userId) => {
         try {
-          await axios.delete(`${process.env.REACT_APP_URL}/api/users/${userId}`);
+          await axios.delete(`${process.env.REACT_APP_URL}/api/users/${userId}`, {
+                                    headers: {
+                                      Authorization: `Bearer ${token}`
+                                    }
+                              });
           const updatedUsers = userRecords.filter(user => user._id !== userId);
           setUserRecords(updatedUsers);
           setAllUserRecords(updatedUsers); // Also update the backup

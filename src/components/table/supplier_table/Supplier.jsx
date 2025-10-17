@@ -13,6 +13,7 @@ import Button from '../../clicks/button/Button';
 import ButtonLoader from '../../clicks/button/button_loader/ButtonLoader';
 import Overlay from '../../overlay/Overlay';
 import ToastComponents from '../../toast_message/toast_component/ToastComponents';
+import { token } from '../../context/UserToken';
 
 
 const SupplierTable = ({data, onDeleteSup}) => {
@@ -72,7 +73,11 @@ const handleDelete = async (supplierId) => {
               try {
                 await axios.delete(`${process.env.REACT_APP_URL}/api/suppliers/bulk-delete`, {
               data: { ids: selectedSupplier.map((e) => e._id) },
-            });
+            }, {
+                                                headers: {
+                                                  Authorization: `Bearer ${token}`
+                                                }
+                                          })
                 toast.success(`${selectedSupplier.length} supplier deleted successfully`);
                               
                 // remove deleted from UI
