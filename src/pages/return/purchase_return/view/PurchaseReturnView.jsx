@@ -176,10 +176,10 @@ export default function PurchaseReturnView() {
                       <span><b>RETURN STATUS:</b></span>
                       <span>{purchaseReturnData?.purchaseStatus}</span>                  
                   </div> */}
-                  <div>
+                  {/* <div>
                       <span><b>PAYMENT STATUS:</b></span>
                       <span><div>{purchaseReturnData?.paymentStatus}</div></span>                  
-                  </div>
+                  </div> */}
               </div>
              
             </DateWrapper>
@@ -305,7 +305,7 @@ export default function PurchaseReturnView() {
 
                             </ChargesWrapper>
 
-                          {  purchaseReturnData.paymentStatus === 'partial' && 
+                          {/* {  purchaseReturnData.paymentStatus === 'partial' && 
                                                         
                               <PartialPaymentWrapper>
                                   <h3>Advance payment</h3> <hr />
@@ -327,7 +327,7 @@ export default function PurchaseReturnView() {
                                                         
                               
                         </PartialPaymentWrapper>
-                    }
+                    } */}
 
 <br/>
               {/* Note */}

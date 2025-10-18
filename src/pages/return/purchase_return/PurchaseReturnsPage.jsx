@@ -99,7 +99,7 @@ export default function PurchaseReturnsPage() {
       {isLoading? <List/> :
         <SaleReturnPageContent>
           <ListHeader 
-            title={'Add Purchase Return'} 
+            title={'Add Return'} 
             btnOnClick={()=>navigate('/add-purchase-return')}
             searQuery={'Customer or code'}
             onChange={handleSearchQueryOnChange}

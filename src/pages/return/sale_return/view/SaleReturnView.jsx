@@ -178,10 +178,10 @@ export default function SaleReturnView() {
                       <span><b>RETURN STATUS:</b></span>
                       <span>{saleReturnData?.saleStatus}</span>                  
                   </div> */}
-                  <div>
+                  {/* <div>
                       <span><b>PAYMENT STATUS:</b></span>
                       <span><div>{saleReturnData?.paymentStatus}</div></span>                  
-                  </div>
+                  </div> */}
               </div>
              
             </DateWrapper>
@@ -270,30 +270,6 @@ export default function SaleReturnView() {
                               <h3>Charges</h3>
                               <hr />
               
-                                {/* subtotal */}
-                                {/* <div>
-                                  <span><b>Sub Total</b></span>
-                                  <span><span dangerouslySetInnerHTML={{ __html: companyData.currencySymbol }}/>{saleReturnData?.subTotal}</span>
-                                </div> */}
-                                      {/* Other Charges */}
-                                {/* <div>
-                                  <span>Other Charges</span>
-                                  <span><span dangerouslySetInnerHTML={{ __html: companyData.currencySymbol }}/>{saleReturnData?.otherCharges}</span>
-                                </div> */}
-              
-                                      {/* Disacount*/}
-                                {/* <div>
-                                  <span>Discount ({saleReturnData?.discount})%</span>
-                                  <span><span dangerouslySetInnerHTML={{ __html: companyData.currencySymbol }}/>{saleReturnData?.discountValue}</span>
-                                </div> */}
-                
-              
-                                      {/* Shipping*/}
-                                {/* <div>
-                                  <span>Shipping</span>
-                                  <span><span dangerouslySetInnerHTML={{ __html: companyData.currencySymbol }}/>{saleReturnData?.shipping}</span>
-                                </div> */}
-              
                                   {/* Refund Total*/}
                                 <div>
                                   <span><b>Refund Total</b></span>
@@ -306,31 +282,6 @@ export default function SaleReturnView() {
                               </div>
 
                             </ChargesWrapper>
-
-                          {  saleReturnData.paymentStatus === 'partial' && 
-                                                        
-                              <PartialPaymentWrapper>
-                                  <h3>Advance payment</h3> <hr />
-                                     <div>                                   
-                                        <span>Amount Paid</span>
-                                        <span><span dangerouslySetInnerHTML={{ __html: companyData.currencySymbol }}/>{saleReturnData?.amountPaid.toLocaleString('en-NG', { 
-                                              minimumFractionDigits: 2, 
-                                              maximumFractionDigits: 2 
-                                            })}</span>
-                                      </div>
-                                                   
-                                     <div>
-                                        <span><b>Balance</b></span>
-                                        <span><b><span dangerouslySetInnerHTML={{ __html: companyData.currencySymbol }}/>{saleReturnData.dueBalance?.toLocaleString('en-NG', { 
-                                    minimumFractionDigits: 2, 
-                                    maximumFractionDigits: 2 
-                                  })}</b></span>
-                                      </div>
-                                                        
-                              
-                        </PartialPaymentWrapper>
-                    }
-
 <br/>
               {/* Note */}
               <NoteWrapper>

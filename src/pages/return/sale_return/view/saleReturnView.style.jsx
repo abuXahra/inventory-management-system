@@ -102,10 +102,10 @@ export const InfoBillWrapper = styled.div`
   gap: 20px;
 
   div {
-    width: 40%;
+    width: 50%;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 20px;
 
     div {
       width: 100%;

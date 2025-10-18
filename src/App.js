@@ -74,6 +74,7 @@ import TopSellingProds from "./pages/product/top_selling_products/TopSellingProd
 import LowStock from "./pages/product/product_low_stock/LowStock";
 import ProtectedRoute from "./components/protected_route/ProtectedRoute";
 import { LoaderWrapper } from "./pages/home/Home.style";
+import PermissionPage from "./pages/zpermission/Permission";
 
 function App() {
   const { user, loading } = useContext(UserContext);
@@ -353,6 +354,10 @@ function App() {
             <Route
               path="/company-calender"
               element={<ProtectedRoute element={<MyCalender />} />}
+            />
+            <Route
+              path="/permission"
+              element={<ProtectedRoute element={<PermissionPage />} />}
             />
           </Routes>
         </DashboardLayout>

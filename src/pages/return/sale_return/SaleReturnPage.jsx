@@ -96,7 +96,7 @@ export default function SaleReturnPage() {
       {isLoading? <List/> :
         <SaleReturnPageContent>
           <ListHeader 
-            title={'Add Sale Return'} 
+            title={'Add Return'} 
             btnOnClick={()=>navigate('/add-sale-return')}
             searQuery={'Customer or code'}
             onChange={handleSearchQueryOnChange}

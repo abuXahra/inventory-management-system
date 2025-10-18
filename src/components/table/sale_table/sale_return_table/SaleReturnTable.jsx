@@ -96,11 +96,8 @@ const SaleReturnTable = ({data, onDeleteSale}) => {
                           try {
                             await axios.delete(`${process.env.REACT_APP_URL}/api/saleReturn/bulk-delete`, {
                               data: { ids: selectedSaleReturn.map((e) => e._id) },
-                            }, {
-                                                                headers: {
-                                                                  Authorization: `Bearer ${token}`
-                                                                }
-                                                          })
+                              headers: {Authorization: `Bearer ${token}`}
+                            })
                             toast.success(`${selectedSaleReturn.length} sales Return deleted successfully`);
                         
                             // remove deleted from UI
