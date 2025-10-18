@@ -1,4 +1,5 @@
 
+
 import React, { useEffect, useState } from 'react';
 import DataTable from 'react-data-table-component';
 import styled from 'styled-components';
@@ -90,11 +91,9 @@ const SalesTable = ({data, onDeleteSale}) => {
                           try {
                             await axios.delete(`${process.env.REACT_APP_URL}/api/sale/bulk-delete`, {
                               data: { ids: selectedSale.map((e) => e._id) },
-                            }, {
-                                                                headers: {
-                                                                  Authorization: `Bearer ${token}`
-                                                                }
-                                                          })
+                              headers: {Authorization: `Bearer ${token}`}
+                           }
+)
                             toast.success(`${selectedSale.length} sales deleted successfully`);
                         
                             // remove deleted from UI

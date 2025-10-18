@@ -28,9 +28,9 @@ export const InputLabel = styled.label`
 `;
 
 export const InputStyle = styled.textarea`
-  border: 1px solid ${({ bdColor }) => bdColor || "#0d398420"};
+  border: 1.5px solid ${({ bdColor }) => bdColor || "#0d398420"};
   border-radius: 10px;
-  padding: ${({ inputPadding }) => inputPadding || "6px"};
+  padding: ${({ inputPadding }) => inputPadding || "10px"};
   background-color: transparent;
   color: ${({ txtColor }) => txtColor || "grey"};
   font-size: 10px;

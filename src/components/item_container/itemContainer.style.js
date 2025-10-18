@@ -10,7 +10,7 @@ export const ItemContainerS = styled.div`
 `;
 
 export const ItemContent = styled.div`
-  border: 1px solid #cccccc;
+  border: 1.5px solid #cccccc8c;
   border-radius: 10px;
   display: flex;
   flex-direction: column;
@@ -21,7 +21,7 @@ export const ItemContent = styled.div`
 `;
 
 export const ItemTitleWrapper = styled.div`
-  border: 1px solid #cccccc;
+  border: 1.5px solid #cccccc8c;
   display: flex;
   justify-content: center;
   align-items: center;

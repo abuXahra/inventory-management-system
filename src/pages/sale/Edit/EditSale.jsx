@@ -640,7 +640,7 @@ const hanldeSumbit = async (e) =>{
                                                   headers: {
                                                     Authorization: `Bearer ${token}`
                                                   }
-                                            })
+                                            });
 
               console.log(res.data)
               navigate(`/sale-invoice/${saleId}`);

@@ -29,9 +29,9 @@ export const SelectInputLabel = styled.label`
 `
 
 export const SelectInputStyle = styled.select`
-    border: 1px solid #0d398420; 
+    border: 1.5px solid #0d398420; 
      border-radius: 10px;
-    padding: 5px;
+    padding: 10px;
     width: 100%;
     color: grey;
     font-size: 10px;

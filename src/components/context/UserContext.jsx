@@ -104,10 +104,10 @@ export function UserContextProvider({ children }) {
 
     try {
       const res = await axios.get(`${process.env.REACT_APP_URL}/api/auth/me`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+                                          headers: {
+                                            Authorization: `Bearer ${token}`
+                                          }
+                                    });
       setUser(res.data);
     } catch (err) {
       console.error("User fetch failed", err);

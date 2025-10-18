@@ -146,7 +146,8 @@ export default function ViewPurchase() {
       const imgX = (pdfWidth - imgWidth * ratio) / 2;
       const imgY = 30;
       pdf.addImage(imgData, 'PNG', imgX, imgY, imgWidth * ratio, imgHeight * ratio );
-      pdf.save('invoice.pdf')
+      // pdf.save('invoice.pdf')
+      pdf.save(`Purchase_${purchaseData?.code || 'invoice'}.pdf`);
       setIsBtnLoading(false);
     })
   }
@@ -199,15 +200,15 @@ export default function ViewPurchase() {
                       <span>{purchaseData?.code}</span>                  
                   </div>
                   <div>
-                      <span><b>INVOICE DATE:</b></span>
+                      <span><b>DATE:</b></span>
                       <span>{new Date(purchaseData?.purchaseDate).toDateString()}</span>                  
                   </div>
                   <div>
-                      <span><b>SALES STATUS:</b></span>
+                      <span><b>PURCHASE STATUS:</b></span>
                       <span>{purchaseData?.purchaseStatus}</span>                  
                   </div>
                   <div>
-                      <span><b>Payment STATUS:</b></span>
+                      <span><b>PAYMENT STATUS:</b></span>
                       <span><div>{purchaseData?.paymentStatus}</div></span>                  
                   </div>
               </div>

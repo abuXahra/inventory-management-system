@@ -89,7 +89,7 @@ return (
 
       {/* Profile picture */}
        <ProfileWrapper onClick={()=> navigate(`users/${user._id}`)}>
-          <img src={user ? `${process.env.REACT_APP_URL}/images/${user.imgUrl}` : ProfilePicture} alt="" srcset="" />
+          <img src={user?.imgUrl ? `${process.env.REACT_APP_URL}/images/${user?.imgUrl}` : ProfilePicture} alt="" srcset="" />
        </ProfileWrapper>
       </HeaderContent>
 </HeadWrapper>

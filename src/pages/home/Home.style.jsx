@@ -181,7 +181,7 @@ export const TopCardIconB = styled.div`
 export const Container = styled.div`
     width: 100%;
     display: flex;
-    gap: 10px;
+    gap: 20px;
     
     
     @media (max-width: 768px) {

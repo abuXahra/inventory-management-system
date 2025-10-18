@@ -14,6 +14,7 @@ import Overlay from '../../overlay/Overlay';
 import axios from 'axios';
 import { SlideUpButton } from '../expense_table/Expense.style';
 import Button from '../../clicks/button/Button';
+import { token } from '../../context/UserToken';
 
 
 const CustomerTable = ({data, onDeleteCus}) => {
@@ -72,7 +73,8 @@ const CustomerTable = ({data, onDeleteCus}) => {
               setIsDeleting(true);
               try {
                 await axios.delete(`${process.env.REACT_APP_URL}/api/customers/bulk-delete`, {
-              data: { ids: selectedCustomer.map((e) => e._id) },
+                data: { ids: selectedCustomer.map((e) => e._id) },
+                headers: {Authorization: `Bearer ${token}`}
             });
                 toast.success(`${selectedCustomer.length} customer deleted successfully`);
                               

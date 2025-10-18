@@ -150,7 +150,9 @@ export default function ViewSale() {
       const imgX = (pdfWidth - imgWidth * ratio) / 2;
       const imgY = 30;
       pdf.addImage(imgData, 'PNG', imgX, imgY, imgWidth * ratio, imgHeight * ratio );
-      pdf.save('invoice.pdf')
+      // pdf.save('invoice.pdf')
+       // 🔽 Use sale code in file name
+      pdf.save(`Sale_${saleData?.code || 'invoice'}.pdf`);
       setIsBtnLoading(false);
     })
   }
@@ -202,7 +204,7 @@ export default function ViewSale() {
                       <span>{saleData?.code}</span>                  
                   </div>
                   <div>
-                      <span><b>INVOICE DATE:</b></span>
+                      <span><b>DATE:</b></span>
                       <span>{new Date(saleData?.saleDate).toDateString()}</span>                                    
                   </div>
                   <div>

@@ -156,7 +156,7 @@ function App() {
             />
             <Route
               path="/edit-sale/:saleId"
-              element={<ProtectedRoute element={<AddSale />} />}
+              element={<ProtectedRoute element={<EditSale />} />}
             />
             <Route
               path="/sale-invoice/:saleId"

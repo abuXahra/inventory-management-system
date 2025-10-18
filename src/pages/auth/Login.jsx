@@ -94,7 +94,7 @@ export default function Login() {
         </LoginContentLeft>
        <FormWrapper>
         <img src={loginIcon} alt="" srcset="" />
-         <h3>Inventory Managment Software</h3>
+         <h2>Inventory Management System</h2>
          <p>Please log in to your account</p>
         <form onSubmit={onSubmitHandler}>
             <Input
@@ -106,7 +106,7 @@ export default function Login() {
                 // error={emailError}
                 onChange={(e)=>onChangeHandler('email', e)}
                 inputPadding={"15px"}
-                bdColor={'grey'}
+                bdColor={'blue'}
                 inputWidth={"100%"}
             />
 
@@ -120,7 +120,7 @@ export default function Login() {
                 onChange={(e)=>onChangeHandler('password', e)}
                 inputPadding={"15px"}
                 inputWidth={"100%"}
-                bdColor={'grey'}
+                bdColor={'blue'}
                     />
                 
          <Button btnColor={'blue'} btnPd={'15px 30px'} btnText={isLoading? <ButtonLoader text="Processing..." />  : 'Login'}/>

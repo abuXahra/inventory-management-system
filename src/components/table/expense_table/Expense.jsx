@@ -96,11 +96,8 @@ const ExpensesTable = ({ data, onDeleteExpense }) => {
         try {
           await axios.delete(`${process.env.REACT_APP_URL}/api/expense/bulk-delete`, {
             data: { ids: selectedExpenses.map((e) => e._id) },
-          }, {
-                                    headers: {
-                                      Authorization: `Bearer ${token}`
-                                    }
-                              });
+            headers: {Authorization: `Bearer ${token}`}
+          });
           toast.success(`${selectedExpenses.length} expenses deleted successfully`);
       
           // remove deleted from UI

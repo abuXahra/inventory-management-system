@@ -18,6 +18,7 @@ import axios from 'axios'
 import { toast } from 'react-toastify'
 import { List } from 'react-content-loader'
 import ToastComponents from '../../../components/toast_message/toast_component/ToastComponents'
+import { token } from '../../../components/context/UserToken'
 
 export default function EditCustomer() {
 
@@ -30,23 +31,23 @@ export default function EditCustomer() {
     const [showPicture, setShowPicture] = useState(true);
 
     // name
-    const [name, setName] = useState('John  Doe');
+    const [name, setName] = useState('');
     const [nameError, setNameError] = useState(false);
 
 // phone
-    const [phone, setPhone] = useState('+234 000 000 000');
+    const [phone, setPhone] = useState('');
     const [phoneError, setPhoneError] = useState(false);
 
     const [file, setFile] = useState('');
     let [photo, setPhoto] = useState('');
 
 // email
-    const [email, setEmail] = useState('johndoe@mail.com');
+    const [email, setEmail] = useState('');
     const [emailError, setEmailError] = useState(false);
 // tax
-    const [tax, setTax] = useState('5567777');
+    const [tax, setTax] = useState('');
 // address
-    const [address, setAddress] = useState('your living address')
+    const [address, setAddress] = useState('')
     const [addressError, setAddressError] = useState(false);
 
     const handleChange = (type, e) =>{
@@ -75,7 +76,11 @@ export default function EditCustomer() {
             const fetchCustomer = async() =>{
                 setIsLoading(true)
                 try {
-                    const res = await axios.get(`${process.env.REACT_APP_URL}/api/customers/${customerId}`);
+                    const res = await axios.get(`${process.env.REACT_APP_URL}/api/customers/${customerId}`, {
+                                                                      headers: {
+                                                                        Authorization: `Bearer ${token}`
+                                                                      }
+                                                                })
                    
                     console.log(res.data);
         
@@ -149,7 +154,11 @@ export default function EditCustomer() {
                 setIsBtnLoading(true)
                         
                 try {
-                    const res = await axios.put(`${process.env.REACT_APP_URL}/api/customers/${customerId}`, updateCustomer)
+                    const res = await axios.put(`${process.env.REACT_APP_URL}/api/customers/${customerId}`, updateCustomer, {
+                                                                      headers: {
+                                                                        Authorization: `Bearer ${token}`
+                                                                      }
+                                                                })
                     console.log(res.data);
                     setIsLoading(false);
                                                

@@ -38,6 +38,7 @@ export const FormWrapper = styled.div`
     position: relative;
     height: 100vh;
     display: flex;
+    p{font-size: 13px;}
     form{
         width: 100%;
         display: flex;
@@ -53,6 +54,7 @@ export const FormWrapper = styled.div`
         
     @media (max-width: 768px) {
     width: 100%;
+    font-size: 13px;
   }
   `
 

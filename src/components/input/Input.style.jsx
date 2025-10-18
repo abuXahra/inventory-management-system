@@ -27,12 +27,23 @@ export const InputLabel = styled.label`
         font-size: 8px;
         color:red;
     }
+
+
+@media (max-width: 768px) {
+    font-size: 12px;
+
+        span{
+        /* padding-top: 5px; */
+        font-size: 12px;
+   
+    }
+  }
 `
 
 export const InputStyle = styled.input`
-    border: 1px solid ${({bdColor})=> bdColor || '#0d398420'}; 
+    border: 1.5px solid ${({bdColor})=> bdColor || '#0d398420'}; 
     border-radius: 10px;
-    padding: ${({inputPadding})=>inputPadding || '6px'};
+    padding: ${({inputPadding})=>inputPadding || '10px'};
     background-color: ${({inputBg}) => inputBg || 'transparent'};
     color: ${({txtColor})=> txtColor || "grey"};
     font-size: 10px;
@@ -42,6 +53,11 @@ export const InputStyle = styled.input`
     outline: none;
 
   }
+
+@media (max-width: 768px) {
+        font-size: 12px;
+  }
+
 `
 
 export const InputError = styled.span`

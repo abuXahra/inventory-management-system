@@ -39,7 +39,11 @@ export default function LowStock() {
              const getProducts = async () => { 
              setIsLoading(true)  
              try {
-                 const res = await axios.get(process.env.REACT_APP_URL + "/api/products/low-stock");
+                 const res = await axios.get(process.env.REACT_APP_URL + "/api/products/low-stock", {
+                                    headers: {
+                                      Authorization: `Bearer ${token}`
+                                    }
+                              });
                  console.log(res.data)
                  setProducts(res.data)
                  setAllProducts(res.data);

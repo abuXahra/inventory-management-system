@@ -8,6 +8,7 @@ import { AnyItemContainer, InnerWrapper } from '../../sale/Add/addSale.style'
 import axios from 'axios'
 import profilPiture from '../../../images/placeholder_image.png'
 import Overlay from '../../../components/overlay/Overlay'
+
 import { toast } from 'react-toastify'
 import ToastComponents from '../../../components/toast_message/toast_component/ToastComponents'
 import ButtonLoader from '../../../components/clicks/button/button_loader/ButtonLoader'

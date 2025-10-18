@@ -16,6 +16,7 @@ import axios from 'axios'
 import { DropdownItems, DropdownWrapper } from '../../purchase/add/addPurchase.style'
 import { UserContext } from '../../../components/context/UserContext'
 import { token } from '../../../components/context/UserToken'
+import { List } from 'react-content-loader'
 
 export default function AddPayment() {
 
@@ -102,6 +103,7 @@ const paymentTypeItems =  [
     const {user} = useContext(UserContext)
 
     const [isLoading, setIsLoading] = useState(false);
+    const [isBtnLoading, setIsBtnLoading] = useState(false);
 
     const [items, setItems] = useState([])
 
@@ -251,7 +253,7 @@ const paymentTypeItems =  [
         }
 
         if(isValid){
-            setIsLoading(true)
+            setIsBtnLoading(true)
             
             try {
 
@@ -275,6 +277,7 @@ const paymentTypeItems =  [
                 navigate(`/payments`)
                 
             } catch (error) {
+              setIsBtnLoading(false);
               console.log(error)   
             }
         }
@@ -285,6 +288,8 @@ const paymentTypeItems =  [
     {/* Page title */}
         <PageTitle title={'Payment'} subTitle={'/ Add'}/>
 
+    <>
+    {isLoading? <List/> :
         <AddPaymentContent>
             <form action="" onSubmit={submitHandler}>
                     <ItemContainer title={'New Payment'}>
@@ -410,7 +415,7 @@ const paymentTypeItems =  [
                             <div>
                             <Button
                                 title={'Select Items'}
-                                btnText={isLoading? <ButtonLoader text={'Adding...'}/> : 'Add Payment'}
+                                btnText={isBtnLoading? <ButtonLoader text={'Adding...'}/> : 'Add Payment'}
                                 btnFontSize={'12px'}
                                 btnColor={'Green'}
                                 btnTxtClr={'white'}
@@ -421,6 +426,7 @@ const paymentTypeItems =  [
                     </ItemContainer>
                 </form>
         </AddPaymentContent>
+         } </>
     </AddPaymentWrapper>
   )
 }

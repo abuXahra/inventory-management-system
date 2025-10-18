@@ -73,11 +73,8 @@ const handleDelete = async (supplierId) => {
               try {
                 await axios.delete(`${process.env.REACT_APP_URL}/api/suppliers/bulk-delete`, {
               data: { ids: selectedSupplier.map((e) => e._id) },
-            }, {
-                                                headers: {
-                                                  Authorization: `Bearer ${token}`
-                                                }
-                                          })
+              headers: {Authorization: `Bearer ${token}`}})
+
                 toast.success(`${selectedSupplier.length} supplier deleted successfully`);
                               
                 // remove deleted from UI

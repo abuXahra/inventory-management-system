@@ -13,6 +13,7 @@ import Button from '../../clicks/button/Button';
 import ButtonLoader from '../../clicks/button/button_loader/ButtonLoader';
 import Overlay from '../../overlay/Overlay';
 import ToastComponents from '../../toast_message/toast_component/ToastComponents';
+import { token } from '../../context/UserToken';
 
 
 const PaymentTable = ({ data, onDeletePayment }) => {
@@ -84,6 +85,7 @@ const PaymentTable = ({ data, onDeletePayment }) => {
                           try {
                             await axios.delete(`${process.env.REACT_APP_URL}/api/payment/bulk-delete`, {
                               data: { ids: selectedPayment.map((e) => e._id) },
+                              headers: {Authorization: `Bearer ${token}`}
                             });
                             toast.success(`${selectedPayment.length} purchases deleted successfully`);
                         

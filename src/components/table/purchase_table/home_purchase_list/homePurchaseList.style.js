@@ -1,7 +1,7 @@
 import styled from "styled-components";
 
 export const HomePurchaseListWrapper = styled.div`
-  width: 50%;
+  width: 100%;
   border-radius: 10px;
   /* background-color: white; */
 

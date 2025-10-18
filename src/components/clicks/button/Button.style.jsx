@@ -10,13 +10,14 @@ export const ButtonWrapper = styled.button`
     border: ${({ btnBorder }) => btnBorder || "none"};
     border-radius: ${({btnBdRd})=> btnBdRd || "10px"};
     cursor: pointer;
-    font-size: ${({btnFontSize}) => btnFontSize || ''};
+    font-size: ${({btnFontSize}) => btnFontSize || '13px'};
     justify-content: center;
 
     @media (max-width: 768px) {
     display: flex;
     flex-direction: row;
-    font-size: 9px;
+    font-size: 13px;
     border: ${({ btnMobileBorder }) => btnMobileBorder || "none"};
   }
+  
 `

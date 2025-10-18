@@ -352,13 +352,14 @@ const {user} = useContext(UserContext);
       </Container>
 
       <Container>
-        <AlertContent/>
-        <HomePurchaseList/>
-      </Container>  
-
-      <Container>
         <TopSelling  header={"Top Selling Products"}/>
       </Container> 
+
+      <Container>
+        <AlertContent/>
+        <HomePurchaseList/>
+      </Container>
+        
     </HomeWrapper>
   )
 }
