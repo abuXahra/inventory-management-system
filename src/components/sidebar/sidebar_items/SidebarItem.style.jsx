@@ -47,14 +47,14 @@ export const SidebarDropdown = styled.div`
     border-radius: 10px;
     padding: 10px;
     position: absolute;
-    right: -152px;
+    right: -170px;
     color: black;
     display: flex;
     flex-direction: column;
-    margin-top: -20px;
+    margin-top: -30px;
 
     @media (max-width: 768px) {
-        right: -152px;
+        right: -170px;
     }
 `
 

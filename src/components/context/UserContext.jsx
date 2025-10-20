@@ -93,6 +93,7 @@ export const UserContext = createContext({});
 
 export function UserContextProvider({ children }) {
   const [user, setUser] = useState(null);
+  const [permissions, setPermissions] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const fetchUser = async () => {
@@ -109,6 +110,7 @@ export function UserContextProvider({ children }) {
                                           }
                                     });
       setUser(res.data);
+      setPermissions(res.data.permissions)
     } catch (err) {
       console.error("User fetch failed", err);
       setUser(null);
@@ -122,7 +124,7 @@ export function UserContextProvider({ children }) {
   }, []);
 
   return (
-    <UserContext.Provider value={{ user, setUser, loading }}>
+    <UserContext.Provider value={{ user, permissions, setUser, setPermissions, loading }}>
       {children}
     </UserContext.Provider>
   );

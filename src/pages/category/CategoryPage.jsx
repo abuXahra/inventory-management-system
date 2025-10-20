@@ -1,5 +1,5 @@
 
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import PageTitle from '../../components/page_title/PageTitle'
 import ListHeader from '../../components/page_title/list_header/ListHeader'
 import { useNavigate } from 'react-router-dom'
@@ -8,6 +8,7 @@ import CategoryTable from '../../components/table/category_table/CategoryTable'
 import { CategoryPageContent, CategoryPageWrapper } from './categoryPage.style'
 import axios from 'axios'
 import { List } from 'react-content-loader'
+import { UserContext } from '../../components/context/UserContext'
 
 
 export default function CategoryPage() {
@@ -19,7 +20,9 @@ export default function CategoryPage() {
           const [allCategory, setAllCategory] = useState([]);
           const [isLoading, setIsLoading] = useState(false);
           const token = localStorage.getItem('token');
-    
+
+          const {permissions, user} = useContext(UserContext);
+          const categoryPermission = permissions?.find(p => p.module === "category")
   
            // fetch category handler 
                             useEffect(() => {
@@ -102,10 +105,18 @@ export default function CategoryPage() {
             onChange={handleSearchQueryOnChange}
             type={'text'}
             dataLength={category.length}
+            permission={categoryPermission?.canAdd}
           />
           
           {/* Product Table */}
-            <CategoryTable data={category} onDeleteCat={deleteCategory} />
+            <CategoryTable 
+              data={category} 
+              onDeleteCat={deleteCategory} 
+              // categoryPermission={user?.role === 'admin'? true: categoryPermission} />
+              categoryPermission={user?.role === 'admin' ? 
+              { canView: true, canEdit: true, canDelete: true } 
+              : categoryPermission}
+            />
         </CategoryPageContent>
 
         }   

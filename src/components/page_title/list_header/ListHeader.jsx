@@ -1,15 +1,25 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { FaDesktop, FaList, FaPlus, FaSearch } from 'react-icons/fa'
 import { ListHeaderWrapper } from './listHeader.style'
 import Button from '../../clicks/button/Button'
 import Input from '../../input/Input'
 import SelectInput from '../../input/selectInput/SelectInput'
+import { UserContext } from '../../context/UserContext'
 
 function ListHeader({ 
   title, btnOnClick, searQuery, onChange, 
   type, dataLength, icon, inputDisplay, entries, 
-  InputWidth
+  InputWidth, permission,
 }) {
+
+  const {user} = useContext(UserContext);
+  
+  const canShowButton =
+    user?.role === 'admin' // Always show for admin
+      ? true
+      : permission;  
+
+
   return (
     <ListHeaderWrapper>
       <span> 
@@ -34,7 +44,8 @@ function ListHeader({
 
       </span>      
       <span>
-    
+       
+       {canShowButton &&( 
         <Button
           btnPd={"0"}
           btnTxtClr={'white'}
@@ -44,7 +55,7 @@ function ListHeader({
           btnLeftIcon={icon || <FaPlus />}
           btnFontSize={'12px'}
           btnOnClick={btnOnClick}
-        />
+        />)}
       </span>
     </ListHeaderWrapper>
   )

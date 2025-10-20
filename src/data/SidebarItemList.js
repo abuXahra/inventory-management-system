@@ -1,6 +1,6 @@
-import { AiFillProduct } from "react-icons/ai";
+import { AiFillApi, AiFillProduct } from "react-icons/ai";
 import { MdDashboard, MdCategory, MdAcUnit } from "react-icons/md";
-import { FaUsers, FaCartPlus } from "react-icons/fa";
+import { FaUsers, FaCartPlus, FaArrowUpRightDots } from "react-icons/fa";
 import { HiUsers } from "react-icons/hi";
 import { BsFillCartDashFill } from "react-icons/bs";
 import { BsCartX } from "react-icons/bs";
@@ -101,6 +101,11 @@ export const SidebarItemLists = [
         title: "Unit",
         url: "/units",
         icon: <MdAcUnit />,
+      },
+      {
+        title: "Permission",
+        url: "/permission",
+        icon: <AiFillApi />,
       },
     ],
   },

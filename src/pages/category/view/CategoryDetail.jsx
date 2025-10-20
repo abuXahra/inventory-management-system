@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import PageTitle from '../../../components/page_title/PageTitle'
 import ItemContainer from '../../../components/item_container/ItemContainer'
 import profilePicture from '../../../images/professional_passport.png'
@@ -15,6 +15,7 @@ import ToastComponents from '../../../components/toast_message/toast_component/T
 import { toast } from 'react-toastify'
 import { PictureWrapper } from '../../user/detail/userDetail.style'
 import CategoryTable from '../../../components/table/category_table/category_product_table/CatProdTable'
+import { UserContext } from '../../../components/context/UserContext'
 
 
 
@@ -29,6 +30,10 @@ export default function CategoryDetail() {
     const [grabTitle, setGrabTitle] = useState('');
       const [company, setCompany] = useState('') 
       const token = localStorage.getItem('token');
+
+      const {permissions, user} = useContext(UserContext);
+      const categoryPermission = permissions?.find(p => p.module === "category")
+        
 
   // Fetch category detail
   useEffect(()=>{
@@ -84,7 +89,6 @@ export default function CategoryDetail() {
     };
 
     fetchCategoryProducts();
-
    
   },[categoryId])
   
@@ -117,7 +121,11 @@ const handleGrabId = (title)=>{
           }
         };
   
-  
+    // Permission logic
+  const isAdmin = user?.role === 'admin'
+  const canEdit = isAdmin || categoryPermission?.canEdit
+  const canDelete = isAdmin || categoryPermission?.canDelete
+
   return (
         <CategoryDetailWrapper>
           <PageTitle title={'Category'} subTitle={' / View'}/>
@@ -156,24 +164,24 @@ const handleGrabId = (title)=>{
                   </AnyItemContainer>
               </ItemContainer>
               <ItemContainer title={'Action'}> 
-                <AnyItemContainer gap="60px">
+              {canEdit && <AnyItemContainer gap="60px">
                       <InnerWrapper wd={'100%'}>
                             <span onClick={()=>navigate(`/edit-category/${catData._id}`)} style={{color: "green", cursor: "pointer"}}><b>Edit</b></span>
                             <span onClick={()=>navigate(`/edit-category/${catData._id}`)} style={{color: "green", cursor: "pointer"}}><FaEdit/></span>
                       </InnerWrapper>
                 </AnyItemContainer>
-                <AnyItemContainer gap="60px">
+              }   <AnyItemContainer gap="60px">
                       <InnerWrapper wd={'100%'}>
                             <span onClick={()=>navigate(`/categories`)} style={{color: "blue", cursor: "pointer"}}><b>List</b></span>
                             <span onClick={()=>navigate(`/categories`)} style={{color: "blue", cursor: "pointer"}}><FaList/></span>
                       </InnerWrapper>
                 </AnyItemContainer>
-                <AnyItemContainer gap="60px">
+              { canDelete && <AnyItemContainer gap="60px">
                       <InnerWrapper wd={'100%'}>
                             <span onClick={()=>handleGrabId(catData?.title)} style={{color: "red", cursor: "pointer"}}><b>Delete</b></span>
                             <span onClick={()=>handleGrabId(catData?.title)} style={{color: "red", cursor: "pointer"}}><FaTrash/></span>
                       </InnerWrapper>
-                </AnyItemContainer>
+                </AnyItemContainer>}
               </ItemContainer>
 
               {/* Category Products */}        

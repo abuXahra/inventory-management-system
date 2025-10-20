@@ -75,6 +75,7 @@ import LowStock from "./pages/product/product_low_stock/LowStock";
 import ProtectedRoute from "./components/protected_route/ProtectedRoute";
 import { LoaderWrapper } from "./pages/home/Home.style";
 import PermissionPage from "./pages/zpermission/Permission";
+import AddPermission from "./pages/zpermission/add/AddPermission";
 
 function App() {
   const { user, loading } = useContext(UserContext);
@@ -358,6 +359,10 @@ function App() {
             <Route
               path="/permission"
               element={<ProtectedRoute element={<PermissionPage />} />}
+            />
+            <Route
+              path="/add-permission"
+              element={<ProtectedRoute element={<AddPermission />} />}
             />
           </Routes>
         </DashboardLayout>

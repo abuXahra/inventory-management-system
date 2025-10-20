@@ -8,85 +8,159 @@ import { List } from 'react-content-loader'
 import { token } from '../../components/context/UserToken'
 import PermissionTable from '../../components/table/permission_table/PermissionTable'
 import { PermissionPageContent, PermissionPageWrapper } from './permission.style'
+import { toast } from 'react-toastify'
 
 
 
 export default function PermissionPage() {
 
-   const[purchaseRecords, setPurchaseRecords] = useState([]);
-   const [allPurchaseRecords, setAllPurchaseRecords] = useState([]);
-   const [isLoading, setIsLoading] = useState(false);
+//   const permissionData = [
+    
+// {
+// 	title: "Product",
+// 	add: true,
+// 	edit: true,
+// 	view: true,
+// 	delete: false,
 
- // fetch expense handler 
-                          useEffect(() => {
-                              const getPurchase = async () => { 
-                                setIsLoading(true)  
-                                try {
-                                      const res = await axios.get(process.env.REACT_APP_URL + "/api/purchase/", {
-                                                                          headers: {
-                                                                            Authorization: `Bearer ${token}`
-                                                                          }
-                                                                    })
-                                     
-                                      setPurchaseRecords(res.data)
-                                      setAllPurchaseRecords(res.data);
-                                      setIsLoading(false)
-                    
-                                      console.log(res.data)
-                                  } catch (err) {
-                                      console.log(err)
-                                      setIsLoading(false)
-                                  }
-                          
-                              }
-                              getPurchase();
-                          }, [])
+// },
+// {
+// 	title: "Category",
+// 	add: true,
+// 	edit: true,
+// 	view: true,
+// 	delete: false,
+
+// },
+// {
+// 	title: "Customer",
+// 	add: true,
+// 	edit: true,
+// 	view: true,
+// 	delete: true,
+
+// },
+// {
+// 	title: "Sale",
+// 	add: true,
+// 	edit: false,
+// 	view: true,
+// 	delete: true,
+// },
+
+// {
+// 	title: "Supplier",
+// 	add: true,
+// 	edit: true,
+// 	view: true,
+// 	delete: true,
+
+// },
+// {
+// 	title: "Purchase",
+// 	add: true,
+// 	edit: false,
+// 	view: true,
+// 	delete: true,
+// },
+// {
+// 	title: "Payment",
+// 	add: true,
+// 	edit: false,
+// 	view: true,
+// 	delete: true,
+// },
+// {
+// 	title: "Expense",
+// 	add: true,
+// 	edit: true,
+// 	view: true,
+// 	delete: false,
+// },
+// {
+// 	title: "Sale Return",
+// 	add: true,
+// 	edit: true,
+// 	view: true,
+// 	delete: false,
+// },
+// {
+// 	title: "Purchase Return",
+// 	add: true,
+// 	edit: true,
+// 	view: true,
+// 	delete: false,
+// },
+// {
+// 	title: "User",
+// 	add: true,
+// 	edit: true,
+// 	view: true,
+// 	delete: false,
+// },
+// {
+// 	title: "Company",
+// 	add: false,
+// 	edit: false,
+// 	view: true,
+// 	delete: false,
+// },
+// {
+// 	title: "Tax",
+// 	add: false,
+// 	edit: false,
+// 	view: true,
+// 	delete: false,
+// },
+// {
+// 	title: "Unit",
+// 	add: false,
+// 	edit: false,
+// 	view: true,
+// 	delete: false,
+// },
+// {
+// 	title: "Generate/View Report",
+// 	add: false,
+// 	edit: false,
+// 	view: false,
+// 	delete: false,
+	
+// },
+//   ]
 
 
+  const [permissions, setPermissions] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-           // handle purchase delete
-          const deletePurchase = async (purchaseId,  updatedList = null) => {
-            
-            if (updatedList) {
-              setPurchaseRecords(updatedList);
-              return { success: true };
-            }
-            
-            try {
-              await axios.delete(`${process.env.REACT_APP_URL}/api/purchase/${purchaseId}`, {
-                                                  headers: {
-                                                    Authorization: `Bearer ${token}`
-                                                  }
-                                            })
-              const updatedPurchase = purchaseRecords.filter(purchase => purchase._id !== purchaseId);
-              setPurchaseRecords(updatedPurchase);
-              return { success: true };
-            } catch (error) {
-              return { success: false, message: error.message };
-            }
-          };
+  const getPermissions = async () => {
+    try {
+      const res = await axios.get(`${process.env.REACT_APP_URL}/api/permission`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
-// handle search query
-            const handleSearchQueryOnChange = (e) => {
-  const query = e.target.value.trim().toLowerCase(); // normalize query
+      console.log(res.data)
+      // Transform backend fields to frontend naming
+      const formatted = res.data.map(p => ({
+        title: p.module,
+        add: p.canAdd,
+        edit: p.canEdit,
+        view: p.canView,
+        delete: p.canDelete,
+      }));
 
-  if (query === '') {
-    setPurchaseRecords(allPurchaseRecords);
-  } else {
-    const filteredRecords = allPurchaseRecords.filter(item => {
-      const supplierName = item.supplier?.name?.toLowerCase() || '';
-      const purchaseCode = item.code?.toLowerCase() || ''; // use correct field name
+      setPermissions(formatted);
+    } catch (error) {
+      toast.error("Failed to fetch permissions");
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-      return (
-        supplierName.includes(query) ||
-        purchaseCode.includes(query)
-      );
-    });
-
-    setPurchaseRecords(filteredRecords);
-  }
-};
-
+  useEffect(() => {
+    getPermissions();
+  }, []);
 
 
   const navigate = useNavigate();
@@ -95,26 +169,21 @@ export default function PermissionPage() {
         <PageTitle title={'Permission'}/>
 
           {/* content */}
-        {isLoading? <List/> :
+         <ListHeader 
+                    title={'Permission'} 
+                    btnOnClick={()=>navigate('/add-permission')}
+                    // searQuery={'Name'}
+                    // onChange={handleChange}
+                    type={'text'}
+                  />
         <PermissionPageContent>
-          <ListHeader 
-            title={'User Permission'} 
-            // btnOnClick={()=>navigate('/add-purchase')}
-            // searQuery={'Supplier or Invoice Code'}
-            // onChange={handleSearchQueryOnChange}
-            // type={'text'}
-            // dataLength={purchaseRecords.length}
-          />
-          
           {/* Permissin Table */}
             <PermissionTable 
-                data={purchaseRecords} 
-                onDeletePurchase={deletePurchase} 
-                setIsLoading={setIsLoading}
+                data={permissions} 
             />
         </PermissionPageContent>
 
-        } 
+ 
     </PermissionPageWrapper>
   )
 }

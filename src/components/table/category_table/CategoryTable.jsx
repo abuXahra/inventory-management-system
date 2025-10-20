@@ -15,7 +15,7 @@ import ToastComponents from '../../toast_message/toast_component/ToastComponents
 
 
 
-const CategoryTable = ({data, onDeleteCat}) => {
+const CategoryTable = ({data, onDeleteCat, categoryPermission}) => {
   
         const navigate = useNavigate();
 
@@ -107,9 +107,9 @@ const CategoryTable = ({data, onDeleteCat}) => {
       name: 'Actions',
       cell: (row) => (
         <ActionButtons>
-          <ActionButton clr='green' onClick={() => navigate(`/category-detail/${row._id}`)}><FaEye/></ActionButton>
-          <ActionButton clr='blue' onClick={() => navigate(`/edit-category/${row._id}`)}><FaEdit/></ActionButton>
-          <ActionButton clr="red" onClick={() =>handleGrabId(row._id, row.title)}><FaTrash/></ActionButton>
+        {categoryPermission.canView &&  <ActionButton clr='green' onClick={() => navigate(`/category-detail/${row._id}`)}><FaEye/></ActionButton>}
+          {categoryPermission.canEdit && <ActionButton clr='blue' onClick={() => navigate(`/edit-category/${row._id}`)}><FaEdit/></ActionButton>}
+          {categoryPermission.canDelete && <ActionButton clr="red" onClick={() =>handleGrabId(row._id, row.title)}><FaTrash/></ActionButton>}
         </ActionButtons>
       ),
     },
