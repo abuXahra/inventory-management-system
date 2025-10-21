@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import PageTitle from '../../../components/page_title/PageTitle'
 import { CustomerDetailContent, CustomerDetailData, CustomerDetailPicture, CustomerDetailWrapper } from './customerDetail.style'
 import ItemContainer from '../../../components/item_container/ItemContainer'
@@ -13,6 +13,7 @@ import { PictureWrapper } from '../../user/detail/userDetail.style'
 import Overlay from '../../../components/overlay/Overlay'
 import ButtonLoader from '../../../components/clicks/button/button_loader/ButtonLoader'
 import ToastComponents from '../../../components/toast_message/toast_component/ToastComponents'
+import { UserContext } from '../../../components/context/UserContext'
 
 
 
@@ -28,6 +29,17 @@ export default function CustomerDetail() {
     const [grabId, setGrabId] = useState('');
     const [grabTitle, setGrabTitle] = useState('');
     const token = localStorage.getItem('token');
+
+   
+    // user permission:
+      const {permissions, user} = useContext(UserContext);
+      const customerPermission = permissions?.find(p => p.module === "Customer")
+
+            // Permission logic
+      const isAdmin = user?.role === 'admin'
+      const canEdit = isAdmin || customerPermission?.canEdit
+      const canDelete = isAdmin || customerPermission?.canDelete
+    
 
       // Fetch customer detail
         useEffect(()=>{
@@ -131,18 +143,18 @@ export default function CustomerDetail() {
                                         <span onClick={()=>navigate(`/customers`)} style={{color: "blue", cursor: "pointer"}}><FaList/></span>
                                     </InnerWrapper>
                               </AnyItemContainer>
-                              <AnyItemContainer gap="60px">
+                              {canEdit && <AnyItemContainer gap="60px">
                                     <InnerWrapper wd={'100%'}>
                                           <span onClick={()=>navigate(`/customers/${cusData?._id}`)} style={{color: "green", cursor: "pointer"}}><b>Edit</b></span>
                                           <span onClick={()=>navigate(`/edit-customer/${cusData?._id}`)} style={{color: "green", cursor: "pointer"}}><FaEdit/></span>
                                     </InnerWrapper>
-                              </AnyItemContainer>
-                              <AnyItemContainer gap="60px">
+                              </AnyItemContainer>}
+                              {canDelete && <AnyItemContainer gap="60px">
                                     <InnerWrapper wd={'100%'}>
                                           <span onClick={()=>handleGrabId(cusData?.name)} style={{color: "red", cursor: "pointer"}}><b>Delete</b></span>
                                           <span onClick={()=>handleGrabId(cusData?.name)} style={{color: "red", cursor: "pointer"}}><FaTrash/></span>
                                     </InnerWrapper>
-                              </AnyItemContainer>
+                              </AnyItemContainer>}
                             </ItemContainer>
             </CustomerDetailData>
 

@@ -17,7 +17,7 @@ import Button from '../../clicks/button/Button';
 import { token } from '../../context/UserToken';
 
 
-const CustomerTable = ({data, onDeleteCus}) => {
+const CustomerTable = ({data, onDeleteCus, customerPermission}) => {
   
   const navigate = useNavigate();
 
@@ -132,9 +132,9 @@ const CustomerTable = ({data, onDeleteCus}) => {
       name: 'Actions',
       cell: (row) => (
         <ActionButtons>
-          <ActionButton clr='green' onClick={() => navigate(`/edit-customer/${row._id}`)}><FaEdit/></ActionButton>
-          <ActionButton clr="blue" onClick={() => navigate(`/customers/${row._id}`)}><FaEye/></ActionButton>
-          <ActionButton clr="red" onClick={() =>  handleGrabId(row._id, row.name)}><FaTrash/></ActionButton>
+        {customerPermission?.canView &&   <ActionButton clr='green' onClick={() => navigate(`/edit-customer/${row._id}`)}><FaEdit/></ActionButton>}
+           {customerPermission?.canView && <ActionButton clr="blue" onClick={() => navigate(`/customers/${row._id}`)}><FaEye/></ActionButton>}
+          {customerPermission?.canView && <ActionButton clr="red" onClick={() =>  handleGrabId(row._id, row.name)}><FaTrash/></ActionButton>}
         </ActionButtons>
       ),
     },

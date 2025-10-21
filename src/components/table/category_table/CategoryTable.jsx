@@ -98,18 +98,21 @@ const CategoryTable = ({data, onDeleteCat, categoryPermission}) => {
       name: 'Status',
       selector: (row) => row.status,
       sortable: true,
+       width: '10%',
     },
     {
       name: 'Products',
       selector: (row) => row.totalProducts,
+       width: '10%',
     },
     {
       name: 'Actions',
+       width: '20%',
       cell: (row) => (
         <ActionButtons>
-        {categoryPermission.canView &&  <ActionButton clr='green' onClick={() => navigate(`/category-detail/${row._id}`)}><FaEye/></ActionButton>}
-          {categoryPermission.canEdit && <ActionButton clr='blue' onClick={() => navigate(`/edit-category/${row._id}`)}><FaEdit/></ActionButton>}
-          {categoryPermission.canDelete && <ActionButton clr="red" onClick={() =>handleGrabId(row._id, row.title)}><FaTrash/></ActionButton>}
+        {categoryPermission?.canView &&  <ActionButton clr='green' onClick={() => navigate(`/category-detail/${row._id}`)}><FaEye/> View</ActionButton>}
+          {categoryPermission?.canEdit && <ActionButton clr='blue' onClick={() => navigate(`/edit-category/${row._id}`)}><FaEdit/> Edit</ActionButton>}
+          {categoryPermission?.canDelete && <ActionButton clr="red" onClick={() =>handleGrabId(row._id, row.title)}><FaTrash/> Delete</ActionButton>}
         </ActionButtons>
       ),
     },

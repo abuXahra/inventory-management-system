@@ -117,7 +117,7 @@ const PermissionTable = ({ data, onPermissionsUpdated }) => {
 
       <div
         style={{
-          paddingLeft: "20px",
+          paddingRight: "20px",
           paddingBottom: "20px",
           display: "flex",
           justifyContent: "flex-end",
@@ -127,7 +127,7 @@ const PermissionTable = ({ data, onPermissionsUpdated }) => {
         <Button
           btnColor={"blue"}
           btnOnClick={handleUpdatePermissions}
-          btnText={isUpdating ? <ButtonLoader text="Updating..." /> : "Update Permission"}
+          btnText={isUpdating ? <ButtonLoader text="Updating Permission" /> : "Update Permission"}
           disabled={isUpdating}
         />
       </div>

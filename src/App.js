@@ -76,6 +76,9 @@ import ProtectedRoute from "./components/protected_route/ProtectedRoute";
 import { LoaderWrapper } from "./pages/home/Home.style";
 import PermissionPage from "./pages/zpermission/Permission";
 import AddPermission from "./pages/zpermission/add/AddPermission";
+import RequireAddPermissionRoute from "./components/protected_route/RequireAddPermissionRoute";
+import NotFound from "./pages/not_found/NotFound";
+import Unauthorized from "./pages/unauthorized/UnauthorizedPage";
 
 function App() {
   const { user, loading } = useContext(UserContext);
@@ -336,9 +339,24 @@ function App() {
               element={<ProtectedRoute element={<UserDetail />} />}
             />
             {/* COMPANY PROFILE */}
-            <Route
+            {/* <Route
               path="/add-company"
               element={<ProtectedRoute element={<AddCompany />} />}
+            /> */}
+            <Route
+              path="/add-company"
+              element={
+                <ProtectedRoute
+                  element={
+                    <RequireAddPermissionRoute
+                      user={user}
+                      moduleName="Company"
+                      element={<AddCompany />}
+                      fallback="/company-profile"
+                    />
+                  }
+                />
+              }
             />
             <Route
               path="/company-profile"
@@ -364,6 +382,8 @@ function App() {
               path="/add-permission"
               element={<ProtectedRoute element={<AddPermission />} />}
             />
+            <Route path="/not-found" element={<NotFound />} />
+            <Route path="/not-authorized" element={<Unauthorized />} />
           </Routes>
         </DashboardLayout>
       )}

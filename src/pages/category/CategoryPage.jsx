@@ -20,9 +20,16 @@ export default function CategoryPage() {
           const [allCategory, setAllCategory] = useState([]);
           const [isLoading, setIsLoading] = useState(false);
           const token = localStorage.getItem('token');
+          
+          // user Permission
+          const {user, permissions} = useContext(UserContext);
+          const categoryPermission = permissions?.find(p => p.module === "Category")
+          const effectivePermission =
+              user?.role === "admin"
+                ? { canView: true, canAdd: true, canEdit: true, canDelete: true }
+                : categoryPermission;
 
-          const {permissions, user} = useContext(UserContext);
-          const categoryPermission = permissions?.find(p => p.module === "category")
+    
   
            // fetch category handler 
                             useEffect(() => {
@@ -105,17 +112,14 @@ export default function CategoryPage() {
             onChange={handleSearchQueryOnChange}
             type={'text'}
             dataLength={category.length}
-            permission={categoryPermission?.canAdd}
+            permission={effectivePermission?.canAdd}
           />
           
           {/* Product Table */}
             <CategoryTable 
               data={category} 
               onDeleteCat={deleteCategory} 
-              // categoryPermission={user?.role === 'admin'? true: categoryPermission} />
-              categoryPermission={user?.role === 'admin' ? 
-              { canView: true, canEdit: true, canDelete: true } 
-              : categoryPermission}
+              categoryPermission={effectivePermission}
             />
         </CategoryPageContent>
 

@@ -32,7 +32,7 @@ export default function CategoryDetail() {
       const token = localStorage.getItem('token');
 
       const {permissions, user} = useContext(UserContext);
-      const categoryPermission = permissions?.find(p => p.module === "category")
+      const categoryPermission = permissions?.find(p => p.module === "Category")
         
 
   // Fetch category detail

@@ -1,5 +1,5 @@
 
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import PageTitle from '../../components/page_title/PageTitle'
 import { useNavigate } from 'react-router-dom'
 import { CustomerPageContent, CustomerPageWrapper } from './customerPage.style'
@@ -7,6 +7,7 @@ import ListHeader from '../../components/page_title/list_header/ListHeader'
 import CustomerTable from '../../components/table/customer_table/CustomerTable'
 import axios from 'axios'
 import { List } from 'react-content-loader'
+import { UserContext } from '../../components/context/UserContext'
 
 
 
@@ -22,7 +23,11 @@ export default function CustomerPage() {
   const [allCustomer, setAllCustomer] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const token = localStorage.getItem('token')
-      
+  
+  // user Permission
+  const {permissions, user} = useContext(UserContext);
+  const customerPermission = permissions?.find(p => p.module === "Customer")
+        
     
    // fetch customer handler 
        useEffect(() => {
@@ -103,12 +108,18 @@ export default function CustomerPage() {
             onChange={handleSearchQueryOnChange}
             type={'text'}
             dataLength={customer.length}
+            permission={customerPermission?.canAdd}
           />
           
           {/* Sales Table */}
             <CustomerTable 
               data={customer} 
               onDeleteCus={deleteCustomer} 
+              customerPermission={user?.role === 'admin' ? 
+              { canView: true, canEdit: true, canDelete: true } 
+              : customerPermission} 
+
+              
             />
         </CustomerPageContent>
 

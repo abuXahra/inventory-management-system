@@ -18,7 +18,7 @@ import ContentLoader, {
 } from 'react-content-loader'
 import { CompanyDetailContent, CompanyDetailData, CompanyDetailPicture, CompanyDetailWrapper, PictureWrapper } from './CompanyDetail.style'
 import { useNavigate, useParams } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import PageTitle from '../../../components/page_title/PageTitle';
@@ -31,6 +31,7 @@ import { FaEdit, FaLongArrowAltRight, FaPlus, FaTrash } from 'react-icons/fa';
 import companyLogosHolder from '../../../images/placeholder_image.png'
 import Button from '../../../components/clicks/button/Button';
 import Markdown from 'markdown-to-jsx';
+import { UserContext } from '../../../components/context/UserContext';
 
 
 
@@ -48,6 +49,14 @@ export default function CompanyDetail() {
   const [grabId, setGrabId] = useState('');
   const [grabCompanyname, setGrabCompanyname] = useState('');
   const token = localStorage.getItem('token');
+
+        const {permissions, user} = useContext(UserContext);
+        const companyPermission = permissions?.find(p => p.module === "Company")
+
+            // Permission logic
+      const isAdmin = user?.role === 'admin'
+      const canEdit = isAdmin || companyPermission?.canEdit
+      const canDelete = isAdmin || companyPermission?.canDelete
 
   
 
@@ -105,8 +114,8 @@ const handleGrabId = (companyName)=>{
           }
         };
   
-  
-  
+    
+
 
   return (<div> 
     {isLoading?
@@ -204,20 +213,20 @@ const handleGrabId = (companyName)=>{
                   </AnyItemContainer>
               </ItemContainer>
 
-                            <ItemContainer title={'Action'}> 
-                              <AnyItemContainer gap="60px">
+                            {canEdit && <ItemContainer title={'Action'}> 
+                             {canDelete && <AnyItemContainer gap="60px">
                                     <InnerWrapper wd={'100%'}>
                                           <span onClick={()=>handleGrabId(companyData?.Companyname)} style={{color: "red", cursor: "pointer"}}><b>Delete</b></span>
                                           <span onClick={()=>handleGrabId(companyData?.Companyname)} style={{color: "red", cursor: "pointer"}}><FaTrash/></span>
                                     </InnerWrapper>
-                              </AnyItemContainer>
-                              <AnyItemContainer gap="60px">
+                              </AnyItemContainer>}
+                              {canEdit && <AnyItemContainer gap="60px">
                                     <InnerWrapper wd={'100%'}>
                                           <span onClick={()=>navigate(`/company/${companyData?._id}`)} style={{color: "green", cursor: "pointer"}}><b>Edit</b></span>
                                           <span onClick={()=>navigate(`/edit-company/${companyData?._id}`)} style={{color: "green", cursor: "pointer"}}><FaEdit/></span>
                                     </InnerWrapper>
-                              </AnyItemContainer>
-                            </ItemContainer>
+                              </AnyItemContainer>}
+                            </ItemContainer>}
             </CompanyDetailData>
           </CompanyDetailContent> 
           
