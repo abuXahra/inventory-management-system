@@ -1,5 +1,5 @@
 
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import PageTitle from '../../components/page_title/PageTitle'
 import ListHeader from '../../components/page_title/list_header/ListHeader'
 import { useNavigate } from 'react-router-dom'
@@ -8,6 +8,7 @@ import { PaymentPageContent, PaymentPageWrapper } from './paymentPage.style'
 import axios from 'axios'
 import { List } from 'react-content-loader'
 import { token } from '../../components/context/UserToken'
+import { UserContext } from '../../components/context/UserContext'
 
 
 
@@ -16,7 +17,16 @@ export default function PaymentPage() {
   const[paymentRecords, setPaymentRecords] = useState([]);
   const [allPaymentRecords, setAllPaymentRecords] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  
+
+           // user Permission
+           const {user, permissions} = useContext(UserContext);
+           const paymentPermission = permissions?.find(p => p.module === "Payment")
+           const effectivePermission =
+               user?.role === "admin"
+                 ? { canView: true, canAdd: true, canEdit: true, canDelete: true }
+                 : paymentPermission;
+ 
+                 
 // fetch expense handler 
                           useEffect(() => {
                               const getPayment = async () => { 
@@ -102,6 +112,7 @@ const handleSearchQueryOnChange = (e) => {
             onChange={handleSearchQueryOnChange}
             type={'text'}
             dataLength={paymentRecords.length}
+            permission={effectivePermission?.canAdd}
           />
           
           {/* Payment Table */}
@@ -109,6 +120,7 @@ const handleSearchQueryOnChange = (e) => {
             data={paymentRecords} 
             onDeletePayment={deletePayment} 
             setIsLoading={setIsLoading}
+            paymentPermission={effectivePermission}
           />
         </PaymentPageContent>
 }

@@ -132,9 +132,9 @@ const CustomerTable = ({data, onDeleteCus, customerPermission}) => {
       name: 'Actions',
       cell: (row) => (
         <ActionButtons>
-        {customerPermission?.canView &&   <ActionButton clr='green' onClick={() => navigate(`/edit-customer/${row._id}`)}><FaEdit/></ActionButton>}
-           {customerPermission?.canView && <ActionButton clr="blue" onClick={() => navigate(`/customers/${row._id}`)}><FaEye/></ActionButton>}
-          {customerPermission?.canView && <ActionButton clr="red" onClick={() =>  handleGrabId(row._id, row.name)}><FaTrash/></ActionButton>}
+        {customerPermission?.canEdit &&   <ActionButton clr='green' onClick={() => navigate(`/edit-customer/${row._id}`)}><FaEdit/> Edit</ActionButton>}
+           {customerPermission?.canView && <ActionButton clr="blue" onClick={() => navigate(`/customers/${row._id}`)}><FaEye/> View</ActionButton>}
+          {customerPermission?.canDelete && <ActionButton clr="red" onClick={() =>  handleGrabId(row._id, row.name)}><FaTrash/> Delete</ActionButton>}
         </ActionButtons>
       ),
     },

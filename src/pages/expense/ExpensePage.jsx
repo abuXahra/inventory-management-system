@@ -1,5 +1,5 @@
 
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import PageTitle from '../../components/page_title/PageTitle'
 import ListHeader from '../../components/page_title/list_header/ListHeader'
 import { useNavigate } from 'react-router-dom'
@@ -11,6 +11,7 @@ import ExpensesTable from '../../components/table/expense_table/Expense'
 import axios from 'axios'
 import { List } from 'react-content-loader'
 import { token } from '../../components/context/UserToken'
+import { UserContext } from '../../components/context/UserContext'
 
 
 
@@ -20,6 +21,14 @@ export default function ExpensePage() {
         const [allExpenseRecords, setAllExpenseRecords] = useState([]);
         const [isLoading, setIsLoading] = useState(false);
         
+          // user Permission
+          const {user, permissions} = useContext(UserContext);
+          const expensePermission = permissions?.find(p => p.module === "Expense")
+          const effectivePermission =
+              user?.role === "admin"
+                ? { canView: true, canAdd: true, canEdit: true, canDelete: true }
+                : expensePermission;
+
   
 
          // fetch expense handler 
@@ -102,6 +111,7 @@ export default function ExpensePage() {
             onChange={handleSearchQueryOnChange}
             type={'text'}
             dataLength={expenseRecords.length}
+            permission={effectivePermission?.canAdd}
           />
           
           {/* Expense Table */}
@@ -109,6 +119,7 @@ export default function ExpensePage() {
                 data={expenseRecords} 
                 onDeleteExpense={deleteExpense} 
                 setIsLoading={setIsLoading}
+                expensePermission={effectivePermission}
             />
         </ExpensePageContent>
 }

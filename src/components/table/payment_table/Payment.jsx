@@ -16,7 +16,7 @@ import ToastComponents from '../../toast_message/toast_component/ToastComponents
 import { token } from '../../context/UserToken';
 
 
-const PaymentTable = ({ data, onDeletePayment }) => {
+const PaymentTable = ({ data, onDeletePayment, paymentPermission}) => {
 
   const navigate = useNavigate();
   
@@ -143,8 +143,8 @@ const PaymentTable = ({ data, onDeletePayment }) => {
       name: 'Actions',
       cell: (row) => (
         <ActionButtons>
-          <ActionButton clr='blue' onClick={() => navigate(`/edit-payment/${row._id}`)}><FaEdit /></ActionButton>
-          <ActionButton clr="red" onClick={() => handleGrabId(row._id, row.paymentFor)}><FaTrash/></ActionButton>
+         {paymentPermission.canEdit && <ActionButton clr='blue' onClick={() => navigate(`/edit-payment/${row._id}`)}><FaEdit /></ActionButton>}
+          {paymentPermission.canDelete && <ActionButton clr="red" onClick={() => handleGrabId(row._id, row.paymentFor)}><FaTrash/></ActionButton>}
         </ActionButtons>
       ),
     },

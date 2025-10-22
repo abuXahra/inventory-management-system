@@ -27,6 +27,10 @@ export default function CustomerPage() {
   // user Permission
   const {permissions, user} = useContext(UserContext);
   const customerPermission = permissions?.find(p => p.module === "Customer")
+  const effectivePermission =
+              user?.role === "admin"
+                ? { canView: true, canAdd: true, canEdit: true, canDelete: true }
+                : customerPermission;
         
     
    // fetch customer handler 
@@ -108,16 +112,14 @@ export default function CustomerPage() {
             onChange={handleSearchQueryOnChange}
             type={'text'}
             dataLength={customer.length}
-            permission={customerPermission?.canAdd}
+            permission={effectivePermission?.canAdd}
           />
           
           {/* Sales Table */}
             <CustomerTable 
               data={customer} 
               onDeleteCus={deleteCustomer} 
-              customerPermission={user?.role === 'admin' ? 
-              { canView: true, canEdit: true, canDelete: true } 
-              : customerPermission} 
+              customerPermission={effectivePermission} 
 
               
             />

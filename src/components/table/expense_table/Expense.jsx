@@ -16,7 +16,7 @@ import { token } from '../../context/UserToken';
 
 
 
-const ExpensesTable = ({ data, onDeleteExpense }) => {
+const ExpensesTable = ({ data, onDeleteExpense, expensePermission }) => {
 
   const navigate = useNavigate();
 
@@ -137,7 +137,7 @@ const ExpensesTable = ({ data, onDeleteExpense }) => {
     {
       name: 'Payment For',
       selector: (row) => row.expenseFor,
-      width: '20%',
+      width: '15%',
     },
     {
       name: 'Amount Paid',
@@ -151,15 +151,16 @@ const ExpensesTable = ({ data, onDeleteExpense }) => {
       name: 'Note',
       selector: (row) => row.note,
       sortable: true,
-      width: '25%',
+      width: '20%',
     },
     {
       name: 'Actions',
-      width: '10%',
+      width: '20%',
       cell: (row) => (
         <ActionButtons>
-          <ActionButton clr='blue' onClick={() => navigate(`/edit-expense/${row._id}`)}><FaEdit /></ActionButton>
-          <ActionButton clr="red" onClick={() => handleGrabId(row._id, row.expenseFor)}><FaTrash /></ActionButton>
+          {/* {expensePermission?.canView &&  <ActionButton clr='green' onClick={() => navigate(`/expense-detail/${row._id}`)}><FaEye/> View</ActionButton>} */}
+         {expensePermission.canEdit && <ActionButton clr='blue' onClick={() => navigate(`/edit-expense/${row._id}`)}><FaEdit /> Edit</ActionButton>}
+          {expensePermission.canDelete && <ActionButton clr="red" onClick={() => handleGrabId(row._id, row.expenseFor)}><FaTrash /> Delete</ActionButton>}
         </ActionButtons>
       ),
     },

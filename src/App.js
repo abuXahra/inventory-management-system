@@ -79,6 +79,7 @@ import AddPermission from "./pages/zpermission/add/AddPermission";
 import RequireAddPermissionRoute from "./components/protected_route/RequireAddPermissionRoute";
 import NotFound from "./pages/not_found/NotFound";
 import Unauthorized from "./pages/unauthorized/UnauthorizedPage";
+import RequirePermissionRoute from "./components/protected_route/RequireAddPermissionRoute";
 
 function App() {
   const { user, loading } = useContext(UserContext);
@@ -174,15 +175,51 @@ function App() {
             />
             <Route
               path="/add-customer"
-              element={<ProtectedRoute element={<AddCustomer />} />}
+              element={
+                <ProtectedRoute
+                  element={
+                    <RequirePermissionRoute
+                      user={user}
+                      moduleName="Customer"
+                      action="canAdd"
+                      element={<AddCustomer />}
+                      fallback="/not-authorized"
+                    />
+                  }
+                />
+              }
             />
             <Route
               path="/customers/:customerId"
-              element={<ProtectedRoute element={<CustomerDetail />} />}
+              element={
+                <ProtectedRoute
+                  element={
+                    <RequirePermissionRoute
+                      user={user}
+                      moduleName="Customer"
+                      action="canView"
+                      element={<CustomerDetail />}
+                      fallback="/not-authorized"
+                    />
+                  }
+                />
+              }
             />
             <Route
               path="/edit-customer/:customerId"
-              element={<ProtectedRoute element={<EditCustomer />} />}
+              element={
+                <ProtectedRoute
+                  element={
+                    <RequireAddPermissionRoute
+                      user={user}
+                      action="canEdit"
+                      moduleName="Customer"
+                      element={<EditCustomer />}
+                      fallback="/not-authorized"
+                    />
+                  }
+                />
+              }
             />
             {/* PURCHASE */}
             <Route
@@ -225,12 +262,40 @@ function App() {
             />
             <Route
               path="/add-payments"
-              element={<ProtectedRoute element={<AddPayment />} />}
+              element={
+                <ProtectedRoute
+                  element={
+                    <RequirePermissionRoute
+                      user={user}
+                      moduleName="Payment"
+                      action="canAdd"
+                      element={<AddPayment />}
+                      fallback="/not-authorized"
+                    />
+                  }
+                />
+              }
             />
             <Route
               path="/edit-payment/:paymentId"
-              element={<ProtectedRoute element={<EditPayment />} />}
+              element={
+                <ProtectedRoute
+                  element={
+                    <RequirePermissionRoute
+                      user={user}
+                      moduleName="Payment"
+                      action="canEdit"
+                      element={<EditPayment />}
+                      fallback="/not-authorized"
+                    />
+                  }
+                />
+              }
             />
+            {/* <Route
+              path="/edit-payment/:paymentId"
+              element={<ProtectedRoute element={<EditPayment />} />}
+            /> */}
             {/* Expenses */}
             <Route
               path="/expenses"
@@ -238,11 +303,35 @@ function App() {
             />
             <Route
               path="/add-expense"
-              element={<ProtectedRoute element={<AddExpenses />} />}
+              element={
+                <ProtectedRoute
+                  element={
+                    <RequireAddPermissionRoute
+                      user={user}
+                      action="canAdd"
+                      moduleName="Expense"
+                      element={<AddExpenses />}
+                      fallback="/not-authorized"
+                    />
+                  }
+                />
+              }
             />
             <Route
               path="/edit-expense/:expenseId"
-              element={<ProtectedRoute element={<EditExpenses />} />}
+              element={
+                <ProtectedRoute
+                  element={
+                    <RequireAddPermissionRoute
+                      user={user}
+                      action="canEdit"
+                      moduleName="Expense"
+                      element={<EditExpenses />}
+                      fallback="/not-authorized"
+                    />
+                  }
+                />
+              }
             />
             {/* REPORTS */}
             <Route
@@ -339,10 +428,6 @@ function App() {
               element={<ProtectedRoute element={<UserDetail />} />}
             />
             {/* COMPANY PROFILE */}
-            {/* <Route
-              path="/add-company"
-              element={<ProtectedRoute element={<AddCompany />} />}
-            /> */}
             <Route
               path="/add-company"
               element={
@@ -350,9 +435,10 @@ function App() {
                   element={
                     <RequireAddPermissionRoute
                       user={user}
+                      action="canAdd"
                       moduleName="Company"
                       element={<AddCompany />}
-                      fallback="/company-profile"
+                      fallback="/not-authorized"
                     />
                   }
                 />
@@ -360,15 +446,51 @@ function App() {
             />
             <Route
               path="/company-profile"
-              element={<ProtectedRoute element={<CompanyDetail />} />}
+              element={
+                <ProtectedRoute
+                  element={
+                    <RequireAddPermissionRoute
+                      user={user}
+                      action="canView"
+                      moduleName="Company"
+                      element={<CompanyDetail />}
+                      fallback="/not-authorized"
+                    />
+                  }
+                />
+              }
             />
             <Route
               path="/company-profile/:companyId"
-              element={<ProtectedRoute element={<CompanyDetail />} />}
+              element={
+                <ProtectedRoute
+                  element={
+                    <RequireAddPermissionRoute
+                      user={user}
+                      action="canView"
+                      moduleName="Company"
+                      element={<CompanyDetail />}
+                      fallback="/not-authorized"
+                    />
+                  }
+                />
+              }
             />
             <Route
               path="/edit-company/:companyId"
-              element={<ProtectedRoute element={<EditCompany />} />}
+              element={
+                <ProtectedRoute
+                  element={
+                    <RequireAddPermissionRoute
+                      user={user}
+                      action="canEdit"
+                      moduleName="Company"
+                      element={<EditCompany />}
+                      fallback="/not-authorized"
+                    />
+                  }
+                />
+              }
             />
             <Route
               path="/company-calender"
@@ -382,8 +504,19 @@ function App() {
               path="/add-permission"
               element={<ProtectedRoute element={<AddPermission />} />}
             />
-            <Route path="/not-found" element={<NotFound />} />
-            <Route path="/not-authorized" element={<Unauthorized />} />
+            <Route
+              path="/not-found"
+              element={<ProtectedRoute element={<NotFound />} />}
+            />
+            <Route
+              path="/not-authorized"
+              element={<ProtectedRoute element={<Unauthorized />} />}
+            />
+            {/* unmatch routes */}
+            <Route
+              path="*"
+              element={<ProtectedRoute element={<NotFound />} />}
+            />
           </Routes>
         </DashboardLayout>
       )}
