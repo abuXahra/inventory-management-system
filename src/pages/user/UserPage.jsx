@@ -1,5 +1,5 @@
 
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import profileHolder from '../../images/placeholder_image.png'
 import UserTable from '../../components/table/user_table/UserTable'
@@ -9,6 +9,7 @@ import PageTitle from '../../components/page_title/PageTitle'
 import axios from 'axios'
 import ContentLoader, {List } from 'react-content-loader'
 import { token } from '../../components/context/UserToken'
+import { UserContext } from '../../components/context/UserContext'
 
 
 
@@ -21,6 +22,15 @@ export default function UserPage() {
       const[userRecords, setUserRecords] = useState([]);
       const [allUserRecords, setAllUserRecords] = useState([]);
       const [isLoading, setIsLoading] = useState(false);
+
+          // user Permission
+          const {user, permissions} = useContext(UserContext);
+          const userPermission = permissions?.find(p => p.module === "User")
+          const effectivePermission =
+              user?.role === "admin"
+                ? { canView: true, canAdd: true, canEdit: true, canDelete: true }
+                : userPermission;
+
 
 // fetch users handler 
       useEffect(() => {
@@ -101,10 +111,16 @@ export default function UserPage() {
             searQuery={'Name'}
             onChange={handleChange}
             type={'text'}
+            dataLength={userRecords.length}
+            permission={effectivePermission?.canAdd}
           />
           
           {/* User Table */}
-            <UserTable data={userRecords} onDeleteUser={deleteUser}/>
+            <UserTable 
+              data={userRecords} 
+              onDeleteUser={deleteUser}
+              userPermission={effectivePermission}
+            />
         </UserPageContent>
 }
         

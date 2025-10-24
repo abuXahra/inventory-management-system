@@ -17,7 +17,7 @@ import ToastComponents from '../../toast_message/toast_component/ToastComponents
 import { token } from '../../context/UserToken';
 
 
-const SalesTable = ({data, onDeleteSale}) => {
+const SalesTable = ({data, onDeleteSale, salePermission}) => {
   
   const navigate = useNavigate();
 
@@ -159,9 +159,9 @@ const SalesTable = ({data, onDeleteSale}) => {
        name: 'Actions',
        cell: (row) => (
          <ActionButtons>
-           <ActionButton clr='green' onClick={() => navigate(`/sale-invoice/${row._id}`)}><FaFileInvoice/></ActionButton>
-           <ActionButton clr='blue' onClick={() => navigate(`/edit-sale/${row._id}`)}><FaEdit/></ActionButton>
-           <ActionButton clr="red" onClick={() => handleGrabId(row._id, row.customer.name, row.code)}><FaTrash/></ActionButton>
+          {salePermission.canView && <ActionButton clr='green' onClick={() => navigate(`/sale-invoice/${row._id}`)}><FaFileInvoice/></ActionButton>}
+          {salePermission.canEdit && <ActionButton clr='blue' onClick={() => navigate(`/edit-sale/${row._id}`)}><FaEdit/></ActionButton>} 
+          {salePermission.canDelete && <ActionButton clr="red" onClick={() => handleGrabId(row._id, row.customer.name, row.code)}><FaTrash/></ActionButton>}
          </ActionButtons>
        ),
      },
@@ -181,21 +181,27 @@ const SalesTable = ({data, onDeleteSale}) => {
             paginationRowsPerPageOptions={[10, 25, 50, 100]} // Options in the dropdown
             responsive
             customStyles={customStyles}
-            selectableRows
-            onSelectedRowsChange={({ selectedRows }) => setSelectedSale(selectedRows)}
-            selectableRowHighlight
+            selectableRows={salePermission.canDelete} // 👈 only show checkboxes if delete permission is true
+            onSelectedRowsChange={
+                          salePermission.canDelete
+                            ? ({ selectedRows }) => setSelectedSale(selectedRows)
+                            : undefined
+                        }
+            selectableRowHighlight={salePermission.canDelete}
+           
         />
       </TableWrapper>
 
        {/* sliding button for delete bulk list */}
           {selectedSale.length > 0 && (
           <SlideUpButton>
+{salePermission.canDelete &&
             <Button 
               btnColor={'red'} 
               btnOnClick={handleBulkDelete} 
               btnText= {isDeleting ? <ButtonLoader text="Deleting..." /> : `Delete Selected (${selectedSale.length})`} 
               disabled={isDeleting}>             
-            </Button>
+            </Button>}
           </SlideUpButton>
         )}
 

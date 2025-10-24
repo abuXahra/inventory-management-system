@@ -13,7 +13,7 @@ import ToastComponents from '../../toast_message/toast_component/ToastComponents
 import userPicture from '../../../images/placeholder_image.png'
 
 
-const UserTable = ({ data, onDeleteUser }) => {
+const UserTable = ({ data, onDeleteUser, userPermission }) => {
 
  
 
@@ -108,10 +108,9 @@ const UserTable = ({ data, onDeleteUser }) => {
       name: 'Actions',
       cell: (row) => (
         <ActionButtons>
-          <ActionButton clr='green' onClick={() => navigate(`/users/${row._id}`)}><FaEye /></ActionButton>
-          <ActionButton clr='blue' onClick={() => navigate(`/edit-user/${row._id}`)}><FaEdit /></ActionButton>
-          <ActionButton clr="red" onClick={() => handleGrabId(row._id, row.username)}><FaTrash /></ActionButton>
-
+         {userPermission.canView && <ActionButton clr='green' onClick={() => navigate(`/users/${row._id}`)}><FaEye /></ActionButton>}
+         {userPermission.canEdit &&  <ActionButton clr='blue' onClick={() => navigate(`/edit-user/${row._id}`)}><FaEdit /></ActionButton>}
+         {userPermission.canDelete &&  <ActionButton clr="red" onClick={() => handleGrabId(row._id, row.username)}><FaTrash /></ActionButton>}
         </ActionButtons>
       ),
     },

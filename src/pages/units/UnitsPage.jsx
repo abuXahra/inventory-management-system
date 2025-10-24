@@ -1,5 +1,5 @@
 
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import PageTitle from '../../components/page_title/PageTitle'
 import ListHeader from '../../components/page_title/list_header/ListHeader'
 import { useNavigate } from 'react-router-dom'
@@ -8,6 +8,7 @@ import UnitsTable from '../../components/table/units_table/UnitsTable'
 import axios from 'axios'
 import { List } from 'react-content-loader'
 import { token } from '../../components/context/UserToken'
+import { UserContext } from '../../components/context/UserContext'
 
 
 export default function UnitsPage() {
@@ -17,6 +18,13 @@ export default function UnitsPage() {
    const [allUnitRecords, setAllUnitRecords] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
 
+          // user Permission
+          const {user, permissions} = useContext(UserContext);
+          const unitPermission = permissions?.find(p => p.module === "Unit")
+          const effectivePermission =
+              user?.role === "admin"
+                ? { canView: true, canAdd: true, canEdit: true, canDelete: true }
+                : unitPermission;    
 
     // fetch unit handler 
           useEffect(() => {
@@ -92,10 +100,16 @@ const handleChange = (e) => {
             searQuery={'Name'}
             onChange={handleChange}
             type={'text'}
+            dataLength={unitRecords.length}
+            permission={effectivePermission?.canAdd}
           />
           
           {/* Unit Table */}
-            <UnitsTable data={unitRecords} onDeleteUnit={deleteUnit}/>
+            <UnitsTable 
+              data={unitRecords} 
+              onDeleteUnit={deleteUnit}
+              unitPermission={effectivePermission}              
+            />
         </UnitsPageContent>
 }
     </UnitsPageWrapper>

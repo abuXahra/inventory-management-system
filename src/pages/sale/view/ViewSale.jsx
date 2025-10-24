@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import PageTitle from '../../../components/page_title/PageTitle'
 import { ButtonsWrapper, ChargesWrapper, DateWrapper, InfoBillWrapper, InvoiceWrapper, LogoDateWrapper, LogoWrapper, NoteWrapper, PartialPaymentWrapper, TableStyled, TdStyled, ViewSalesContent, ViewSalesWrapper } from './viewSale.style'
 import ItemContainer from '../../../components/item_container/ItemContainer'
@@ -16,6 +16,7 @@ import jsPDF from 'jspdf'
 import { List } from 'react-content-loader'
 import ButtonLoader from '../../../components/clicks/button/button_loader/ButtonLoader'
 import { token } from '../../../components/context/UserToken'
+import { UserContext } from '../../../components/context/UserContext'
 
 export default function ViewSale() {
   
@@ -30,7 +31,15 @@ export default function ViewSale() {
     const [isLoading, setIsLoading] = useState(false);
     const [isBtnLoading, setIsBtnLoading] = useState(false);
   
+    // user permission:
+      const {permissions, user} = useContext(UserContext);
+      const salePermission = permissions?.find(p => p.module === "Sale")
 
+            // Permission logic
+      const isAdmin = user?.role === 'admin'
+      const canEdit = isAdmin || salePermission?.canEdit
+     
+    
 // Fetch invoice detail
 
 
@@ -474,6 +483,7 @@ export default function ViewSale() {
       <ButtonsWrapper>
 
          {/* Edit */}
+{canEdit &&
                 <Button
                   btnColor={'rgb(35, 139, 0)'}
                   btnText={'Edit'}
@@ -482,7 +492,7 @@ export default function ViewSale() {
                   btnLeftIcon={<FaEdit/>}
                   btnBdRd={'2px'}
                   btnOnClick={()=>navigate(`/edit-sale/${saleData?._id}`)}
-                />
+                />}
         
                 {/* print */}
                     <Button

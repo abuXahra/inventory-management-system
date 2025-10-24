@@ -1,5 +1,5 @@
 
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import PageTitle from '../../components/page_title/PageTitle'
 import ListHeader from '../../components/page_title/list_header/ListHeader'
 import { useNavigate } from 'react-router-dom'
@@ -8,6 +8,7 @@ import PurchaseTable from '../../components/table/purchase_table/Purchase'
 import axios from 'axios'
 import { List } from 'react-content-loader'
 import { token } from '../../components/context/UserToken'
+import { UserContext } from '../../components/context/UserContext'
 
 
 
@@ -17,6 +18,16 @@ export default function PurchasePage() {
    const [allPurchaseRecords, setAllPurchaseRecords] = useState([]);
    const [isLoading, setIsLoading] = useState(false);
 
+
+          // user Permission
+          const {user, permissions} = useContext(UserContext);
+          const purchasePermission = permissions?.find(p => p.module === "Purchase")
+          const effectivePermission =
+              user?.role === "admin"
+                ? { canView: true, canAdd: true, canEdit: true, canDelete: true }
+                : purchasePermission;
+
+     
  // fetch expense handler 
                           useEffect(() => {
                               const getPurchase = async () => { 
@@ -104,6 +115,7 @@ export default function PurchasePage() {
             onChange={handleSearchQueryOnChange}
             type={'text'}
             dataLength={purchaseRecords.length}
+            permission={effectivePermission.canAdd}
           />
           
           {/* Purchase Table */}
@@ -111,6 +123,7 @@ export default function PurchasePage() {
                 data={purchaseRecords} 
                 onDeletePurchase={deletePurchase} 
                 setIsLoading={setIsLoading}
+                purchasePermission={effectivePermission}
             />
         </PurchasePageContent>
 

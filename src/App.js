@@ -58,9 +58,6 @@ import EditUser from "./pages/user/edit/EditUser";
 import AddCompany from "./pages/company_profile/add_company/AddCompany";
 import CompanyDetail from "./pages/company_profile/company_detail/CompanyDetail";
 import EditCompany from "./pages/company_profile/edit_company/EditCompany";
-// import ProtectedRoute from "./components/protected_route/ProtectedRoute";
-// import UserHome from "./pages/system_user/home/UserHome";
-// import Unauthorized from "./components/unauthorized/Unauthorized";
 import MyCalender from "./pages/MyCalender";
 import DashboardLayout from "./pages/home/DashboardLayout";
 import AddSaleReturn from "./pages/return/sale_return/add/AddSaleReturn";
@@ -112,36 +109,134 @@ function App() {
             {/* CATEGORY */}
             <Route
               path="/categories"
-              element={<ProtectedRoute element={<CategoryPage />} />}
+              element={
+                <ProtectedRoute
+                  element={
+                    <RequirePermissionRoute
+                      user={user}
+                      moduleName="Category"
+                      action="canVisit"
+                      element={<CategoryPage />}
+                      fallback="/not-authorized"
+                    />
+                  }
+                />
+              }
             />
             <Route
               path="/add-category"
-              element={<ProtectedRoute element={<AddCategory />} />}
+              element={
+                <ProtectedRoute
+                  element={
+                    <RequirePermissionRoute
+                      user={user}
+                      moduleName="Category"
+                      action="canAdd"
+                      element={<AddCategory />}
+                      fallback="/not-authorized"
+                    />
+                  }
+                />
+              }
             />
             <Route
               path="/edit-category/:categoryId"
-              element={<ProtectedRoute element={<EditCategory />} />}
+              element={
+                <ProtectedRoute
+                  element={
+                    <RequirePermissionRoute
+                      user={user}
+                      moduleName="Category"
+                      action="canEdit"
+                      element={<EditCategory />}
+                      fallback="/not-authorized"
+                    />
+                  }
+                />
+              }
             />
             <Route
               path="/category-detail/:categoryId"
-              element={<ProtectedRoute element={<CategoryDetail />} />}
+              element={
+                <ProtectedRoute
+                  element={
+                    <RequirePermissionRoute
+                      user={user}
+                      moduleName="Category"
+                      action="canView"
+                      element={<CategoryDetail />}
+                      fallback="/not-authorized"
+                    />
+                  }
+                />
+              }
             />
+
             {/* PRODUCT */}
             <Route
               path="/products"
-              element={<ProtectedRoute element={<ProductPage />} />}
+              element={
+                <ProtectedRoute
+                  element={
+                    <RequirePermissionRoute
+                      user={user}
+                      moduleName="Product"
+                      action="canVisit"
+                      element={<ProductPage />}
+                      fallback="/not-authorized"
+                    />
+                  }
+                />
+              }
             />
+
             <Route
               path="/add-product"
-              element={<ProtectedRoute element={<AddProduct />} />}
+              element={
+                <ProtectedRoute
+                  element={
+                    <RequirePermissionRoute
+                      user={user}
+                      moduleName="Product"
+                      action="canAdd"
+                      element={<AddProduct />}
+                      fallback="/not-authorized"
+                    />
+                  }
+                />
+              }
             />
             <Route
               path="/edit-product/:productId"
-              element={<ProtectedRoute element={<EditProduct />} />}
+              element={
+                <ProtectedRoute
+                  element={
+                    <RequirePermissionRoute
+                      user={user}
+                      moduleName="Product"
+                      action="canEdit"
+                      element={<EditProduct />}
+                      fallback="/not-authorized"
+                    />
+                  }
+                />
+              }
             />
             <Route
               path="/product-detail/:productId"
-              element={<ProtectedRoute element={<ProductDetail />} />}
+              element={
+                <ProtectedRoute
+                  element={
+                    <RequirePermissionRoute
+                      user={user}
+                      moduleName="Product"
+                      action="canView"
+                      element={<ProductDetail />}
+                      fallback="/not-authorized"
+                    />
+                  }
+                />
+              }
             />
             <Route
               path="/low-stock"
@@ -154,24 +249,85 @@ function App() {
             {/* SALE */}
             <Route
               path="/sales"
-              element={<ProtectedRoute element={<SalePage />} />}
+              element={
+                <ProtectedRoute
+                  element={
+                    <RequirePermissionRoute
+                      user={user}
+                      moduleName="Sale"
+                      action="canVisit"
+                      element={<SalePage />}
+                      fallback="/not-authorized"
+                    />
+                  }
+                />
+              }
             />
             <Route
               path="/add-sale"
-              element={<ProtectedRoute element={<AddSale />} />}
+              element={
+                <ProtectedRoute
+                  element={
+                    <RequirePermissionRoute
+                      user={user}
+                      moduleName="Sale"
+                      action="canAdd"
+                      element={<AddSale />}
+                      fallback="/not-authorized"
+                    />
+                  }
+                />
+              }
             />
             <Route
               path="/edit-sale/:saleId"
-              element={<ProtectedRoute element={<EditSale />} />}
+              element={
+                <ProtectedRoute
+                  element={
+                    <RequirePermissionRoute
+                      user={user}
+                      moduleName="Sale"
+                      action="canEdit"
+                      element={<EditSale />}
+                      fallback="/not-authorized"
+                    />
+                  }
+                />
+              }
             />
             <Route
               path="/sale-invoice/:saleId"
-              element={<ProtectedRoute element={<ViewSale />} />}
+              element={
+                <ProtectedRoute
+                  element={
+                    <RequirePermissionRoute
+                      user={user}
+                      moduleName="Sale"
+                      action="canView"
+                      element={<ViewSale />}
+                      fallback="/not-authorized"
+                    />
+                  }
+                />
+              }
             />
+
             {/* CUSTOMER */}
             <Route
               path="/customers"
-              element={<ProtectedRoute element={<CustomerPage />} />}
+              element={
+                <ProtectedRoute
+                  element={
+                    <RequirePermissionRoute
+                      user={user}
+                      moduleName="Customer"
+                      action="canVisit"
+                      element={<CustomerPage />}
+                      fallback="/not-authorized"
+                    />
+                  }
+                />
+              }
             />
             <Route
               path="/add-customer"
@@ -224,41 +380,150 @@ function App() {
             {/* PURCHASE */}
             <Route
               path="/purchase"
-              element={<ProtectedRoute element={<PurchasePage />} />}
+              element={
+                <ProtectedRoute
+                  element={
+                    <RequirePermissionRoute
+                      user={user}
+                      moduleName="Purchase"
+                      action="canVisit"
+                      element={<PurchasePage />}
+                      fallback="/not-authorized"
+                    />
+                  }
+                />
+              }
             />
             <Route
               path="/add-purchase"
-              element={<ProtectedRoute element={<AddPurchase />} />}
+              element={
+                <ProtectedRoute
+                  element={
+                    <RequirePermissionRoute
+                      user={user}
+                      moduleName="Purchase"
+                      action="canAdd"
+                      element={<AddPurchase />}
+                      fallback="/not-authorized"
+                    />
+                  }
+                />
+              }
             />
             <Route
               path="/edit-purchase/:purchaseId"
-              element={<ProtectedRoute element={<EditPurchase />} />}
+              element={
+                <ProtectedRoute
+                  element={
+                    <RequirePermissionRoute
+                      user={user}
+                      moduleName="Purchase"
+                      action="canEdit"
+                      element={<EditPurchase />}
+                      fallback="/not-authorized"
+                    />
+                  }
+                />
+              }
             />
             <Route
               path="/purchase-invoice/:purchaseId"
-              element={<ProtectedRoute element={<ViewPurchase />} />}
+              element={
+                <ProtectedRoute
+                  element={
+                    <RequirePermissionRoute
+                      user={user}
+                      moduleName="Purchase"
+                      action="canView"
+                      element={<ViewPurchase />}
+                      fallback="/not-authorized"
+                    />
+                  }
+                />
+              }
             />
             {/* SUPPLIER */}
             <Route
               path="/suppliers"
-              element={<ProtectedRoute element={<SupplierPage />} />}
+              element={
+                <ProtectedRoute
+                  element={
+                    <RequirePermissionRoute
+                      user={user}
+                      moduleName="Supplier"
+                      action="canVisit"
+                      element={<SupplierPage />}
+                      fallback="/not-authorized"
+                    />
+                  }
+                />
+              }
             />
             <Route
               path="/add-supplier"
-              element={<ProtectedRoute element={<AddSupplier />} />}
+              element={
+                <ProtectedRoute
+                  element={
+                    <RequirePermissionRoute
+                      user={user}
+                      moduleName="Supplier"
+                      action="canAdd"
+                      element={<AddSupplier />}
+                      fallback="/not-authorized"
+                    />
+                  }
+                />
+              }
             />
             <Route
               path="/supplier-detail/:supplierId"
-              element={<ProtectedRoute element={<SupplierDetail />} />}
+              element={
+                <ProtectedRoute
+                  element={
+                    <RequirePermissionRoute
+                      user={user}
+                      moduleName="Supplier"
+                      action="canView"
+                      element={<SupplierDetail />}
+                      fallback="/not-authorized"
+                    />
+                  }
+                />
+              }
             />
             <Route
               path="/edit-supplier/:supplierId"
-              element={<ProtectedRoute element={<EditSupplier />} />}
+              element={
+                <ProtectedRoute
+                  element={
+                    <RequirePermissionRoute
+                      user={user}
+                      moduleName="Supplier"
+                      action="canEdit"
+                      element={<EditSupplier />}
+                      fallback="/not-authorized"
+                    />
+                  }
+                />
+              }
             />
+
             {/* PAYMENTS */}
             <Route
               path="/payments"
-              element={<ProtectedRoute element={<PaymentPage />} />}
+              element={
+                <ProtectedRoute
+                  element={
+                    <RequirePermissionRoute
+                      user={user}
+                      moduleName="Payment"
+                      action="canVisit"
+                      element={<PaymentPage />}
+                      fallback="/not-authorized"
+                    />
+                  }
+                />
+              }
             />
             <Route
               path="/add-payments"
@@ -292,14 +557,23 @@ function App() {
                 />
               }
             />
-            {/* <Route
-              path="/edit-payment/:paymentId"
-              element={<ProtectedRoute element={<EditPayment />} />}
-            /> */}
+
             {/* Expenses */}
             <Route
               path="/expenses"
-              element={<ProtectedRoute element={<ExpensePage />} />}
+              element={
+                <ProtectedRoute
+                  element={
+                    <RequireAddPermissionRoute
+                      user={user}
+                      action="canVisit"
+                      moduleName="Expense"
+                      element={<ExpensePage />}
+                      fallback="/not-authorized"
+                    />
+                  }
+                />
+              }
             />
             <Route
               path="/add-expense"
@@ -336,7 +610,19 @@ function App() {
             {/* REPORTS */}
             <Route
               path="/reports"
-              element={<ProtectedRoute element={<ReportsPage />} />}
+              element={
+                <ProtectedRoute
+                  element={
+                    <RequireAddPermissionRoute
+                      user={user}
+                      action="canVisit"
+                      moduleName="Report"
+                      element={<ReportsPage />}
+                      fallback="/not-authorized"
+                    />
+                  }
+                />
+              }
             />
             <Route
               path="/sales-report"
@@ -357,76 +643,287 @@ function App() {
             {/* SALE RETURN/REFUND */}
             <Route
               path="/sale-return"
-              element={<ProtectedRoute element={<SaleReturnPage />} />}
+              element={
+                <ProtectedRoute
+                  element={
+                    <RequireAddPermissionRoute
+                      user={user}
+                      action="canVisit"
+                      moduleName="Sale Return"
+                      element={<SaleReturnPage />}
+                      fallback="/not-authorized"
+                    />
+                  }
+                />
+              }
             />
+
             <Route
               path="/add-sale-return"
-              element={<ProtectedRoute element={<AddSaleReturn />} />}
+              element={
+                <ProtectedRoute
+                  element={
+                    <RequireAddPermissionRoute
+                      user={user}
+                      action="canAdd"
+                      moduleName="Sale Return"
+                      element={<AddSaleReturn />}
+                      fallback="/not-authorized"
+                    />
+                  }
+                />
+              }
             />
             <Route
               path="/sale-return/:returnId"
-              element={<ProtectedRoute element={<SaleReturnView />} />}
+              element={
+                <ProtectedRoute
+                  element={
+                    <RequireAddPermissionRoute
+                      user={user}
+                      action="canView"
+                      moduleName="Sale Return"
+                      element={<SaleReturnView />}
+                      fallback="/not-authorized"
+                    />
+                  }
+                />
+              }
             />
             <Route
               path="/edit-return/:returnId"
-              element={<ProtectedRoute element={<EditSaleReturn />} />}
+              element={
+                <ProtectedRoute
+                  element={
+                    <RequireAddPermissionRoute
+                      user={user}
+                      action="canEdit"
+                      moduleName="Sale Return"
+                      element={<EditSaleReturn />}
+                      fallback="/not-authorized"
+                    />
+                  }
+                />
+              }
             />
             {/* PURCHASE RETURN/REFUND */}
             <Route
               path="/purchase-return"
-              element={<ProtectedRoute element={<PurchaseReturnsPage />} />}
+              element={
+                <ProtectedRoute
+                  element={
+                    <RequireAddPermissionRoute
+                      user={user}
+                      action="canVisit"
+                      moduleName="Purchase Return"
+                      element={<PurchaseReturnsPage />}
+                      fallback="/not-authorized"
+                    />
+                  }
+                />
+              }
             />
             <Route
               path="/add-purchase-return"
-              element={<ProtectedRoute element={<AddPurchaseReturn />} />}
-            />{" "}
+              element={
+                <ProtectedRoute
+                  element={
+                    <RequireAddPermissionRoute
+                      user={user}
+                      action="canAdd"
+                      moduleName="Purchase Return"
+                      element={<AddPurchaseReturn />}
+                      fallback="/not-authorized"
+                    />
+                  }
+                />
+              }
+            />
             <Route
               path="/purchase-return/:returnId"
-              element={<ProtectedRoute element={<PurchaseReturnView />} />}
+              element={
+                <ProtectedRoute
+                  element={
+                    <RequireAddPermissionRoute
+                      user={user}
+                      action="canView"
+                      moduleName="Purchase Return"
+                      element={<PurchaseReturnView />}
+                      fallback="/not-authorized"
+                    />
+                  }
+                />
+              }
             />
+
             {/* TAX */}
             <Route
               path="/tax"
-              element={<ProtectedRoute element={<TaxPage />} />}
+              element={
+                <ProtectedRoute
+                  element={
+                    <RequireAddPermissionRoute
+                      user={user}
+                      action="canVisit"
+                      moduleName="Tax"
+                      element={<TaxPage />}
+                      fallback="/not-authorized"
+                    />
+                  }
+                />
+              }
             />
             <Route
               path="/add-tax"
-              element={<ProtectedRoute element={<AddTax />} />}
+              element={
+                <ProtectedRoute
+                  element={
+                    <RequireAddPermissionRoute
+                      user={user}
+                      action="canAdd"
+                      moduleName="Tax"
+                      element={<AddTax />}
+                      fallback="/not-authorized"
+                    />
+                  }
+                />
+              }
             />
             <Route
               path="/edit-tax/:taxId"
-              element={<ProtectedRoute element={<EditTax />} />}
+              element={
+                <ProtectedRoute
+                  element={
+                    <RequireAddPermissionRoute
+                      user={user}
+                      action="canEdit"
+                      moduleName="Tax"
+                      element={<EditTax />}
+                      fallback="/not-authorized"
+                    />
+                  }
+                />
+              }
             />
+
             {/* UNITS */}
             <Route
               path="/units"
-              element={<ProtectedRoute element={<UnitsPage />} />}
+              element={
+                <ProtectedRoute
+                  element={
+                    <RequireAddPermissionRoute
+                      user={user}
+                      action="canVisit"
+                      moduleName="Unit"
+                      element={<UnitsPage />}
+                      fallback="/not-authorized"
+                    />
+                  }
+                />
+              }
             />
+
             <Route
               path="/add-units"
-              element={<ProtectedRoute element={<AddUnits />} />}
+              element={
+                <ProtectedRoute
+                  element={
+                    <RequireAddPermissionRoute
+                      user={user}
+                      action="canAdd"
+                      moduleName="Unit"
+                      element={<AddUnits />}
+                      fallback="/not-authorized"
+                    />
+                  }
+                />
+              }
             />
             <Route
               path="/edit-units/:unitId"
-              element={<ProtectedRoute element={<EditUnits />} />}
+              element={
+                <ProtectedRoute
+                  element={
+                    <RequireAddPermissionRoute
+                      user={user}
+                      action="canEdit"
+                      moduleName="Unit"
+                      element={<EditUnits />}
+                      fallback="/not-authorized"
+                    />
+                  }
+                />
+              }
             />
             {/* USERS */}
             <Route
               path="/users"
-              element={<ProtectedRoute element={<UserPage />} />}
+              element={
+                <ProtectedRoute
+                  element={
+                    <RequireAddPermissionRoute
+                      user={user}
+                      action="canVisit"
+                      moduleName="User"
+                      element={<UserPage />}
+                      fallback="/not-authorized"
+                    />
+                  }
+                />
+              }
             />
+
             <Route
               path="/add-user"
-              element={<ProtectedRoute element={<AddUser />} />}
+              element={
+                <ProtectedRoute
+                  element={
+                    <RequireAddPermissionRoute
+                      user={user}
+                      action="canAdd"
+                      moduleName="User"
+                      element={<AddUser />}
+                      fallback="/not-authorized"
+                    />
+                  }
+                />
+              }
             />
             <Route
               path="/edit-user/:userId"
-              element={<ProtectedRoute element={<EditUser />} />}
+              element={
+                <ProtectedRoute
+                  element={
+                    <RequireAddPermissionRoute
+                      user={user}
+                      action="canEdit"
+                      moduleName="User"
+                      element={<EditUser />}
+                      fallback="/not-authorized"
+                    />
+                  }
+                />
+              }
             />
+
             <Route
               path="/users/:userId"
-              element={<ProtectedRoute element={<UserDetail />} />}
+              element={
+                <ProtectedRoute
+                  element={
+                    <RequireAddPermissionRoute
+                      user={user}
+                      action="canView"
+                      moduleName="User"
+                      element={<UserDetail />}
+                      fallback="/not-authorized"
+                    />
+                  }
+                />
+              }
             />
+
             {/* COMPANY PROFILE */}
             <Route
               path="/add-company"
@@ -498,8 +995,21 @@ function App() {
             />
             <Route
               path="/permission"
-              element={<ProtectedRoute element={<PermissionPage />} />}
+              element={
+                <ProtectedRoute
+                  element={
+                    <RequireAddPermissionRoute
+                      user={user}
+                      action="canVisit"
+                      moduleName="Permission"
+                      element={<PermissionPage />}
+                      fallback="/not-authorized"
+                    />
+                  }
+                />
+              }
             />
+
             <Route
               path="/add-permission"
               element={<ProtectedRoute element={<AddPermission />} />}

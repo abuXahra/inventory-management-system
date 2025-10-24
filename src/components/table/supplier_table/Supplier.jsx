@@ -16,7 +16,7 @@ import ToastComponents from '../../toast_message/toast_component/ToastComponents
 import { token } from '../../context/UserToken';
 
 
-const SupplierTable = ({data, onDeleteSup}) => {
+const SupplierTable = ({data, onDeleteSup, supplierPermission}) => {
   
   const navigate = useNavigate();
 
@@ -134,9 +134,9 @@ const handleDelete = async (supplierId) => {
       width: '100px',
       cell: (row) => (
         <ActionButtons>
-          <ActionButton clr='green' onClick={() => navigate(`/supplier-detail/${row._id}`)}><FaEye/></ActionButton>
-          <ActionButton clr='blue' onClick={() => navigate(`/edit-supplier/${row._id}`)}><FaEdit/></ActionButton>
-          <ActionButton clr="red" onClick={() => handleGrabId(row._id, row.name)}><FaTrash/></ActionButton>
+          {supplierPermission.canView && <ActionButton clr='green' onClick={() => navigate(`/supplier-detail/${row._id}`)}><FaEye/></ActionButton>}
+         {supplierPermission.canEdit && <ActionButton clr='blue' onClick={() => navigate(`/edit-supplier/${row._id}`)}><FaEdit/></ActionButton>}
+         {supplierPermission.canDelete &&  <ActionButton clr="red" onClick={() => handleGrabId(row._id, row.name)}><FaTrash/></ActionButton>}
         </ActionButtons>
       ),
     },
@@ -156,9 +156,14 @@ const handleDelete = async (supplierId) => {
               paginationRowsPerPageOptions={[10, 25, 50, 100]} // Options in the dropdown
               responsive
               customStyles={customStyles}
-              selectableRows
-              onSelectedRowsChange={({ selectedRows }) => setSelectedSupplier(selectedRows)}
-              selectableRowHighlight
+              selectableRows={supplierPermission.canDelete} // 👈 only show checkboxes if delete permission is true
+              onSelectedRowsChange={
+                          supplierPermission.canDelete
+                            ? ({ selectedRows }) => setSelectedSupplier(selectedRows)
+                            : undefined
+                        }
+              selectableRowHighlight={supplierPermission.canDelete}
+         
             />
       </TableWrapper>
 
@@ -166,12 +171,13 @@ const handleDelete = async (supplierId) => {
 {/* sliding button for delete bulk list */}
           {selectedSupplier.length > 0 && (
           <SlideUpButton>
+        {supplierPermission.canDelete &&
             <Button 
               btnColor={'red'} 
               btnOnClick={handleBulkDelete} 
               btnText= {isDeleting ? <ButtonLoader text="Deleting..." /> : `Delete Selected (${selectedSupplier.length})`} 
               disabled={isDeleting}>             
-            </Button>
+            </Button>}
           </SlideUpButton>
         )}
 

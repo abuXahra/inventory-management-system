@@ -22,7 +22,7 @@ import { token } from '../../../context/UserToken';
 // import ToastComponents from '../../../toast_message/toast_component/ToastComponents';
 
 
-const SaleReturnTable = ({data, onDeleteSale}) => {
+const SaleReturnTable = ({data, onDeleteSale, saleReturnPermission}) => {
   
   const navigate = useNavigate();
 
@@ -157,10 +157,10 @@ const SaleReturnTable = ({data, onDeleteSale}) => {
        name: 'Actions',
        cell: (row) => (
          <ActionButtons>
-           <ActionButton clr='green' onClick={() => navigate(`/sale-return/${row._id}`)}><FaEye/></ActionButton>
-            <ActionButton clr='green' onClick={() => navigate(`/sale-invoice/${row.sale?._id}`)}><FaFileInvoice/></ActionButton>
+         {saleReturnPermission.canView &&  <ActionButton clr='green' onClick={() => navigate(`/sale-return/${row._id}`)}><FaEye/></ActionButton>}
+            {saleReturnPermission.canView && <ActionButton clr='green' onClick={() => navigate(`/sale-invoice/${row.sale?._id}`)}><FaFileInvoice/></ActionButton>}
            {/* <ActionButton clr='blue' onClick={() => navigate(`/edit-return/${row._id}`)}><FaEdit/></ActionButton> */}
-           <ActionButton clr="red" onClick={() => handleGrabId(row._id, row.customer.name, row.code)}><FaTrash/></ActionButton>
+           {saleReturnPermission.canDelete && <ActionButton clr="red" onClick={() => handleGrabId(row._id, row.customer.name, row.code)}><FaTrash/></ActionButton>}
          </ActionButtons>
        ),
      },
@@ -180,21 +180,26 @@ const SaleReturnTable = ({data, onDeleteSale}) => {
             paginationRowsPerPageOptions={[10, 25, 50, 100]} // Options in the dropdown
             responsive
             customStyles={customStyles}
-            selectableRows
-            onSelectedRowsChange={({ selectedRows }) => setSelectedSaleReturn(selectedRows)}
-            selectableRowHighlight
+            selectableRows={saleReturnPermission.canDelete} // 👈 only show checkboxes if delete permission is true
+            onSelectedRowsChange={
+                          saleReturnPermission.canDelete
+                            ? ({ selectedRows }) => setSelectedSaleReturn(selectedRows)
+                            : undefined
+                        }
+            selectableRowHighlight={saleReturnPermission.canDelete}
         />
       </TableWrapper>
 
        {/* sliding button for delete bulk list */}
           {selectedSaleReturn.length > 0 && (
           <SlideUpButton>
-            <Button 
+         {saleReturnPermission.canDelete &&   
+         <Button 
               btnColor={'red'} 
               btnOnClick={handleBulkDelete} 
               btnText= {isDeleting ? <ButtonLoader text="Deleting..." /> : `Delete Selected (${selectedSaleReturn.length})`} 
               disabled={isDeleting}>             
-            </Button>
+            </Button>}
           </SlideUpButton>
         )}
 

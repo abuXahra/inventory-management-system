@@ -16,7 +16,7 @@ import { token } from "../../context/UserToken";
 
 
 
-const PurchaseTable = ({data, onDeletePurchase}) => {
+const PurchaseTable = ({data, onDeletePurchase, purchasePermission}) => {
   
   const navigate = useNavigate();
 
@@ -158,9 +158,9 @@ const PurchaseTable = ({data, onDeletePurchase}) => {
       name: 'Actions',
       cell: (row) => (
         <ActionButtons>
-          <ActionButton clr='green' onClick={() => navigate(`/purchase-invoice/${row._id}`)}><FaFileInvoice/></ActionButton>
-          <ActionButton clr='blue' onClick={() => navigate(`/edit-purchase/${row._id}`)}><FaEdit/></ActionButton>
-          <ActionButton clr="red" onClick={() => handleGrabId(row._id, row.supplier.name, row.code)}><FaTrash/></ActionButton>
+        {purchasePermission.canView &&  <ActionButton clr='green' onClick={() => navigate(`/purchase-invoice/${row._id}`)}><FaFileInvoice/></ActionButton>}
+          {purchasePermission.canEdit && <ActionButton clr='blue' onClick={() => navigate(`/edit-purchase/${row._id}`)}><FaEdit/></ActionButton>}
+          {purchasePermission.canDelete && <ActionButton clr="red" onClick={() => handleGrabId(row._id, row.supplier.name, row.code)}><FaTrash/></ActionButton>}
         </ActionButtons>
       ),
     },
@@ -180,20 +180,25 @@ const PurchaseTable = ({data, onDeletePurchase}) => {
                       paginationRowsPerPageOptions={[10, 25, 50, 100]} // Options in the dropdown
                       responsive
                       customStyles={customStyles}
-                      selectableRows
-                      onSelectedRowsChange={({ selectedRows }) => setSelectedPurchase(selectedRows)}
-                      selectableRowHighlight
+                      selectableRows={purchasePermission.canDelete} // 👈 only show checkboxes if delete permission is true
+                      onSelectedRowsChange={
+                          purchasePermission.canDelete
+                            ? ({ selectedRows }) => setSelectedPurchase(selectedRows)
+                            : undefined
+                        }
+                        selectableRowHighlight={purchasePermission.canDelete}
                     />
       </TableWrapper>
        {/* sliding button for delete bulk list */}
           {selectedPurchase.length > 0 && (
           <SlideUpButton>
-            <Button 
+          {purchasePermission.canDelete &&  
+          <Button 
               btnColor={'red'} 
               btnOnClick={handleBulkDelete} 
               btnText= {isDeleting ? <ButtonLoader text="Deleting..." /> : `Delete Selected (${selectedPurchase.length})`} 
               disabled={isDeleting}>             
-            </Button>
+            </Button>}
           </SlideUpButton>
         )}
 

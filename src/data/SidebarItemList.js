@@ -16,12 +16,12 @@ export const SidebarItemLists = [
     icon: <MdDashboard />,
   },
   {
-    tile: "Sales",
+    tile: "Sale",
     url: "/sales",
     icon: <BsFillCartDashFill />,
   },
   {
-    tile: "Customers",
+    tile: "Customer",
     url: "/customers",
     icon: <FaUsers />,
   },
@@ -31,7 +31,7 @@ export const SidebarItemLists = [
     icon: <FaCartPlus />,
   },
   {
-    tile: "Suppliers",
+    tile: "Supplier",
     url: "/suppliers",
     icon: <FaCartPlus />,
   },
@@ -51,7 +51,7 @@ export const SidebarItemLists = [
     icon: <FaCartPlus />,
   },
   {
-    tile: "Expenses",
+    tile: "Expense",
     url: "/expenses",
     icon: <FaCartPlus />,
   },
@@ -73,7 +73,7 @@ export const SidebarItemLists = [
     ],
   },
   {
-    tile: "Reports",
+    tile: "Report",
     url: "/reports",
     icon: <BsCartX />,
   },
@@ -88,12 +88,12 @@ export const SidebarItemLists = [
         icon: <IoMicOffCircle />,
       },
       {
-        title: "Users",
+        title: "User",
         url: "/users",
         icon: <FaUsers />,
       },
       {
-        title: "TAX",
+        title: "Tax",
         url: "/tax",
         icon: <TbTax />,
       },

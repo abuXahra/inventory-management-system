@@ -1,7 +1,7 @@
-import React, {useState, useEffect} from 'react'
+import React, {useState, useEffect, useContext} from 'react'
 import PageTitle from '../../../components/page_title/PageTitle'
 import { UserDetailContent, UserDetailData, UserDetailPicture, UserDetailWrapper, PictureWrapper } from './userDetail.style'
-import { FaEdit, FaTrash } from 'react-icons/fa'
+import { FaEdit, FaSignOutAlt, FaTrash } from 'react-icons/fa'
 import { useNavigate, useParams } from 'react-router-dom'
 import ItemContainer from '../../../components/item_container/ItemContainer'
 import { AnyItemContainer, InnerWrapper } from '../../sale/Add/addSale.style'
@@ -19,8 +19,7 @@ import ContentLoader, {
   Instagram
 } from 'react-content-loader'
 import { token } from '../../../components/context/UserToken'
-
-
+import { UserContext } from '../../../components/context/UserContext'
 
 
 export default function UserDetail() {
@@ -32,7 +31,31 @@ export default function UserDetail() {
   const [showDeleteCard, setShowDeleteCard] = useState(false);
   const [grabId, setGrabId] = useState('');
   const [grabUsername, setGrabUsername] = useState('');
+  
 
+
+    // user permission:
+        const {permissions, user, setUser} = useContext(UserContext);
+        const userPermission = permissions?.find(p => p.module === "User")
+  
+              // Permission logic
+        const isAdmin = user?.role === 'admin'
+        const canEdit = isAdmin || userPermission?.canEdit
+  
+  
+  
+        const handleLogout = async () => {
+    try {
+      const res = await axios.get(process.env.REACT_APP_URL + '/api/auth/logout', { withCredentials: true });
+      setUser(null);
+      localStorage.removeItem("user"); // ✅ Clear storage
+      localStorage.removeItem("token"); // Clear token
+      navigate('/');
+    } catch (err) {
+      console.log(err);
+    }
+  };        const canDelete = isAdmin || userPermission?.canDelete
+      
 
   
 
@@ -142,16 +165,23 @@ const handleGrabId = (userName)=>{
               </ItemContainer>
 
                             <ItemContainer title={'Action'}> 
-                              <AnyItemContainer gap="60px">
+  {      canEdit &&                       
+                                <AnyItemContainer gap="60px">
+                                    <InnerWrapper wd={'100%'}>
+                                          <span onClick={()=>navigate(`/users/${userData?._id}`)} style={{color: "green", cursor: "pointer"}}><b>Edit</b></span>
+                                          <span onClick={()=>navigate(`/edit-user/${userData?._id}`)} style={{color: "green", cursor: "pointer"}}><FaEdit/></span>
+                                    </InnerWrapper>
+                              </AnyItemContainer>}
+         {     canDelete &&                <AnyItemContainer gap="60px">
                                     <InnerWrapper wd={'100%'}>
                                           <span onClick={()=>handleGrabId(userData?.username)} style={{color: "red", cursor: "pointer"}}><b>Delete</b></span>
                                           <span onClick={()=>handleGrabId(userData?.username)} style={{color: "red", cursor: "pointer"}}><FaTrash/></span>
                                     </InnerWrapper>
-                              </AnyItemContainer>
-                              <AnyItemContainer gap="60px">
+                              </AnyItemContainer>}
+                                                            <AnyItemContainer gap="60px">
                                     <InnerWrapper wd={'100%'}>
-                                          <span onClick={()=>navigate(`/users/${userData?._id}`)} style={{color: "green", cursor: "pointer"}}><b>Edit</b></span>
-                                          <span onClick={()=>navigate(`/edit-user/${userData?._id}`)} style={{color: "green", cursor: "pointer"}}><FaEdit/></span>
+                                          <span onClick={()=>handleGrabId(handleLogout)} style={{color: "red", cursor: "pointer"}}><b>Logout</b></span>
+                                          <span onClick={()=>handleGrabId(handleLogout)} style={{color: "red", cursor: "pointer"}}><FaSignOutAlt/></span>
                                     </InnerWrapper>
                               </AnyItemContainer>
                             </ItemContainer>

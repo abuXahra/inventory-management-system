@@ -127,6 +127,14 @@ export default function PermissionPage() {
 // 	delete: false,
 	
 // },
+// {
+// 	title: "Permission",
+// 	add: false,
+// 	edit: false,
+// 	view: false,
+// 	delete: false,
+	
+// },
 //   ]
 
 
@@ -143,6 +151,7 @@ export default function PermissionPage() {
       // Transform backend fields to frontend naming
       const formatted = res.data.map(p => ({
         title: p.module,
+        visit: p.canVisit,
         add: p.canAdd,
         edit: p.canEdit,
         view: p.canView,
@@ -169,13 +178,13 @@ export default function PermissionPage() {
         <PageTitle title={'Permission'}/>
 
           {/* content */}
-         <ListHeader 
+         {/* <ListHeader 
                     title={'Permission'} 
                     btnOnClick={()=>navigate('/add-permission')}
                     // searQuery={'Name'}
                     // onChange={handleChange}
                     type={'text'}
-                  />
+                  /> */}
         <PermissionPageContent>
           {/* Permissin Table */}
             <PermissionTable 

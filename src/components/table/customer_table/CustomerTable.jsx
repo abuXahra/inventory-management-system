@@ -155,21 +155,26 @@ const CustomerTable = ({data, onDeleteCus, customerPermission}) => {
               paginationRowsPerPageOptions={[10, 25, 50, 100]} // Options in the dropdown
               responsive
               customStyles={customStyles}
-              selectableRows
-              onSelectedRowsChange={({ selectedRows }) => setSelectedCustomer(selectedRows)}
-              selectableRowHighlight
+              selectableRows={customerPermission.canDelete} // 👈 only show checkboxes if delete permission is true
+                      onSelectedRowsChange={
+                          customerPermission.canDelete
+                            ? ({ selectedRows }) => setSelectedCustomer(selectedRows)
+                            : undefined
+                        }
+                        selectableRowHighlight={customerPermission.canDelete}
             />
       </TableWrapper>
 
     {/* sliding button for delete bulk list */}
           {selectedCustomer.length > 0 && (
           <SlideUpButton>
+{ customerPermission.canDelete &&
             <Button 
               btnColor={'red'} 
               btnOnClick={handleBulkDelete} 
               btnText= {isDeleting ? <ButtonLoader text="Deleting..." /> : `Delete Selected (${selectedCustomer.length})`} 
               disabled={isDeleting}>             
-            </Button>
+            </Button>}
           </SlideUpButton>
         )}
 

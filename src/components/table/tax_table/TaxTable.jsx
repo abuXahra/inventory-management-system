@@ -12,7 +12,7 @@ import ButtonLoader from '../../clicks/button/button_loader/ButtonLoader';
 import ToastComponents from '../../toast_message/toast_component/ToastComponents';
 
 
-const TaxTable = ({ data, onDeleteTax }) => {
+const TaxTable = ({ data, onDeleteTax, taxPermission }) => {
 
   const navigate = useNavigate();
   
@@ -76,8 +76,8 @@ const TaxTable = ({ data, onDeleteTax }) => {
       name: 'Actions',
       cell: (row) => (
         <ActionButtons>
-          <ActionButton clr='blue' onClick={() => navigate(`/edit-tax/${row._id}`)}><FaEdit /></ActionButton>
-          <ActionButton clr="red" onClick={() => handleGrabId(row._id, row.name)}><FaTrash /></ActionButton>
+          {taxPermission.canEdit && <ActionButton clr='blue' onClick={() => navigate(`/edit-tax/${row._id}`)}><FaEdit /></ActionButton>}
+          {taxPermission.canView && <ActionButton clr="red" onClick={() => handleGrabId(row._id, row.name)}><FaTrash /></ActionButton>}
         </ActionButtons>
       ),
     },

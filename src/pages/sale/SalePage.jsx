@@ -1,5 +1,5 @@
 
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import PageTitle from '../../components/page_title/PageTitle'
 import { SalePageContent, SalePageWrapper } from './salePage.style'
 import ListHeader from '../../components/page_title/list_header/ListHeader'
@@ -8,6 +8,7 @@ import SalesTable from '../../components/table/sale_table/Sale'
 import axios from 'axios'
 import { List } from 'react-content-loader'
 import { token } from '../../components/context/UserToken'
+import { UserContext } from '../../components/context/UserContext'
 
 
 
@@ -18,6 +19,15 @@ export default function SalePage() {
      const [allSaleRecords, setAllSaleRecords] = useState([]);
      const [isLoading, setIsLoading] = useState(false);
   
+               // user Permission
+               const {user, permissions} = useContext(UserContext);
+               const salePermission = permissions?.find(p => p.module === "Sale")
+               const effectivePermission =
+                   user?.role === "admin"
+                     ? { canView: true, canAdd: true, canEdit: true, canDelete: true }
+                     : salePermission;
+     
+       
      // fetch expense handler 
                           useEffect(() => {
                               const getSale = async () => { 
@@ -99,6 +109,7 @@ export default function SalePage() {
             onChange={handleSearchQueryOnChange}
             type={'text'}
             dataLength={saleRecords.length}
+            permission={effectivePermission.canAdd}
           />
           
           {/* Sales Table */}
@@ -106,6 +117,7 @@ export default function SalePage() {
               data={saleRecords}
               onDeleteSale={deleteSale}
               setIsLoading={setIsLoading}
+              salePermission={effectivePermission}
             />
         </SalePageContent>
 

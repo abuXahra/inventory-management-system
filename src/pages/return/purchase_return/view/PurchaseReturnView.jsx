@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import CompanyLogo from '../../../../images/product_placeholder.jpg'  
 import { FaEdit, FaPrint } from 'react-icons/fa'
 import { FaDownload } from 'react-icons/fa6'
@@ -13,6 +13,7 @@ import PageTitle from '../../../../components/page_title/PageTitle'
 import Button from '../../../../components/clicks/button/Button'
 import ButtonLoader from '../../../../components/clicks/button/button_loader/ButtonLoader'
 import { token } from '../../../../components/context/UserToken'
+import { UserContext } from '../../../../components/context/UserContext'
 
 
 export default function PurchaseReturnView() {
@@ -28,6 +29,15 @@ export default function PurchaseReturnView() {
     const [isLoading, setIsLoading] = useState(false);
     const [isBtnLoading, setIsBtnLoading] = useState(false);
   
+ // user permission:
+      const {permissions, user} = useContext(UserContext);
+      const purchaseReturnPermission = permissions?.find(p => p.module === "Purchase Return")
+
+            // Permission logic
+      const isAdmin = user?.role === 'admin'
+      // const canEdit = isAdmin || purchaseReturnPermission?.canEdit
+      const canView = isAdmin || purchaseReturnPermission?.canView
+    
 
 // Fetch invoice detail
                 useEffect(()=>{
@@ -374,7 +384,8 @@ export default function PurchaseReturnView() {
                   btnOnClick={()=>handleBtnClick('pdf')}
                 />
 
-            <Button
+{  canView &&
+          <Button
                   btnColor={'#0284c7'}
                   btnText={'View Invoice'}
                   btnPd={'5px 10px'}
@@ -383,7 +394,7 @@ export default function PurchaseReturnView() {
                   btnBdRd={'2px'}
                   btnOnClick={()=>navigate(`/purchase-invoice/${purchaseReturnData.purchase?._id}`)}
                 />
-        
+        }
                 {/* <Button
                   btnColor={'#0284c7'}
                   btnText={'Email'}

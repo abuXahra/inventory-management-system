@@ -1,5 +1,5 @@
 
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import PageTitle from '../../components/page_title/PageTitle'
 import ListHeader from '../../components/page_title/list_header/ListHeader'
 import { useNavigate } from 'react-router-dom'
@@ -7,6 +7,8 @@ import { ProductPageContent, ProductPageWrapper } from './productPage.style'
 import ProductTable from '../../components/table/product_table/Product'
 import axios from 'axios'
 import { List } from 'react-content-loader'
+import { token } from '../../components/context/UserToken'
+import { UserContext } from '../../components/context/UserContext'
 
 
 export default function ProductPage() {
@@ -15,7 +17,15 @@ export default function ProductPage() {
    const [allProducts, setAllProducts] = useState([]);
    const [isLoading, setIsLoading] = useState(false);
    const [company, setCompany] = useState('') 
-   const token = localStorage.getItem('token');
+
+          // user Permission
+          const {user, permissions} = useContext(UserContext);
+          const productPermission = permissions?.find(p => p.module === "Product")
+          const effectivePermission =
+              user?.role === "admin"
+                ? { canView: true, canAdd: true, canEdit: true, canDelete: true }
+                : productPermission;
+   
 
    // fetch handler 
           useEffect(() => {
@@ -113,10 +123,11 @@ export default function ProductPage() {
           <ListHeader 
             title={'Add Product'} 
             btnOnClick={()=>navigate('/add-product')}
-            searQuery={'Name'}
+            searQuery={'Title'}
             onChange={handleSearchQueryOnChange}
             type={'text'}
             dataLength={products.length}
+            permission={effectivePermission?.canAdd}
           />
           
           {/* Product Table */}
@@ -124,6 +135,7 @@ export default function ProductPage() {
                 data={products}
                 onDeleteProd = {deleteProduct}
                 currencySymbol={company?.currencySymbol}
+                productPermission={effectivePermission}
             />
         </ProductPageContent>
 } 

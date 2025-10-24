@@ -14,7 +14,7 @@ import ToastComponents from '../../toast_message/toast_component/ToastComponents
 
 
 
-const UnitsTable = ({ data, onDeleteUnit }) => {
+const UnitsTable = ({ data, onDeleteUnit, unitPermission }) => {
 
   const navigate = useNavigate();
 
@@ -77,8 +77,8 @@ const UnitsTable = ({ data, onDeleteUnit }) => {
       name: 'Actions',
       cell: (row) => (
         <ActionButtons>
-          <ActionButton clr='blue' onClick={() => navigate(`/edit-units/${row._id}`)}><FaEdit /></ActionButton>
-          <ActionButton clr="red" onClick={() => handleGrabId(row._id, row.title)}><FaTrash /></ActionButton>
+         {unitPermission.canEdit && <ActionButton clr='blue' onClick={() => navigate(`/edit-units/${row._id}`)}><FaEdit /></ActionButton>}
+          {unitPermission.canDelete &&<ActionButton clr="red" onClick={() => handleGrabId(row._id, row.title)}><FaTrash /></ActionButton>}
         </ActionButtons>
       ),
     },

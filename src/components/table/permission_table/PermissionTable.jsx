@@ -57,52 +57,83 @@ const PermissionTable = ({ data, onPermissionsUpdated }) => {
   };
 
   const columns = [
-    { name: "Module", selector: (row) => row.title, width: "20%" },
-    {
-      name: "Add",
-      width: "20%",
-      cell: (row, index) => (
+  { 
+    name: "Module", 
+    selector: (row) => row.title, 
+    width: "20%" 
+  },
+  {
+    name: "Visit Page",
+    width: "16%",
+    cell: (row, index) => (
+      <input
+        type="checkbox"
+        checked={permissionState[index]?.visit || false}
+        onChange={handleCheckboxChange(index, "visit")}
+      />
+    ),
+  },
+  {
+    name: "Add",
+    width: "16%",
+    cell: (row, index) => {
+      // ✅ Hide Add for Report and Permission
+      if (["Report", "Permission"].includes(row.title)) return null;
+      return (
         <input
           type="checkbox"
           checked={permissionState[index]?.add || false}
           onChange={handleCheckboxChange(index, "add")}
         />
-      ),
+      );
     },
-    {
-      name: "Edit",
-      width: "20%",
-      cell: (row, index) => (
+  },
+  {
+    name: "Edit",
+    width: "16%",
+    cell: (row, index) => {
+      // ✅ Hide Edit for Report and Permission
+      if (["Report"].includes(row.title)) return null;
+      return (
         <input
           type="checkbox"
           checked={permissionState[index]?.edit || false}
           onChange={handleCheckboxChange(index, "edit")}
         />
-      ),
+      );
     },
-    {
-      name: "View",
-      width: "20%",
-      cell: (row, index) => (
+  },
+  {
+    name: "View",
+    width: "16%",
+    cell: (row, index) => {
+      // ✅ Hide View for Report and Permission
+      if (["Report"].includes(row.title)) return null;
+      return (
         <input
           type="checkbox"
           checked={permissionState[index]?.view || false}
           onChange={handleCheckboxChange(index, "view")}
         />
-      ),
+      );
     },
-    {
-      name: "Delete",
-      width: "20%",
-      cell: (row, index) => (
+  },
+  {
+    name: "Delete",
+    width: "16%",
+    cell: (row, index) => {
+      // ✅ Hide Delete for Report and Permission
+      if (["Report", "Permission"].includes(row.title)) return null;
+      return (
         <input
           type="checkbox"
           checked={permissionState[index]?.delete || false}
           onChange={handleCheckboxChange(index, "delete")}
         />
-      ),
+      );
     },
-  ];
+  },
+];
 
   return (
     <Container>

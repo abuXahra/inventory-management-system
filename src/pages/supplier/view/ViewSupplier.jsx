@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import PageTitle from '../../../components/page_title/PageTitle'
 import { SupplierDetailContent, SupplierDetailData, SupplierDetailPicture, SupplierDetailWrapper } from './SupplierDetail.style'
 import ItemContainer from '../../../components/item_container/ItemContainer'
@@ -14,6 +14,7 @@ import ButtonLoader from '../../../components/clicks/button/button_loader/Button
 import ToastComponents from '../../../components/toast_message/toast_component/ToastComponents'
 import { List } from 'react-content-loader'
 import { token } from '../../../components/context/UserToken'
+import { UserContext } from '../../../components/context/UserContext'
 
 
 
@@ -30,7 +31,15 @@ export default function SupplierDetail() {
       const [grabId, setGrabId] = useState('');
       const [grabTitle, setGrabTitle] = useState('');
 
+    // user permission:
+      const {permissions, user} = useContext(UserContext);
+      const supplierPermission = permissions?.find(p => p.module === "Supplier")
 
+            // Permission logic
+      const isAdmin = user?.role === 'admin'
+      const canEdit = isAdmin || supplierPermission?.canEdit
+      const canDelete = isAdmin || supplierPermission?.canDelete
+    
       
             // Fetch customer detail
               useEffect(()=>{
@@ -135,18 +144,18 @@ export default function SupplierDetail() {
                   <span onClick={()=>navigate(`/suppliers`)} style={{color: "blue", cursor: "pointer"}}><FaList/></span>
                   </InnerWrapper>
                 </AnyItemContainer>
-                <AnyItemContainer gap="60px">
+{  canEdit &&   <AnyItemContainer gap="60px">
                       <InnerWrapper wd={'100%'}>
                             <span onClick={()=>navigate(`/edit-supplier/${supData?._id}`)} style={{color: "green", cursor: "pointer"}}><b>Edit</b></span>
                             <span onClick={()=>navigate(`/edit-supplier/${supData?._id}`)} style={{color: "green", cursor: "pointer"}}><FaEdit/></span>
                       </InnerWrapper>
-                </AnyItemContainer>
-                 <AnyItemContainer gap="60px">
+                </AnyItemContainer>}
+{ canDelete &&   <AnyItemContainer gap="60px">
                       <InnerWrapper wd={'100%'}>
                             <span onClick={()=>handleGrabId(supData?.name)} style={{color: "red", cursor: "pointer"}}><b>Delete</b></span>
                             <span onClick={()=>handleGrabId(supData?.name)} style={{color: "red", cursor: "pointer"}}><FaTrash/></span>
                       </InnerWrapper>
-                </AnyItemContainer>
+                </AnyItemContainer>}
               </ItemContainer>
             </SupplierDetailData>
 

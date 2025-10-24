@@ -21,7 +21,8 @@ export default function Siderbar({
 }) {
   const location = useLocation();
   const navigate = useNavigate();
-  const {setUser } = useContext(UserContext);
+  const {user, setUser } = useContext(UserContext);
+  
 
 //     // Track which dropdown is active
   const [activeDropdown, setActiveDropdown] = useState(null); // Track the active dropdown index
@@ -54,6 +55,50 @@ export default function Siderbar({
     }
   };
 
+
+  //   // ✅ Filter sidebar items based on user role
+  // const filteredSidebarItems = SidebarItemLists.filter(item => {
+  //   // Hide "Setting" for regular users
+  //   if (item.tile === "Setting" && user?.role === "user") {
+  //     return false;
+  //   }
+  //   return true;
+  // });
+
+
+   // 🧩 Build permission map for quick lookup
+  const permissionMap = user?.permissions?.reduce((acc, perm) => {
+    acc[perm.module] = perm;
+    return acc;
+  }, {}) || {};
+
+  // 🧠 Filter items based on canVisit only (applicable only for 'user' role)
+  const visibleSidebarItems = SidebarItemLists.filter(item => {
+    // Always allow Dashboard
+    if (item.tile === "Dashboard") return true;
+
+    // If admin → show all menus
+    if (user?.role === "admin") return true;
+
+    // If user → apply canVisit restriction
+    if (user?.role === "user") {
+      if (item.subMenu) {
+        const visibleSubMenu = item.subMenu.filter(sub => {
+          const perm = permissionMap[sub.title];
+          return perm?.canVisit !== false;
+        });
+        item.subMenu = visibleSubMenu;
+        return visibleSubMenu.length > 0;
+      }
+
+      const perm = permissionMap[item.tile];
+      return perm?.canVisit !== false;
+    }
+
+    return true; // Default
+  });
+
+
   return (
 
       <SidebarWrapper isOpen={isOpen}>
@@ -68,20 +113,21 @@ export default function Siderbar({
         <SidebarContent>
           <SidebarItemsWrapper ref={sidebarRef}>
             {
-              SidebarItemLists && SidebarItemLists.map((item, i) => (
-                <SidebarItem
-                  key={i}
-                  bg={location.pathname === item.url && '#0058fc'}
-                  icon={item.icon}
-                  title={item.tile}
-                  subMenu={item.subMenu}
-                  isActive={activeDropdown === i}  // Pass active state to the SidebarItem
-                  handleClick={() => navigate(item.url)}
-                  onToggleDropdown={() => setActiveDropdown(activeDropdown === i ? null : i)}  // Pass the function to toggle dropdown visibility
-                  setDisplayShowSidebar={()=>setActiveDropdown(null)}
-                />
-              ))
-            }
+              visibleSidebarItems.map((item, i) => (
+              
+              <SidebarItem
+                              key={i}
+                              bg={location.pathname === item.url && '#0058fc'}
+                              icon={item.icon}
+                              title={item.tile}
+                              subMenu={item.subMenu}
+                              isActive={activeDropdown === i}  // Pass active state to the SidebarItem
+                              handleClick={() => navigate(item.url)}
+                              onToggleDropdown={() => setActiveDropdown(activeDropdown === i ? null : i)}  // Pass the function to toggle dropdown visibility
+                              setDisplayShowSidebar={()=>setActiveDropdown(null)}
+                            />
+                        ))
+                      }
           </SidebarItemsWrapper>
         </SidebarContent>
         <SignOutWrapper>

@@ -1,5 +1,5 @@
 
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 // import PageTitle from '../../../components/page_title/PageTitle'
 // import ListHeader from '../../../components/page_title/list_header/ListHeader'
 import { useNavigate } from 'react-router-dom'
@@ -11,6 +11,7 @@ import { SaleReturnPageContent, SaleReturnPageWrapper } from './saleReturnPage.s
 import PageTitle from '../../../components/page_title/PageTitle'
 import ListHeader from '../../../components/page_title/list_header/ListHeader'
 import { token } from '../../../components/context/UserToken'
+import { UserContext } from '../../../components/context/UserContext'
 // 
 
 
@@ -21,7 +22,17 @@ export default function SaleReturnPage() {
      const[saleReturnRecords, setSaleReturnRecords] = useState([]);
      const [allSaleReturnRecords, setAllSaleReturnRecords] = useState([]);
      const [isLoading, setIsLoading] = useState(false);
-  
+
+     
+          // user Permission
+          const {user, permissions} = useContext(UserContext);
+          const saleReturnPermission = permissions?.find(p => p.module === "Sale Return")
+          const effectivePermission =
+              user?.role === "admin"
+                ? { canView: true, canAdd: true, canEdit: true, canDelete: true }
+                : saleReturnPermission;
+
+       
      // fetch expense handler 
                           useEffect(() => {
                               const getSale = async () => { 
@@ -102,12 +113,14 @@ export default function SaleReturnPage() {
             onChange={handleSearchQueryOnChange}
             type={'text'}
             dataLength={saleReturnRecords.length}
+            permission={effectivePermission.canAdd}
           />
           
           {/* Sales Return Table */}
             <SaleReturnTable 
               data={saleReturnRecords}
               onDeleteSale={deleteSaleReturn}
+              saleReturnPermission={effectivePermission}
             />
         </SaleReturnPageContent>
 

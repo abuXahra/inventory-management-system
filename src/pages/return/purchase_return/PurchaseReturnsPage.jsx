@@ -1,5 +1,5 @@
 
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 // import PageTitle from '../../../components/page_title/PageTitle'
 // import ListHeader from '../../../components/page_title/list_header/ListHeader'
 import { useNavigate } from 'react-router-dom'
@@ -13,6 +13,7 @@ import ListHeader from '../../../components/page_title/list_header/ListHeader'
 import { SaleReturnPageContent, SaleReturnPageWrapper } from './purchaseReturnsPage.style'
 import PurchaseReturnTable from '../../../components/table/purchase_table/purchase_return_table/PurchaseReturnTable'
 import { token } from '../../../components/context/UserToken'
+import { UserContext } from '../../../components/context/UserContext'
 
 
 
@@ -23,7 +24,16 @@ export default function PurchaseReturnsPage() {
      const[purchaseReturnRecords, setPurchaseReturnRecords] = useState([]);
      const [allPurchaseReturnRecords, setAllPurchaseReturnRecords] = useState([]);
      const [isLoading, setIsLoading] = useState(false);
-  
+
+          // user Permission
+          const {user, permissions} = useContext(UserContext);
+          const purchaseReturnPermission = permissions?.find(p => p.module === "Purchase Return")
+          const effectivePermission =
+              user?.role === "admin"
+                ? { canView: true, canAdd: true, canEdit: true, canDelete: true }
+                : purchaseReturnPermission;
+
+       
      // fetch expense handler 
                           useEffect(() => {
                               const getPurchase = async () => { 
@@ -105,12 +115,14 @@ export default function PurchaseReturnsPage() {
             onChange={handleSearchQueryOnChange}
             type={'text'}
             dataLength={purchaseReturnRecords.length}
+            permission={effectivePermission.canAdd}
           />
           
           {/* Purchase Return Table */}
             <PurchaseReturnTable 
               data={purchaseReturnRecords}
               onDeletePurchase={deletePurchaseReturn}
+              purchaseReturnPermission={effectivePermission}
             />
         </SaleReturnPageContent>
 

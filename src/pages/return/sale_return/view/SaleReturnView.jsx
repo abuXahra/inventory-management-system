@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 
 import CompanyLogo from '../../../../images/product_placeholder.jpg'  
 import { SiPantheon } from 'react-icons/si'
@@ -15,6 +15,7 @@ import PageTitle from '../../../../components/page_title/PageTitle'
 import Button from '../../../../components/clicks/button/Button'
 import ButtonLoader from '../../../../components/clicks/button/button_loader/ButtonLoader'
 import { token } from '../../../../components/context/UserToken'
+import { UserContext } from '../../../../components/context/UserContext'
 
 export default function SaleReturnView() {
   
@@ -30,6 +31,15 @@ export default function SaleReturnView() {
     const [isBtnLoading, setIsBtnLoading] = useState(false);
   
 
+    // user permission:
+      const {permissions, user} = useContext(UserContext);
+      const saleReturnPermission = permissions?.find(p => p.module === "Sale Return")
+
+            // Permission logic
+      const isAdmin = user?.role === 'admin'
+      const canEdit = isAdmin || saleReturnPermission?.canEdit
+      const canView = isAdmin || saleReturnPermission?.canView
+        
 // Fetch invoice detail
                 useEffect(()=>{
                   const fetchInvoice = async() =>{

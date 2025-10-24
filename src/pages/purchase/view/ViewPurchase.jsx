@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react'
+import React, { useEffect, useState, useRef, useContext } from 'react'
 import PageTitle from '../../../components/page_title/PageTitle'
 import ItemContainer from '../../../components/item_container/ItemContainer'
 import CompanyLogo from '../../../images/product_placeholder.jpg' 
@@ -17,6 +17,7 @@ import html2canvas from  'html2canvas'
 import ButtonLoader from '../../../components/clicks/button/button_loader/ButtonLoader'
 import { PartialPaymentWrapper } from '../../sale/view/viewSale.style'
 import { token } from '../../../components/context/UserToken'
+import { UserContext } from '../../../components/context/UserContext'
 
 export default function ViewPurchase() {
 
@@ -30,6 +31,17 @@ export default function ViewPurchase() {
 
   const [isLoading, setIsLoading] = useState(false);
   const [isBtnLoading, setIsBtnLoading] = useState(false);
+
+     // user permission:
+       const {permissions, user} = useContext(UserContext);
+       const purchasePermission = permissions?.find(p => p.module === "Customer")
+ 
+             // Permission logic
+       const isAdmin = user?.role === 'admin'
+       const canEdit = isAdmin || purchasePermission?.canEdit
+       const canDelete = isAdmin || purchasePermission?.canDelete
+       const canView = isAdmin || purchasePermission?.canView
+      
 
   // Fetch invoice detail
                 useEffect(()=>{
@@ -473,7 +485,8 @@ export default function ViewPurchase() {
       <ButtonsWrapper>
 
         {/* Edit */}
-        <Button
+{canEdit && 
+       <Button
           btnColor={'rgb(35, 139, 0)'}
           btnText={'Edit'}
           btnPd={'5px 10px'}
@@ -481,7 +494,7 @@ export default function ViewPurchase() {
           btnLeftIcon={<FaEdit/>}
           btnBdRd={'2px'}
           btnOnClick={()=>navigate(`/edit-purchase/${purchaseData?._id}`)}
-        />
+        />}
 
         {/* print */}
             <Button

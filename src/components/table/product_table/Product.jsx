@@ -16,7 +16,7 @@ import Overlay from '../../overlay/Overlay';
 import ToastComponents from '../../toast_message/toast_component/ToastComponents';
 
 
-const ProductTable = ({ data, onDeleteProd, currencySymbol, show = true }) => {
+const ProductTable = ({ data, onDeleteProd, currencySymbol, show = true, productPermission }) => {
 
   const navigate = useNavigate();
 
@@ -165,9 +165,9 @@ const ProductTable = ({ data, onDeleteProd, currencySymbol, show = true }) => {
       width: '10%',
       cell: (row) => (
         <ActionButtons>
-          <ActionButton clr='green' onClick={() => navigate(`/product-detail/${row._id}`)}><FaEye /></ActionButton>
-          <ActionButton clr='blue' onClick={() => navigate(`/edit-product/${row._id}`)}><FaEdit /></ActionButton>
-          <ActionButton clr="red" onClick={() => handleGrabId(row._id, row.title)}><FaTrash /></ActionButton>
+         {productPermission.canView && <ActionButton clr='green' onClick={() => navigate(`/product-detail/${row._id}`)}><FaEye /></ActionButton>}
+          {productPermission.canEdit && <ActionButton clr='blue' onClick={() => navigate(`/edit-product/${row._id}`)}><FaEdit /></ActionButton>}
+          {productPermission.canDelete && <ActionButton clr="red" onClick={() => handleGrabId(row._id, row.title)}><FaTrash /></ActionButton>}
         </ActionButtons>
       ),
     },
@@ -187,21 +187,27 @@ const ProductTable = ({ data, onDeleteProd, currencySymbol, show = true }) => {
           paginationRowsPerPageOptions={[10, 25, 50, 100]} // Options in the dropdown
           responsive
           customStyles={customStyles}
-          selectableRows
-          onSelectedRowsChange={({ selectedRows }) => setSelectedProduct(selectedRows)}
-          selectableRowHighlight
+          selectableRows={productPermission.canDelete} // 👈 only show checkboxes if delete permission is true
+                      onSelectedRowsChange={
+                          productPermission.canDelete
+                            ? ({ selectedRows }) => setSelectedProduct(selectedRows)
+                            : undefined
+                        }
+                        selectableRowHighlight={productPermission.canDelete}
+              
         />
       </TableWrapper>
 
        {/* sliding button for delete bulk list */}
                 {selectedProduct.length > 0 && (
                 <SlideUpButton>
+{ productPermission.canDelete &&
                   <Button 
                     btnColor={'red'} 
                     btnOnClick={handleBulkDelete} 
                     btnText= {isDeleting ? <ButtonLoader text="Deleting..." /> : `Delete Selected (${selectedProduct.length})`} 
                     disabled={isDeleting}>             
-                  </Button>
+                  </Button>}
                 </SlideUpButton>
               )}
       

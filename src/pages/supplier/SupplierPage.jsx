@@ -1,5 +1,5 @@
 
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import PageTitle from '../../components/page_title/PageTitle'
 import ListHeader from '../../components/page_title/list_header/ListHeader'
 import { useNavigate } from 'react-router-dom'
@@ -8,6 +8,7 @@ import SupplierTable from '../../components/table/supplier_table/Supplier'
 import axios from 'axios'
 import { List } from 'react-content-loader'
 import { token } from '../../components/context/UserToken'
+import { UserContext } from '../../components/context/UserContext'
 
 
 
@@ -16,6 +17,17 @@ export default function SupplierPage() {
   const [supplier, setSupplier] = useState([]);
   const [allSuppliers, setAllSuppliers] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+
+          // user Permission
+          const {user, permissions} = useContext(UserContext);
+          const supplierPermission = permissions?.find(p => p.module === "Supplier")
+          const effectivePermission =
+              user?.role === "admin"
+                ? { canView: true, canAdd: true, canEdit: true, canDelete: true }
+                : supplierPermission;
+
+  
+
 
 // fetch handler 
        useEffect(() => {
@@ -101,12 +113,14 @@ export default function SupplierPage() {
             onChange={handleSearchQueryOnChange}
             type={'text'}
             dataLength={supplier.length}
+            permission={effectivePermission.canAdd}
           />
           
           {/* Supplier Table */}
             <SupplierTable 
               data={supplier}
               onDeleteSup = {deleteSupplier}
+              supplierPermission={effectivePermission}
               />
         </SupplierPageContent>
 }

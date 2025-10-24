@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import PageTitle from '../../../components/page_title/PageTitle'
 import { ProductDetailContent, ProductDetailData, ProductDetailPicture, ProductDetailWrapper } from './ProductDetail.style'
 import ItemContainer from '../../../components/item_container/ItemContainer'
@@ -15,6 +15,8 @@ import ToastComponents from '../../../components/toast_message/toast_component/T
 import { List } from 'react-content-loader'
 import { TopCard, TopCardContent, TopCardContentWrapper, TopCardIcon } from '../../home/Home.style'
 import { TopCardItemList } from '../../../data/TopcardItems'
+import { token } from '../../../components/context/UserToken'
+import { UserContext } from '../../../components/context/UserContext'
 
 
 
@@ -34,7 +36,17 @@ export default function ProductDetail() {
     let totalProdSale = (prodData?.saleQuantity) * (prodData?.salePrice)
     let totalProdPurchase = (prodData?.purchaseQuantity) * (prodData?.purchasePrice)
     let netProfit = totalProdSale - totalProdPurchase;
-    const token = localStorage.getItem('token');
+
+    // user permission:
+      const {permissions, user} = useContext(UserContext);
+      const customerPermission = permissions?.find(p => p.module === "Product")
+
+            // Permission logic
+      const isAdmin = user?.role === 'admin'
+      const canEdit = isAdmin || customerPermission?.canEdit
+      const canDelete = isAdmin || customerPermission?.canDelete
+    
+    
     
       // Fetch product detail
               useEffect(()=>{
@@ -131,8 +143,14 @@ export default function ProductDetail() {
           <ItemContainer title={'Product Detail'}> 
               <AnyItemContainer gap="60px">
                     <InnerWrapper wd={'100%'}>
-                          <span><b>Name</b></span>
+                          <span><b>Title</b></span>
                           <span>{prodData.title}</span>
+                       </InnerWrapper>
+              </AnyItemContainer>
+              <AnyItemContainer gap="60px">
+                    <InnerWrapper wd={'100%'}>
+                          <span><b>Description</b></span>
+                          <span>{prodData.description}</span>
                        </InnerWrapper>
               </AnyItemContainer>
                   <AnyItemContainer gap="60px"> 
@@ -239,6 +257,16 @@ export default function ProductDetail() {
 
             <ProductDetailPicture>
           <ItemContainer title={'Total Summary'}> 
+         {     netProfit >= 0 &&
+             <AnyItemContainer>
+                       <InnerWrapper wd={'100%'}>
+                          <span><b style={{color:"green"}}>Profit</b></span>
+                          <span><b style={{color:"green"}}><span dangerouslySetInnerHTML={{ __html: companyData.currencySymbol }}/>{netProfit.toLocaleString('en-NG', { 
+                                                  minimumFractionDigits: 2, 
+                                                  maximumFractionDigits: 2 
+                                                })}</b></span>
+                       </InnerWrapper>
+                  </AnyItemContainer> }             
               <AnyItemContainer>
                        <InnerWrapper wd={'100%'}>
                           <span>Sale</span>
@@ -257,18 +285,7 @@ export default function ProductDetail() {
                                                 })}</span>
                        </InnerWrapper>
                   </AnyItemContainer>               
-      
-         {     netProfit >= 0 &&
-             <AnyItemContainer>
-                       <InnerWrapper wd={'100%'}>
-                          <span><b style={{color:"green"}}>Profit</b></span>
-                          <span><b style={{color:"green"}}><span dangerouslySetInnerHTML={{ __html: companyData.currencySymbol }}/>{netProfit.toLocaleString('en-NG', { 
-                                                  minimumFractionDigits: 2, 
-                                                  maximumFractionDigits: 2 
-                                                })}</b></span>
-                       </InnerWrapper>
-                  </AnyItemContainer> }
-                  
+                    
                 </ItemContainer>
 
                 <ItemContainer title={'Product Picture'}> 
@@ -283,18 +300,18 @@ export default function ProductDetail() {
                   <span onClick={()=>navigate(`/products`)} style={{color: "blue", cursor: "pointer"}}><FaList/></span>
                   </InnerWrapper>
                 </AnyItemContainer>
-                <AnyItemContainer gap="60px">
+{  canEdit &&              <AnyItemContainer gap="60px">
                       <InnerWrapper wd={'100%'}>
                             <span onClick={()=>navigate(`/edit-product/${prodData?._id}`)} style={{color: "green", cursor: "pointer"}}><b>Edit</b></span>
                             <span onClick={()=>navigate(`/edit-product/${prodData?._id}`)} style={{color: "green", cursor: "pointer"}}><FaEdit/></span>
                       </InnerWrapper>
-                </AnyItemContainer>
-                <AnyItemContainer gap="60px">
+                </AnyItemContainer>}
+{  canDelete && <AnyItemContainer gap="60px">
                       <InnerWrapper wd={'100%'}>
                             <span onClick={()=>handleGrabId(prodData?.title)} style={{color: "red", cursor: "pointer"}}><b>Delete</b></span>
                             <span onClick={()=>handleGrabId(prodData?.title)} style={{color: "red", cursor: "pointer"}}><FaTrash/></span>
                       </InnerWrapper>
-                </AnyItemContainer>
+                </AnyItemContainer>}
               </ItemContainer>
             </ProductDetailPicture>
           </ProductDetailContent> 

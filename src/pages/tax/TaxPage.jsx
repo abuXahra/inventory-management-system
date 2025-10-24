@@ -1,5 +1,5 @@
 
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import PageTitle from '../../components/page_title/PageTitle'
 import ListHeader from '../../components/page_title/list_header/ListHeader'
 import { useNavigate } from 'react-router-dom'
@@ -9,6 +9,7 @@ import { TaxPageContent, TaxPageWrapper } from './taxPage.style'
 import axios from 'axios'
 import { List } from 'react-content-loader'
 import { token } from '../../components/context/UserToken'
+import { UserContext } from '../../components/context/UserContext'
 
 
 export default function TaxPage() {
@@ -18,6 +19,13 @@ export default function TaxPage() {
      const [allTaxRecords, setAllTaxRecords] = useState([]);
       const [isLoading, setIsLoading] = useState(false);
 
+                // user Permission
+                const {user, permissions} = useContext(UserContext);
+                const taxPermission = permissions?.find(p => p.module === "Tax")
+                const effectivePermission =
+                    user?.role === "admin"
+                      ? { canView: true, canAdd: true, canEdit: true, canDelete: true }
+                      : taxPermission;
 
          // fetch tax handler 
                   useEffect(() => {
@@ -93,10 +101,16 @@ export default function TaxPage() {
             searQuery={'Name'}
             onChange={handleChange}
             type={'text'}
+            dataLength={taxRecords.length}
+            permission={effectivePermission?.canAdd}
           />
           
-          {/* Payment Table */}
-            <TaxTable data={taxRecords} onDeleteTax={deleteTax}/>
+          {/* Tax Table */}
+            <TaxTable 
+              data={taxRecords} 
+              onDeleteTax={deleteTax}
+              taxPermission={effectivePermission}
+            />
         </TaxPageContent>
 }
     </TaxPageWrapper>

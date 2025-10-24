@@ -39,6 +39,14 @@ const [toggleDropdown, setToggleDropdown] = useState(false)
   };
 }, []);
 
+   // ✅ Filter sidebar items based on user role
+  const filteredSidebarItems = SidebarItemLists.filter(item => {
+    // Hide "Setting" for regular users
+    if (item.tile === "Setting" && user?.role === "user") {
+      return false;
+    }
+    return true;
+  });
 
 
 return (
@@ -52,9 +60,9 @@ return (
   {/* Icons, notifications, profile, etc. */}
     <HeaderContent wd={'60%'} jc={"flex-end"} mwd={'40%'}>
        {/* user icon */}
-       <IconWrapper onClick={()=>navigate('/users')}>
+{ user?.role === "admin" &&     <IconWrapper onClick={()=>navigate('/users')}>
           <FiUsers/>
-       </IconWrapper>
+       </IconWrapper>}
 
          {/* notification icon */}
       {/* <IconWrapper>
@@ -70,7 +78,7 @@ return (
        </IconWrapper> */}
 
        {/* setting icon */}
-       <IconWrapper ref={dropdownRef} onClick={()=>setToggleDropdown(!toggleDropdown)}>
+ { user?.role === "admin" &&    <IconWrapper ref={dropdownRef} onClick={()=>setToggleDropdown(!toggleDropdown)}>
           <CiSettings/>
           {
           toggleDropdown &&
@@ -85,7 +93,7 @@ return (
                     }
             </HeaderDropdown>
          }
-       </IconWrapper>
+       </IconWrapper>}
 
       {/* Profile picture */}
        <ProfileWrapper onClick={()=> navigate(`users/${user._id}`)}>

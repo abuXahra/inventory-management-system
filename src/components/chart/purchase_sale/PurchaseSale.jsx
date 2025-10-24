@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { BarChatWrapper, PurchaseHeader, PurchaseSaleWrapper, ResponsiveContainerStyled } from './PurchaseSale.style'
 import {
     BarChart,
@@ -12,6 +12,7 @@ import {
   } from 'recharts';
 import axios from 'axios';
 import { token } from '../../context/UserToken';
+import { UserContext } from '../../context/UserContext';
 
 
 export default function PurchaseSale() {
@@ -29,6 +30,16 @@ export default function PurchaseSale() {
 
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
+
+    // user permission:
+        const {permissions, user} = useContext(UserContext);
+        const reportPermission = permissions?.find(p => p.module === "Generate/View Report")
+  
+              // Permission logic
+        const isAdmin = user?.role === 'admin'
+        const canView = isAdmin || reportPermission?.canView
+        const canDelete = isAdmin || reportPermission?.canDelete
+      
 
   useEffect(() => {
     const fetchChartData = async () => {

@@ -179,21 +179,26 @@ const ExpensesTable = ({ data, onDeleteExpense, expensePermission }) => {
               paginationRowsPerPageOptions={[10, 25, 50, 100]} // Options in the dropdown
               responsive
               customStyles={customStyles}
-              selectableRows
-              onSelectedRowsChange={({ selectedRows }) => setSelectedExpenses(selectedRows)}
-              selectableRowHighlight
+              selectableRows={expensePermission.canDelete} // 👈 only show checkboxes if delete permission is true
+              onSelectedRowsChange={
+                          expensePermission.canDelete
+                            ? ({ selectedRows }) => setSelectedExpenses(selectedRows)
+                            : undefined
+                        }
+              selectableRowHighlight={expensePermission.canDelete}
             />
           </TableWrapper>
 
     {/* sliding button for delete bulk list */}
           {selectedExpenses.length > 0 && (
           <SlideUpButton>
-            <Button 
+        {expensePermission.canDelete  &&
+           <Button 
               btnColor={'red'} 
               btnOnClick={handleBulkDelete} 
               btnText= {isDeleting ? <ButtonLoader text="Deleting..." /> : `Delete Selected (${selectedExpenses.length})`} 
               disabled={isDeleting}>             
-            </Button>
+            </Button>}
           </SlideUpButton>
         )}
 
