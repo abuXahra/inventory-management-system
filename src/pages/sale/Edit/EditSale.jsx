@@ -750,7 +750,9 @@ const hanldeSumbit = async (e) =>{
                                 readOnly 
                                 onChange={(e)=>handleChange('tax', e)}
                             />
-
+</AnyItemContainer>
+    
+<AnyItemContainer>
                             <Input 
                                 value={taxAmount} 
                                 title={'Tax Amount'}

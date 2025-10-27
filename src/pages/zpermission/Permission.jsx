@@ -139,9 +139,10 @@ export default function PermissionPage() {
 
 
   const [permissions, setPermissions] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   const getPermissions = async () => {
+    setLoading(true)
     try {
       const res = await axios.get(`${process.env.REACT_APP_URL}/api/permission`, {
         headers: { Authorization: `Bearer ${token}` },
@@ -159,6 +160,7 @@ export default function PermissionPage() {
       }));
 
       setPermissions(formatted);
+      setLoading(false)
     } catch (error) {
       toast.error("Failed to fetch permissions");
       console.error(error);
@@ -185,12 +187,13 @@ export default function PermissionPage() {
                     // onChange={handleChange}
                     type={'text'}
                   /> */}
+        {loading ? <List/>:
         <PermissionPageContent>
           {/* Permissin Table */}
             <PermissionTable 
                 data={permissions} 
             />
-        </PermissionPageContent>
+        </PermissionPageContent>}
 
  
     </PermissionPageWrapper>

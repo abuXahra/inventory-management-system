@@ -24,25 +24,18 @@ import { SaleChartContWrapper, SaleChartHeader, SaleChartWrapper } from "./saleC
 import { useState } from "react";
 import { useEffect } from "react";
 import axios from "axios";
-import { token } from "../../context/UserToken";
 
-// Sample data
-// const data = [
-//   { name: "January", sales: 4000, profit: 2400 },
-//   { name: "February", sales: 3000, profit: 1398 },
-//   { name: "March", sales: 2000, profit: 9800 },
-//   { name: "April", sales: 2780, profit: 3908 },
-//   { name: "May", sales: 1890, profit: 4800 },
-//   { name: "June", sales: 2390, profit: 3800 },
-//   { name: "July", sales: 3490, profit: 4300 },
-// ];
+
 
 const SaleChart = () => {
 
+    const token = localStorage.getItem('token');
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(true);
   
     useEffect(() => {
+ 
+
       const fetchChartData = async () => {
         setLoading(true);
         try {

@@ -742,7 +742,8 @@ const hanldeSumbit = async (e) =>{
                                 readOnly 
                                 onChange={(e)=>handleChange('tax', e)}
                             />
-
+</AnyItemContainer>
+<AnyItemContainer>
                             <Input 
                                 value={taxAmount} 
                                 title={'Tax Amount'}
@@ -820,15 +821,17 @@ const hanldeSumbit = async (e) =>{
                             <TdStyled>{data.price}</TdStyled>
                             {/* <TdStyled>{data.qty}</TdStyled> */}
                              <TdStyled>
-                                <button
-                                style={{borderRadius: "100%", marginRight: '5px', border: "none", cursor: 'pointer' }}
-                                onClick={() => updateQuantity(i, -1)}
-                                disabled={parseInt(data.quantity) <= 1}
-                                >-</button>
-                                {data.quantity}
-                                <button
-                                 style={{borderRadius: "100%", marginLeft: '5px', border: "none",  cursor: 'pointer'}}
-                                onClick={() => updateQuantity(i, 1)}>+</button>
+                                <span style={{color: "black", display: "flex",  justifyContent:"center", alignItems:"center", gap: "3px"}}>
+                                    <button
+                                    style={{borderRadius: "100%", marginRight: '5px', border: "none", cursor: 'pointer' }}
+                                    onClick={() => updateQuantity(i, -1)}
+                                    disabled={parseInt(data.quantity) <= 1}
+                                    >-</button>
+                                    {data.quantity}
+                                    <button
+                                    style={{borderRadius: "100%", marginLeft: '5px', border: "none",  cursor: 'pointer'}}
+                                    onClick={() => updateQuantity(i, 1)}>+</button>
+                                </span>
                             </TdStyled>
                             <TdStyled>{data.tax}</TdStyled>
                             <TdStyled>{data.taxAmount}</TdStyled>

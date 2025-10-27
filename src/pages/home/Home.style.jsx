@@ -142,13 +142,14 @@ export const TopCard = styled.div`
 
 export const TopCardIcon = styled.div`
         position: absolute;
-        top:10px;
-        right: 20px;
-        font-size: 40px;
+        top:5px;
+        right: 10px;
+        font-size: 30px;
         display: flex;
         align-items: center;
         justify-content: center;
         padding: 5px;
+        
         /* background-color: #00032a; */
         /* height: 45px;
         width: 45px; */

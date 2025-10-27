@@ -10,11 +10,13 @@ import { TableReusableHeader, TableReusableWrapper} from '../../TableReusabComp/
 import { FaLongArrowAltRight } from 'react-icons/fa'
 import TopSellingProduct from './TopSellingProduct'
 
+
 // home page components
 export default function TopSelling({header}) {
 
    const [products, setProducts] = useState([]);
    const [isLoading, setIsLoading] = useState(false);
+   
    const [company, setCompany] = useState('') 
    const token = localStorage.getItem('token');
 

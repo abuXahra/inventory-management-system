@@ -21,7 +21,7 @@ import MyBarChart from '../../components/chart/Barchart'
 import MyPieChart from '../../components/chart/pie-chat/MyPieChart'
 import SaleChart from '../../components/chart/sale-chart/SaleChart'
 import TopSelling from '../../components/table/product_table/top_selling_prod/TopSelling'
-import { token } from '../../components/context/UserToken'
+
 
 
 
@@ -31,9 +31,9 @@ import { token } from '../../components/context/UserToken'
 
 
 function DashboardHome() {
-
+  const token = localStorage.getItem("token");
+  const {user, loading} = useContext(UserContext);
   const navigate = useNavigate();
-   
   const [customer, setCustomer] = useState([]);
   const [saleInvoice, setSaleInvoice] = useState(null);
   const [supplier, setSupplier] = useState([]);
@@ -42,6 +42,7 @@ function DashboardHome() {
   const [category, setCategory] = useState([]);
   const [paymentCount, setPaymentCount] = useState(null);
   const [expenses, setExpenses] = useState(null);
+  
   const [companyData, setCompanyData] = useState('')
   const [isLoading, setIsLoading] = useState(false);
 
@@ -165,24 +166,6 @@ function DashboardHome() {
     }
 
 
-                     const fetchCompany = async() =>{
-                        // setIsLoading(true)
-                          try {
-                              const res = await axios.get(`${process.env.REACT_APP_URL}/api/company`, {
-                                                                  headers: {
-                                                                    Authorization: `Bearer ${token}`
-                                                                  }
-                                                            })
-                              setCompanyData(res.data[0])
-                              // setIsLoading(false);
-                          } catch (error) {
-                              console.log(error);
-                              // setIsLoading(false);
-                          }
-                    
-                      }
-                      fetchCompany();
-
     useEffect(()=>{
       fetchCustomer();
       fetchSupplier();
@@ -198,13 +181,6 @@ function DashboardHome() {
   
   const TopCardItemList = [
     {
-      title: "Customer",
-      count: customer.length,
-      icon: <IoIosPeople />,
-      bg: "#2563eb",
-      url: "/customers",
-    },
-    {
       title: "Sales Invoice",
       count: saleInvoice?.toLocaleString('en-NG', { 
                       minimumFractionDigits: 2, 
@@ -216,39 +192,17 @@ function DashboardHome() {
        currency: companyData,
     },
     {
-      title: "Suppliers",
-      count: supplier.length,
-      icon: <FaPeopleCarry />,
-      bg: "#2563eb",
-      url: "/suppliers",
-    },
-    {
       title: "Purchase Invoice",
       count: purchaseInvoice?.toLocaleString('en-NG', { 
                       minimumFractionDigits: 2, 
                       maximumFractionDigits: 2 
                     }),
       icon: <PiInvoiceBold />,
-      bg: "#16a34a",
+      bg: "#2563eb",
       url: "/purchase",
       currency: companyData,
     },
-    {
-      title: "Items",
-      count: items.length,
-      icon: <IoBagSharp />,
-      bg: "#16a34a",
-      url: "/products",
-    },
-  
-    {
-      title: "Items Category",
-      count: category.length,
-      icon: <IoPricetagsSharp />,
-      bg: "#2563eb",
-      url: "/categories",
-    },
-    {
+        {
       title: "Payments",
       count: paymentCount?.toLocaleString('en-NG', { 
                       minimumFractionDigits: 2, 
@@ -269,6 +223,35 @@ function DashboardHome() {
       bg: "#ef4444",
       url: "/expenses",
        currency: companyData,
+    },
+    {
+      title: "Customer",
+      count: customer.length,
+      icon: <IoIosPeople />,
+      bg: "#2563eb",
+      url: "/customers",
+    },
+    {
+      title: "Suppliers",
+      count: supplier.length,
+      icon: <FaPeopleCarry />,
+      bg: "#16a34a",
+      url: "/suppliers",
+    },
+    {
+      title: "Items",
+      count: items.length,
+      icon: <IoBagSharp />,
+      bg: "#2563eb",
+      url: "/products",
+    },
+  
+    {
+      title: "Items Category",
+      count: category.length,
+      icon: <IoPricetagsSharp />,
+      bg: "#f59e0b",
+      url: "/categories",
     },
   ];
   
@@ -302,7 +285,12 @@ function DashboardHome() {
       paymentStatus: 'Paid',
     },
   ];
-const {user} = useContext(UserContext);
+
+  // 🟢 Show loader while user data is still being fetched
+  if (loading || !user) {
+    return <div className="loading">Loading dashboard...</div>;
+  }
+
 
   return (
     <HomeWrapper>

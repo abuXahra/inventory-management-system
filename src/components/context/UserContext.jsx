@@ -10,13 +10,16 @@ export function UserContextProvider({ children }) {
   const [loading, setLoading] = useState(true);
 
   const fetchUser = async () => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      setLoading(false)
-      return;
+ 
+    try {
+       const token = localStorage.getItem("token");
+    
+       if (!token) {
+        setUser(null);
+        setLoading(false)
+        return;
     }
 
-    try {
       const res = await axios.get(`${process.env.REACT_APP_URL}/api/auth/me`, {
                                           headers: {
                                             Authorization: `Bearer ${token}`

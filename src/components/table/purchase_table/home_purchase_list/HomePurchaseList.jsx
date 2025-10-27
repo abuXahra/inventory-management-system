@@ -8,15 +8,17 @@ import { HomePurchaseListWrapper } from './homePurchaseList.style';
 import { ProductItemList } from '../../../../data/productItems';
 import axios from 'axios';
 import HomePurchaseTable from './home_purchase_table/HomePurchaseTable';
-import { token } from '../../../context/UserToken';
+import { TableReusableHeader, TableReusableWrapper } from '../../TableReusabComp/tableReusabComp.style';
+import { FaLongArrowAltRight } from 'react-icons/fa';
 
 
 
 const HomePurchaseList = () => {
 
-
+   const token = localStorage.getItem('token');
   const [data, setData] = useState([])
    const [isLoading, setIsLoading] = useState([])
+   const navigate = useNavigate();
   
      useEffect(() => {
                        const getPurchase = async () => { 
@@ -30,7 +32,7 @@ const HomePurchaseList = () => {
                         // Sort by saleAmount descending
                         const sortedData = res.data.sort((a, b) => b.saleAmount - a.saleAmount);
                                 
-                                        setData(sortedData)
+                                        setData(sortedData.slice(0, 5))
                                         setIsLoading(false)
                       
                                         console.log(res.data)
@@ -43,9 +45,23 @@ const HomePurchaseList = () => {
                             }, [])
   
   return (
-    <HomePurchaseListWrapper>
-        <HomePurchaseTable productData={data} header={'Sale Items'} isLoading={isLoading}/>
-    </HomePurchaseListWrapper>
+     <TableReusableWrapper>
+    
+                        <TableReusableHeader>
+                                      {"Highest Sale Items"}
+                                      <span onClick={()=>navigate('/top-selling')}>View All <FaLongArrowAltRight /></span>
+                  </TableReusableHeader>
+             {isLoading ? (
+              <div style={{height: "250px", width: "100%", display: 'flex', justifyContent: "center", alignItems: "center" }}>
+                <p>Loading</p>
+              </div>
+            ) : (
+         <HomePurchaseListWrapper>
+            <HomePurchaseTable data={data} header={'Sale Items'} isLoading={isLoading}/>
+        </HomePurchaseListWrapper>
+       )}
+      </TableReusableWrapper>
+
   );
 };
 

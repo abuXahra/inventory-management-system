@@ -11,7 +11,7 @@ import {
     CartesianGrid,
   } from 'recharts';
 import axios from 'axios';
-import { token } from '../../context/UserToken';
+
 import { UserContext } from '../../context/UserContext';
 
 
@@ -27,7 +27,7 @@ export default function PurchaseSale() {
 //     { date: '2025-01-04', purchase: 500, sale: 700 },
 //     { date: '2025-01-05', purchase: 400, sale: 600 },
 //   ];
-
+   const token = localStorage.getItem('token');
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -42,6 +42,7 @@ export default function PurchaseSale() {
       
 
   useEffect(() => {
+
     const fetchChartData = async () => {
       setLoading(true);
       try {
