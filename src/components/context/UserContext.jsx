@@ -7,7 +7,7 @@ export const UserContext = createContext({});
 export function UserContextProvider({ children }) {
   const [user, setUser] = useState(null);
   const [permissions, setPermissions] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const fetchUser = async () => {
  

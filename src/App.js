@@ -78,9 +78,84 @@ import NotFound from "./pages/not_found/NotFound";
 import Unauthorized from "./pages/unauthorized/UnauthorizedPage";
 import RequirePermissionRoute from "./components/protected_route/RequireAddPermissionRoute";
 
+function usePageTitle() {
+  const location = useLocation();
+
+  useEffect(() => {
+    const path = location.pathname;
+
+    const titles = {
+      "/": "Login | Inventory Software",
+      "/dashboard": "Dashboard | Inventory Software",
+      "/categories": "Categories | Inventory Software",
+      "/add-category": "Add Category | Inventory Software",
+      "/products": "Products | Inventory Software",
+      "/add-product": "Add Product | Inventory Software",
+      "/sales": "Sales | Inventory Software",
+      "/add-sale": "Add Sale | Inventory Software",
+      "/customers": "Customers | Inventory Software",
+      "/add-customer": "Add Customer | Inventory Software",
+      "/purchase": "Purchases | Inventory Software",
+      "/suppliers": "Suppliers | Inventory Software",
+      "/payments": "Payments | Inventory Software",
+      "/expenses": "Expenses | Inventory Software",
+      "/reports": "Reports | Inventory Software",
+      "/tax": "Tax | Inventory Software",
+      "/units": "Units | Inventory Software",
+      "/users": "Users | Inventory Software",
+      "/company-profile": "Company Profile | Inventory Software",
+      "/permission": "Permissions | Inventory Software",
+      "/not-authorized": "Unauthorized | Inventory Software",
+      "/not-found": "Page Not Found | Inventory Software",
+    };
+
+    // Default fallback
+    let title = titles[path] || "Inventory Software";
+
+    // Handle dynamic routes like /edit-category/:id
+    if (path.startsWith("/edit-category"))
+      title = "Edit Category | Inventory Software";
+    else if (path.startsWith("/category-detail"))
+      title = "Category Detail | Inventory Software";
+    else if (path.startsWith("/edit-product"))
+      title = "Edit Product | Inventory Software";
+    else if (path.startsWith("/product-detail"))
+      title = "Product Detail | Inventory Software";
+    else if (path.startsWith("/edit-sale"))
+      title = "Edit Sale | Inventory Software";
+    else if (path.startsWith("/sale-invoice"))
+      title = "Sale Invoice | Inventory Software";
+    else if (path.startsWith("/edit-customer"))
+      title = "Edit Customer | Inventory Software";
+    else if (path.startsWith("/customers/"))
+      title = "Customer Details | Inventory Software";
+    else if (path.startsWith("/edit-supplier"))
+      title = "Edit Supplier | Inventory Software";
+    else if (path.startsWith("/supplier-detail"))
+      title = "Supplier Detail | Inventory Software";
+    else if (path.startsWith("/edit-purchase"))
+      title = "Edit Purchase | Inventory Software";
+    else if (path.startsWith("/purchase-invoice"))
+      title = "Purchase Invoice | Inventory Software";
+    else if (path.startsWith("/sale-return"))
+      title = "Sale Return | Inventory Software";
+    else if (path.startsWith("/purchase-return"))
+      title = "Purchase Return | Inventory Software";
+    else if (path.startsWith("/edit-user"))
+      title = "Edit User | Inventory Software";
+    else if (path.startsWith("/users/"))
+      title = "User Details | Inventory Software";
+
+    document.title = title;
+  }, [location]);
+}
+
 function App() {
   const { user, loading } = useContext(UserContext);
   const location = useLocation();
+
+  // Page titles
+  usePageTitle();
 
   // If still verifying the user, show nothing or a loader
   if (loading) return <LoaderWrapper>Loading...</LoaderWrapper>;
