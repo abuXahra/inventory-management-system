@@ -21,14 +21,14 @@ import CompanyLogo from '../../../images/product_placeholder.jpg'
 import axios from 'axios';
 import { DropdownItems, DropdownWrapper } from '../../purchase/add/addPurchase.style';
 import { List } from 'react-content-loader'
-import { token } from '../../../components/context/UserToken';
 
 
 
 export default function SalesReport() {
 
         //  const[saleReport, setSaleReport] = useState([]);
-        
+        const token = localStorage.getItem('token');
+    
     
          const searchCustomerBy=[
         {

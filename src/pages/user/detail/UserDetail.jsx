@@ -18,12 +18,12 @@ import ContentLoader, {
   Facebook,
   Instagram
 } from 'react-content-loader'
-import { token } from '../../../components/context/UserToken'
 import { UserContext } from '../../../components/context/UserContext'
 
 
 export default function UserDetail() {
-
+const token = localStorage.getItem('token');
+    
   const navigate = useNavigate();
   const [userData, setUserData] = useState('');
   const {userId} = useParams();
@@ -160,6 +160,12 @@ const handleGrabId = (userName)=>{
                         <InnerWrapper wd={'100%'}>
                           <span><b>Address</b></span>
                           <span>{userData?.address}</span>
+                       </InnerWrapper>
+                  </AnyItemContainer>
+                  <AnyItemContainer gap="60px">
+                        <InnerWrapper wd={'100%'}>
+                          <span><b>Role</b></span>
+                          <span>{userData?.role}</span>
                        </InnerWrapper>
                   </AnyItemContainer>
               </ItemContainer>

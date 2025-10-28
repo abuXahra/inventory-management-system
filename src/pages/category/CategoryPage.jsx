@@ -9,14 +9,14 @@ import { CategoryPageContent, CategoryPageWrapper } from './categoryPage.style'
 import axios from 'axios'
 import { List } from 'react-content-loader'
 import { UserContext } from '../../components/context/UserContext'
-import { token } from '../../components/context/UserToken'
 
 
 export default function CategoryPage() {
   
   
 
-
+          const token = localStorage.getItem('token');
+    
           const [category, setCategory] = useState([]);
           const [allCategory, setAllCategory] = useState([]);
           const [isLoading, setIsLoading] = useState(false);

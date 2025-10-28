@@ -286,12 +286,7 @@ function DashboardHome() {
     },
   ];
 
-  // 🟢 Show loader while user data is still being fetched
-  if (loading || !user) {
-    return <div className="loading">Loading dashboard...</div>;
-  }
-
-
+  
   return (
     <HomeWrapper>
         {/* <video src={flightVide} autoPlay loop muted></video> */}

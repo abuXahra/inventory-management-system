@@ -12,12 +12,12 @@ import Overlay from '../../overlay/Overlay';
 import ButtonLoader from '../../clicks/button/button_loader/ButtonLoader';
 import ToastComponents from '../../toast_message/toast_component/ToastComponents';
 import Button from '../../clicks/button/Button';
-import { token } from '../../context/UserToken';
 
 
 
 const ExpensesTable = ({ data, onDeleteExpense, expensePermission }) => {
-
+const token = localStorage.getItem('token');
+    
   const navigate = useNavigate();
 
   // fetching currency from db

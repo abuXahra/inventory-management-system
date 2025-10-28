@@ -18,10 +18,10 @@ import axios from 'axios'
 import { toast } from 'react-toastify'
 import ToastComponents from '../../../components/toast_message/toast_component/ToastComponents'
 import { List } from 'react-content-loader'
-import { token } from '../../../components/context/UserToken'
 
 export default function EditSupplier() {
-
+const token = localStorage.getItem('token');
+    
     const navigate = useNavigate();
         const { supplierId } = useParams();
         const {user} = useContext(UserContext);

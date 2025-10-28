@@ -141,6 +141,8 @@ export default function PermissionPage() {
   const [permissions, setPermissions] = useState([]);
   const [loading, setLoading] = useState(false);
 
+const token = localStorage.getItem('token');
+
   const getPermissions = async () => {
     setLoading(true)
     try {

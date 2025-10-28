@@ -17,10 +17,10 @@ import { toast } from 'react-toastify'
 import ButtonLoader from '../../../components/clicks/button/button_loader/ButtonLoader'
 import ToastComponents from '../../../components/toast_message/toast_component/ToastComponents'
 import { List } from 'react-content-loader'
-import { token } from '../../../components/context/UserToken'
 
 export default function EditPurchase() {
-
+const token = localStorage.getItem('token');
+    
 // const [productItemList, setProductItemList] = useState(ProductItemList);
 const {purchaseId} = useParams();
   

@@ -10,7 +10,6 @@ import SaleReturnTable from '../../../components/table/sale_table/sale_return_ta
 import { SaleReturnPageContent, SaleReturnPageWrapper } from './saleReturnPage.style'
 import PageTitle from '../../../components/page_title/PageTitle'
 import ListHeader from '../../../components/page_title/list_header/ListHeader'
-import { token } from '../../../components/context/UserToken'
 import { UserContext } from '../../../components/context/UserContext'
 // 
 
@@ -18,7 +17,8 @@ import { UserContext } from '../../../components/context/UserContext'
 
 export default function SaleReturnPage() {
   
-  
+  const token = localStorage.getItem('token');
+    
      const[saleReturnRecords, setSaleReturnRecords] = useState([]);
      const [allSaleReturnRecords, setAllSaleReturnRecords] = useState([]);
      const [isLoading, setIsLoading] = useState(false);

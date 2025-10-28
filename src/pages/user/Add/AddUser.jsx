@@ -15,10 +15,10 @@ import SelectInput from '../../../components/input/selectInput/SelectInput'
 import axios from 'axios'
 import { ToastContainer, toast } from 'react-toastify';
 import "react-toastify/ReactToastify.css"
-import { token } from '../../../components/context/UserToken'
 
 export default function AddUser() {
-
+const token = localStorage.getItem('token');
+    
 
     const roleItems =  [
         {

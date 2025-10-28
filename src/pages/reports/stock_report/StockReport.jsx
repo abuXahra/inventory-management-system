@@ -14,11 +14,11 @@ import StockReportTable from '../../../components/table/report_table/stock_repor
 // import ProductImage from '../../../images/necklace.jpeg'
 import axios from 'axios';
 import { List } from 'react-content-loader';
-import { token } from '../../../components/context/UserToken';
 
 
 export default function StockReport() {
-
+const token = localStorage.getItem('token');
+    
   
   const [company, setCompany] = useState('')   
   const [products, setProducts] = useState([]);

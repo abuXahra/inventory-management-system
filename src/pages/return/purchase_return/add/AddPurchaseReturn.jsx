@@ -17,12 +17,12 @@ import ButtonLoader from '../../../../components/clicks/button/button_loader/But
 import ToastComponents from '../../../../components/toast_message/toast_component/ToastComponents'
 import { AddPurchaseReturnContent, AddPurchaseReturnWrapper, AnyItemContainer, DropdownItems, DropdownWrapper, HrStyled, InnerWrapper, ItemListContent, ItemsWrapper, SelectItemContent, SupplierInfoWrapper, TableResponsiveWrapper, TableStyled, TdStyled, TotalChargesWrapper } from './addPurchaseReturn.style'
 import { List } from 'react-content-loader'
-import { token } from '../../../../components/context/UserToken'
 
 export default function AddPurchaseReturn() {
 
     // const [productItemList, setProductItemList] = useState(ProductItemList);
-
+const token = localStorage.getItem('token');
+    
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(false);
     const [isBtnLoading, setIsBtnLoading] = useState(false);

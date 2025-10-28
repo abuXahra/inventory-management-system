@@ -7,10 +7,11 @@ export const UserContext = createContext({});
 export function UserContextProvider({ children }) {
   const [user, setUser] = useState(null);
   const [permissions, setPermissions] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   const fetchUser = async () => {
  
+    setLoading(true);
     try {
        const token = localStorage.getItem("token");
     
@@ -41,7 +42,7 @@ export function UserContextProvider({ children }) {
   }, []);
 
   return (
-    <UserContext.Provider value={{ user, permissions, setUser, setPermissions, loading }}>
+    <UserContext.Provider value={{ user, permissions, setUser, setPermissions, loading, fetchUser }}>
       {children}
     </UserContext.Provider>
   );

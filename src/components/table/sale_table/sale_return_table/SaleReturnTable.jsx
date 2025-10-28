@@ -14,7 +14,6 @@ import ButtonLoader from '../../../clicks/button/button_loader/ButtonLoader';
 import { SlideUpButton } from '../../expense_table/Expense.style';
 import Overlay from '../../../overlay/Overlay';
 import ToastComponents from '../../../toast_message/toast_component/ToastComponents';
-import { token } from '../../../context/UserToken';
 // import { SlideUpButton } from '../../expense_table/Expense.style';
 // import Button from '../../../clicks/button/Button';
 // import ButtonLoader from '../../../clicks/button/button_loader/ButtonLoader';
@@ -23,7 +22,8 @@ import { token } from '../../../context/UserToken';
 
 
 const SaleReturnTable = ({data, onDeleteSale, saleReturnPermission}) => {
-  
+const token = localStorage.getItem('token');
+    
   const navigate = useNavigate();
 
    // fetching currency from db

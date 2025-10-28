@@ -15,13 +15,12 @@ import { AddPaymentContent, AddPaymentWrapper } from '../../payment/add/AddPayme
 import axios from 'axios'
 import { DropdownItems, DropdownWrapper } from '../../purchase/add/addPurchase.style'
 import { UserContext } from '../../../components/context/UserContext'
-import { token } from '../../../components/context/UserToken'
 import { List } from 'react-content-loader'
 
 export default function AddPayment() {
 
-
-
+const token = localStorage.getItem('token');
+    
 // Payment for
 const paymentForItems =  [
     {

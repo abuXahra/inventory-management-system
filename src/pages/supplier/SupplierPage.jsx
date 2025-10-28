@@ -7,12 +7,13 @@ import { SupplierPageContent, SupplierPageWrapper } from './supplierPage.style'
 import SupplierTable from '../../components/table/supplier_table/Supplier'
 import axios from 'axios'
 import { List } from 'react-content-loader'
-import { token } from '../../components/context/UserToken'
 import { UserContext } from '../../components/context/UserContext'
 
 
 
 export default function SupplierPage() {
+  const token = localStorage.getItem('token');
+  
    
   const [supplier, setSupplier] = useState([]);
   const [allSuppliers, setAllSuppliers] = useState([]);

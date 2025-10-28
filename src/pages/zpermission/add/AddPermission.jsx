@@ -9,12 +9,13 @@ import { toast } from "react-toastify";
 
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { token } from "../../../components/context/UserToken";
 import PageTitle from "../../../components/page_title/PageTitle";
 import ButtonLoader from "../../../components/clicks/button/button_loader/ButtonLoader";
 import Button from "../../../components/clicks/button/Button";
 
 export default function AddPermission() {
+  const token = localStorage.getItem('token');
+
   const [module, setModule] = useState("");
   const [canView, setCanView] = useState(false);
   const [canAdd, setCanAdd] = useState(false);

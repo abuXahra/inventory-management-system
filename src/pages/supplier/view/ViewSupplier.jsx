@@ -13,7 +13,6 @@ import Overlay from '../../../components/overlay/Overlay'
 import ButtonLoader from '../../../components/clicks/button/button_loader/ButtonLoader'
 import ToastComponents from '../../../components/toast_message/toast_component/ToastComponents'
 import { List } from 'react-content-loader'
-import { token } from '../../../components/context/UserToken'
 import { UserContext } from '../../../components/context/UserContext'
 
 
@@ -22,7 +21,8 @@ export default function SupplierDetail() {
 
   const navigate = useNavigate();
 
-  
+  const token = localStorage.getItem('token');
+    
       const {supplierId} = useParams();
       const [supData, setSupData] = useState('');
       const [isLoading, setIsLoading] = useState(false);

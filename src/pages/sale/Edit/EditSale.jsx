@@ -17,11 +17,11 @@ import ToastComponents from '../../../components/toast_message/toast_component/T
 import { AddSalesContent, AddSalesWrapper, CustomerInfoWrapper, EditSalesContent, EditSalesWrapper, HrStyled, ItemListContent, ItemsWrapper, SelectItemContent, TotalChargesWrapper } from './editSale.style'
 import { AnyItemContainer, DropdownItems, DropdownWrapper, InnerWrapper, TableResponsiveWrapper, TableStyled, TdStyled } from '../../purchase/add/addPurchase.style'
 import { List } from 'react-content-loader'
-import { token } from '../../../components/context/UserToken'
 
 
 export default function EditSale() {
-
+const token = localStorage.getItem('token');
+    
 // const [productItemList, setProductItemList] = useState(ProductItemList);
   const {saleId} = useParams();
 

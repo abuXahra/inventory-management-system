@@ -16,10 +16,10 @@ import { UserContext } from '../../../components/context/UserContext'
 import { toast } from 'react-toastify'
 import ButtonLoader from '../../../components/clicks/button/button_loader/ButtonLoader'
 import ToastComponents from '../../../components/toast_message/toast_component/ToastComponents'
-import { token } from '../../../components/context/UserToken'
 
 export default function AddPurchase() {
-
+const token = localStorage.getItem('token');
+    
 // const [productItemList, setProductItemList] = useState(ProductItemList);
 
   const navigate = useNavigate();

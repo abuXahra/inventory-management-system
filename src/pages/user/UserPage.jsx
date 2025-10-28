@@ -8,7 +8,6 @@ import ListHeader from '../../components/page_title/list_header/ListHeader'
 import PageTitle from '../../components/page_title/PageTitle'
 import axios from 'axios'
 import ContentLoader, {List } from 'react-content-loader'
-import { token } from '../../components/context/UserToken'
 import { UserContext } from '../../components/context/UserContext'
 
 
@@ -18,6 +17,7 @@ import { UserContext } from '../../components/context/UserContext'
 
 export default function UserPage() {
 
+    const token = localStorage.getItem('token');
 
       const[userRecords, setUserRecords] = useState([]);
       const [allUserRecords, setAllUserRecords] = useState([]);

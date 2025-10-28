@@ -8,13 +8,13 @@ import TaxTable from '../../components/table/tax_table/TaxTable'
 import { TaxPageContent, TaxPageWrapper } from './taxPage.style'
 import axios from 'axios'
 import { List } from 'react-content-loader'
-import { token } from '../../components/context/UserToken'
 import { UserContext } from '../../components/context/UserContext'
 
 
 export default function TaxPage() {
   
-
+const token = localStorage.getItem('token');
+    
      const[taxRecords, setTaxRecords] = useState([]);
      const [allTaxRecords, setAllTaxRecords] = useState([]);
       const [isLoading, setIsLoading] = useState(false);

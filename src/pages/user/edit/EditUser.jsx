@@ -19,10 +19,10 @@ import ToastComponents from '../../../components/toast_message/toast_component/T
 import ContentLoader, {
   List, 
 } from 'react-content-loader'
-import { token } from '../../../components/context/UserToken'
 
 export default function AddUser() {
-
+const token = localStorage.getItem('token');
+    
     const navigate = useNavigate();
 
 

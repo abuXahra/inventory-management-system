@@ -15,10 +15,11 @@ import { AddUnitContent, AddUnitWrapper } from './addUnits.style'
 import axios from 'axios'
 import ToastComponents from '../../../components/toast_message/toast_component/ToastComponents'
 import { toast } from 'react-toastify'
-import { token } from '../../../components/context/UserToken'
 
 export default function AddUnits() {
 
+const token = localStorage.getItem('token');
+    
 // Unit items
 const unitNameItems =  [
     {

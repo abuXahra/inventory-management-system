@@ -12,7 +12,6 @@ import PageTitle from '../../../components/page_title/PageTitle'
 import ListHeader from '../../../components/page_title/list_header/ListHeader'
 import { SaleReturnPageContent, SaleReturnPageWrapper } from './purchaseReturnsPage.style'
 import PurchaseReturnTable from '../../../components/table/purchase_table/purchase_return_table/PurchaseReturnTable'
-import { token } from '../../../components/context/UserToken'
 import { UserContext } from '../../../components/context/UserContext'
 
 
@@ -20,7 +19,8 @@ import { UserContext } from '../../../components/context/UserContext'
 
 export default function PurchaseReturnsPage() {
   
-  
+  const token = localStorage.getItem('token');
+    
      const[purchaseReturnRecords, setPurchaseReturnRecords] = useState([]);
      const [allPurchaseReturnRecords, setAllPurchaseReturnRecords] = useState([]);
      const [isLoading, setIsLoading] = useState(false);

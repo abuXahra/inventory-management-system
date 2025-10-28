@@ -16,12 +16,12 @@ import CompanyLogo from '../../../images/product_placeholder.jpg'
 import { AddressWrapper, DateWrapper, ExpenseReportContent, ExpenseReportWrapper, Logo, LogoWrapper, ReportHeaderContent, ReportHeaderWrapper, SearchReportWrapper } from './expenseReport.style';
 import ExpenseReportTable from '../../../components/table/report_table/expense_report_table/ExenpenseReportTable';
 import axios from 'axios';
-import { token } from '../../../components/context/UserToken';
 
 
 
 export default function ExpenseReport() {
-
+const token = localStorage.getItem('token');
+    
 
     // today date
     const todayDate = new Date().toISOString().split('T')[0]; // Format: YYYY-MM-DD (2025-02-29)

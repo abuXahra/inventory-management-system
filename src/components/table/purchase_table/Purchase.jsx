@@ -11,13 +11,13 @@ import Button from "../../clicks/button/Button";
 import ButtonLoader from "../../clicks/button/button_loader/ButtonLoader";
 import Overlay from "../../overlay/Overlay";
 import ToastComponents from "../../toast_message/toast_component/ToastComponents";
-import { token } from "../../context/UserToken";
 
 
 
 
 const PurchaseTable = ({data, onDeletePurchase, purchasePermission}) => {
-  
+  const token = localStorage.getItem('token');
+    
   const navigate = useNavigate();
 
   // fetching currency from db

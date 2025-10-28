@@ -15,10 +15,10 @@ import PageTitle from '../../../../components/page_title/PageTitle'
 import TextArea from '../../../../components/input/textArea/TextArea'
 import ButtonLoader from '../../../../components/clicks/button/button_loader/ButtonLoader'
 import ToastComponents from '../../../../components/toast_message/toast_component/ToastComponents'
-import { token } from '../../../../components/context/UserToken'
 
 export default function AddSaleReturn() {
-
+const token = localStorage.getItem('token');
+    
 // const [productItemList, setProductItemList] = useState(ProductItemList);
 
   const navigate = useNavigate();

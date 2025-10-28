@@ -10,13 +10,14 @@ import { ExpensePageContent, ExpensePageWrapper } from './expensePage.style'
 import ExpensesTable from '../../components/table/expense_table/Expense'
 import axios from 'axios'
 import { List } from 'react-content-loader'
-import { token } from '../../components/context/UserToken'
 import { UserContext } from '../../components/context/UserContext'
 
 
 
 export default function ExpensePage() {
   
+  const token = localStorage.getItem('token');
+    
         const[expenseRecords, setExpenseRecords] = useState([]);
         const [allExpenseRecords, setAllExpenseRecords] = useState([]);
         const [isLoading, setIsLoading] = useState(false);

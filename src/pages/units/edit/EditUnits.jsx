@@ -13,12 +13,12 @@ import axios from 'axios'
 import { List } from 'react-content-loader'
 import { toast } from 'react-toastify'
 import ToastComponents from '../../../components/toast_message/toast_component/ToastComponents'
-import { token } from '../../../components/context/UserToken'
 
 export default function AddUnits() {
 
 const {unitId} = useParams();
-
+const token = localStorage.getItem('token');
+    
 
 // unit status item
 const unitStatusItems =  [

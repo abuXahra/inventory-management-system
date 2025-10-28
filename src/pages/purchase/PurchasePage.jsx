@@ -7,13 +7,13 @@ import { PurchasePageContent, PurchasePageWrapper } from './purchasePage.style'
 import PurchaseTable from '../../components/table/purchase_table/Purchase'
 import axios from 'axios'
 import { List } from 'react-content-loader'
-import { token } from '../../components/context/UserToken'
 import { UserContext } from '../../components/context/UserContext'
 
 
 
 export default function PurchasePage() {
-
+const token = localStorage.getItem('token');
+    
    const[purchaseRecords, setPurchaseRecords] = useState([]);
    const [allPurchaseRecords, setAllPurchaseRecords] = useState([]);
    const [isLoading, setIsLoading] = useState(false);

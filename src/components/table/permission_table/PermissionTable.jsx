@@ -11,11 +11,12 @@ import Button from "../../clicks/button/Button";
 import ButtonLoader from "../../clicks/button/button_loader/ButtonLoader";
 import Overlay from "../../overlay/Overlay";
 import ToastComponents from "../../toast_message/toast_component/ToastComponents";
-import { token } from "../../context/UserToken";
 
 
 
 const PermissionTable = ({ data, onPermissionsUpdated }) => {
+  const token = localStorage.getItem('token');
+    
   const [permissionState, setPermissionState] = useState([]);
   const [isUpdating, setIsUpdating] = useState(false);
 

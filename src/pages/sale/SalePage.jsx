@@ -7,13 +7,13 @@ import { useNavigate } from 'react-router-dom'
 import SalesTable from '../../components/table/sale_table/Sale'
 import axios from 'axios'
 import { List } from 'react-content-loader'
-import { token } from '../../components/context/UserToken'
 import { UserContext } from '../../components/context/UserContext'
 
 
 
 export default function SalePage() {
-  
+  const token = localStorage.getItem('token');
+    
   
      const[saleRecords, setSaleRecords] = useState([]);
      const [allSaleRecords, setAllSaleRecords] = useState([]);

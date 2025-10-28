@@ -48,7 +48,7 @@ export default function Siderbar({
       const res = await axios.get(process.env.REACT_APP_URL + '/api/auth/logout', { withCredentials: true });
       setUser(null);
       localStorage.removeItem("user"); // ✅ Clear storage
-      localStorage.removeItem("token"); // Clear token
+      // localStorage.removeItem("token"); // Clear token
       navigate('/');
     } catch (err) {
       console.log(err);

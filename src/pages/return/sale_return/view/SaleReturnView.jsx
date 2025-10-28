@@ -14,11 +14,11 @@ import { ButtonsWrapper, ChargesWrapper, DateWrapper, InfoBillWrapper, InvoiceWr
 import PageTitle from '../../../../components/page_title/PageTitle'
 import Button from '../../../../components/clicks/button/Button'
 import ButtonLoader from '../../../../components/clicks/button/button_loader/ButtonLoader'
-import { token } from '../../../../components/context/UserToken'
 import { UserContext } from '../../../../components/context/UserContext'
 
 export default function SaleReturnView() {
-  
+  const token = localStorage.getItem('token');
+    
 
   const navigate = useNavigate();
     const {returnId} = useParams();

@@ -16,11 +16,11 @@ import jsPDF from 'jspdf'
 import html2canvas from  'html2canvas'
 import ButtonLoader from '../../../components/clicks/button/button_loader/ButtonLoader'
 import { PartialPaymentWrapper } from '../../sale/view/viewSale.style'
-import { token } from '../../../components/context/UserToken'
 import { UserContext } from '../../../components/context/UserContext'
 
 export default function ViewPurchase() {
-
+const token = localStorage.getItem('token');
+    
   const navigate = useNavigate();
   const {purchaseId} = useParams();
   const [supplierId, setSupplierId] = useState('')

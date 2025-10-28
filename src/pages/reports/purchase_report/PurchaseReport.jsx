@@ -21,13 +21,13 @@ import PurchaseReportTable from '../../../components/table/report_table/purchase
 import axios from 'axios';
 import { DropdownItems, DropdownWrapper } from '../../purchase/add/addPurchase.style';
 import { List } from 'react-content-loader';
-import { token } from '../../../components/context/UserToken';
 
 
 
 export default function PurchaseReport() {
 
           
+    const token = localStorage.getItem('token');
     
     const searchSupplierBy=[
         {

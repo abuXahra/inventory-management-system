@@ -7,13 +7,13 @@ import PaymentTable from '../../components/table/payment_table/Payment'
 import { PaymentPageContent, PaymentPageWrapper } from './paymentPage.style'
 import axios from 'axios'
 import { List } from 'react-content-loader'
-import { token } from '../../components/context/UserToken'
 import { UserContext } from '../../components/context/UserContext'
 
 
 
 export default function PaymentPage() {
   
+  const token = localStorage.getItem('token');
   const[paymentRecords, setPaymentRecords] = useState([]);
   const [allPaymentRecords, setAllPaymentRecords] = useState([]);
   const [isLoading, setIsLoading] = useState(false);

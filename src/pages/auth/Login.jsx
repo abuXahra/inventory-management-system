@@ -25,7 +25,7 @@ export default function Login() {
     const [loginError, setLoginError] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 
-    const {setUser } = useContext(UserContext) // user context
+    const {setUser, fetchUser} = useContext(UserContext) // user context
 
     const navigate = useNavigate()
 
@@ -59,11 +59,16 @@ export default function Login() {
             
                 const res = await axios.post(`${process.env.REACT_APP_URL}/api/auth/login`, { email, password });
             
-                const {token, user: userData} = res.data;
-                localStorage.setItem("token", token);  // ✅ Save JWT to localStorage
+                // const {token, user: userData} = res.data;
+                localStorage.setItem("token", res.data.token);  // ✅ Save JWT to localStorage
                 
+                
+                await fetchUser();
+
                 toast.success('Login successfully')
-                setUser(userData);
+                // setUser(userData);
+
+                
                 setIsLoading(false);
                 navigate('/dashboard')
             } catch (err) {

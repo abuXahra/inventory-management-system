@@ -15,13 +15,13 @@ import ToastComponents from '../../../components/toast_message/toast_component/T
 import { List } from 'react-content-loader'
 import { TopCard, TopCardContent, TopCardContentWrapper, TopCardIcon } from '../../home/Home.style'
 import { TopCardItemList } from '../../../data/TopcardItems'
-import { token } from '../../../components/context/UserToken'
 import { UserContext } from '../../../components/context/UserContext'
 
 
 
 export default function ProductDetail() {
-
+  const token = localStorage.getItem('token');
+    
     const navigate = useNavigate();
     const {productId} = useParams();
     const [prodData, setProdData] = useState('');

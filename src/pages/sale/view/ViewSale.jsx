@@ -15,12 +15,12 @@ import html2canvas from 'html2canvas'
 import jsPDF from 'jspdf'
 import { List } from 'react-content-loader'
 import ButtonLoader from '../../../components/clicks/button/button_loader/ButtonLoader'
-import { token } from '../../../components/context/UserToken'
 import { UserContext } from '../../../components/context/UserContext'
 
 export default function ViewSale() {
   
-
+const token = localStorage.getItem('token');
+    
   const navigate = useNavigate();
     const {saleId} = useParams();
     const [customerId, setCustomerId] = useState('')

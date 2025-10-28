@@ -15,10 +15,10 @@ import { AddTaxContent, AddTaxWrapper } from './addTax.style'
 import axios from 'axios'
 import { toast } from 'react-toastify'
 import ToastComponents from '../../../components/toast_message/toast_component/ToastComponents'
-import { token } from '../../../components/context/UserToken'
 
 export default function AddTax() {
-
+const token = localStorage.getItem('token');
+    
 // Payment for
 const taxNameItems =  [
     {

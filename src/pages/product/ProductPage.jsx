@@ -7,7 +7,7 @@ import { ProductPageContent, ProductPageWrapper } from './productPage.style'
 import ProductTable from '../../components/table/product_table/Product'
 import axios from 'axios'
 import { List } from 'react-content-loader'
-import { token } from '../../components/context/UserToken'
+
 import { UserContext } from '../../components/context/UserContext'
 
 
@@ -16,7 +16,9 @@ export default function ProductPage() {
    const [products, setProducts] = useState([]);
    const [allProducts, setAllProducts] = useState([]);
    const [isLoading, setIsLoading] = useState(false);
-   const [company, setCompany] = useState('') 
+   const [company, setCompany] = useState('')
+   const token = localStorage.getItem('token');
+    
 
           // user Permission
           const {user, permissions} = useContext(UserContext);

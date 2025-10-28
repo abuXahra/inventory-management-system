@@ -16,12 +16,12 @@ import ButtonLoader from '../../../components/clicks/button/button_loader/Button
 import ToastComponents from '../../../components/toast_message/toast_component/ToastComponents'
 import { AddSalesContent, AddSalesWrapper, CustomerInfoWrapper, HrStyled, ItemListContent, ItemsWrapper, SelectItemContent, TotalChargesWrapper } from './addSale.style'
 import { AnyItemContainer, DropdownItems, DropdownWrapper, InnerWrapper, TableResponsiveWrapper, TableStyled, TdStyled } from '../../purchase/add/addPurchase.style'
-import { token } from '../../../components/context/UserToken'
 
 export default function AddSale() {
 
 // const [productItemList, setProductItemList] = useState(ProductItemList);
-
+const token = localStorage.getItem('token');
+    
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [isBtnLoading, setIsBtnLoading] = useState(false);

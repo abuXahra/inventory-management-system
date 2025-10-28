@@ -13,14 +13,14 @@ import Button from '../../clicks/button/Button';
 import ButtonLoader from '../../clicks/button/button_loader/ButtonLoader';
 import Overlay from '../../overlay/Overlay';
 import ToastComponents from '../../toast_message/toast_component/ToastComponents';
-import { token } from '../../context/UserToken';
 
 
 const SupplierTable = ({data, onDeleteSup, supplierPermission}) => {
   
   const navigate = useNavigate();
 
-
+const token = localStorage.getItem('token');
+    
     const [showDeleteCard, setShowDeleteCard] = useState(false);
     const [grabId, setGrabId] = useState('');
     const [grabSupplierName, setGrabSupplierName] = useState('');

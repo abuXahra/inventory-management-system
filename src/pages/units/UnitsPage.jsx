@@ -7,13 +7,13 @@ import { UnitsPageContent, UnitsPageWrapper } from './unitsPage.style'
 import UnitsTable from '../../components/table/units_table/UnitsTable'
 import axios from 'axios'
 import { List } from 'react-content-loader'
-import { token } from '../../components/context/UserToken'
 import { UserContext } from '../../components/context/UserContext'
 
 
 export default function UnitsPage() {
   
-
+  const token = localStorage.getItem('token');
+    
    const[unitRecords, setUnitRecords] = useState([]);
    const [allUnitRecords, setAllUnitRecords] = useState([]);
     const [isLoading, setIsLoading] = useState(false);

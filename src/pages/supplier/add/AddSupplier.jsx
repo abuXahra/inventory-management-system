@@ -15,10 +15,10 @@ import { ImageWrapper, InputPicture, NameAndFileInput, SupplierContent, Supplier
 import { UserContext } from '../../../components/context/UserContext'
 import axios from 'axios'
 import { toast } from 'react-toastify'
-import { token } from '../../../components/context/UserToken'
 
 export default function AddSupplier() {
-
+const token = localStorage.getItem('token');
+    
     const navigate = useNavigate();
     const {user} = useContext(UserContext);
     const [isLoading, setIsLoading] = useState(false);

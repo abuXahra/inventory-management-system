@@ -15,10 +15,11 @@ import { EditTaxContent, EditTaxWrapper } from './editTax.style'
 import axios from 'axios'
 import { toast } from 'react-toastify'
 import { List } from 'react-content-loader'
-import { token } from '../../../components/context/UserToken'
 
 export default function EditTax() {
 
+    const token = localStorage.getItem('token');
+    
     const {taxId} = useParams();
 
 // // Tax name items

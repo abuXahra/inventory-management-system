@@ -14,11 +14,11 @@ import Overlay from '../../overlay/Overlay';
 import axios from 'axios';
 import { SlideUpButton } from '../expense_table/Expense.style';
 import Button from '../../clicks/button/Button';
-import { token } from '../../context/UserToken';
 
 
 const CustomerTable = ({data, onDeleteCus, customerPermission}) => {
-  
+  const token = localStorage.getItem('token');
+    
   const navigate = useNavigate();
 
   const [showDeleteCard, setShowDeleteCard] = useState(false);

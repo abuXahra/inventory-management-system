@@ -13,10 +13,10 @@ import { EditPaymentContent, EditPaymentWrapper } from '../../payment/edit/EditP
 import axios from 'axios'
 import { UserContext } from '../../../components/context/UserContext'
 import { List } from 'react-content-loader';
-import { token } from '../../../components/context/UserToken'
 
 export default function EditPayment() {
 
+    const token = localStorage.getItem('token');
     const {paymentId} = useParams();
     console.log('id:======= ',paymentId)
 // Payment For
