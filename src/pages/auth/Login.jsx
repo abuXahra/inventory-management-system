@@ -10,8 +10,10 @@ import { useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import "react-toastify/ReactToastify.css"
 import ButtonLoader from '../../components/clicks/button/button_loader/ButtonLoader';
-import loginPicture from '../../images/icons/login-cover.svg'
+import loginPicture from '../../images/inventoryimage.jpg'
 import loginIcon from '../../images/icons/icon.png'
+
+
 
 
 export default function Login() {
