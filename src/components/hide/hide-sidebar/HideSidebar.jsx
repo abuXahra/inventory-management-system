@@ -13,7 +13,7 @@ const HideSidebar = ({ children }) => {
 
     useEffect(() => {
         console.log(`this is ${location}`);
-        if (location.pathname === '/') {
+        if (location.pathname === '/' || location.pathname==='/register') {
             setShowNavbar(false);
         } else {
             setShowNavbar(true)

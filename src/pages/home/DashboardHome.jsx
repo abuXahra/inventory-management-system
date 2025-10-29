@@ -47,6 +47,23 @@ function DashboardHome() {
   const [isLoading, setIsLoading] = useState(false);
 
   
+  const fetchCompany = async() =>{
+                      // setIsLoading(true)
+                        try {
+                            const res = await axios.get(`${process.env.REACT_APP_URL}/api/company`, {
+                                                                headers: {
+                                                                  Authorization: `Bearer ${token}`
+                                                                }
+                                                          })
+                            setCompanyData(res.data[0])
+                            // setIsLoading(false);
+                        } catch (error) {
+                            console.log(error);
+                            // setIsLoading(false);
+                        }
+                  
+                    }
+           
   // customer
   const fetchCustomer = async () =>{
       try {
@@ -175,6 +192,7 @@ function DashboardHome() {
       fetchSaleInvoice();
       fetchPurchaseInvoice();
       fetchExpenses();
+      fetchCompany();
     }, []);
     
   

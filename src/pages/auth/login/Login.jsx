@@ -1,17 +1,17 @@
 
 import React, { useContext, useEffect, useState } from 'react'
-import { LoginWrapper, LoginContentLeft, FormWrapper } from './Login.style'
-import Input from '../../components/input/Input'
-import Button from '../../components/clicks/button/Button';
+import { LoginWrapper, LoginContentLeft, FormWrapper, LoginContent } from './Login.style'
+import Input from '../../../components/input/Input'
+import Button from '../../../components/clicks/button/Button';
 // import ButtonLoader from '../../components/clicks/button/button_loader/ButtonLoader';
 import axios from 'axios';
-import { UserContext } from '../../components/context/UserContext';
+import { UserContext } from '../../../components/context/UserContext';
 import { useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import "react-toastify/ReactToastify.css"
-import ButtonLoader from '../../components/clicks/button/button_loader/ButtonLoader';
-import loginPicture from '../../images/inventoryimage.jpg'
-import loginIcon from '../../images/icons/icon.png'
+import ButtonLoader from '../../../components/clicks/button/button_loader/ButtonLoader';
+import loginPicture from '../../../images/inventoryimage.jpg'
+import loginIcon from '../../../images/icons/icon.png'
 
 
 
@@ -65,12 +65,12 @@ export default function Login() {
                 localStorage.setItem("token", res.data.token);  // ✅ Save JWT to localStorage
                 
                 
-                await fetchUser();
-
+                
                 toast.success('Login successfully')
                 // setUser(userData);
 
-                
+                await fetchUser();
+
                 setIsLoading(false);
                 navigate('/dashboard')
             } catch (err) {
@@ -96,12 +96,13 @@ export default function Login() {
 
   return (
     <LoginWrapper>
+    <LoginContent>
         <LoginContentLeft>
             <img src={loginPicture} alt="" srcset="" />
         </LoginContentLeft>
        <FormWrapper>
         <img src={loginIcon} alt="" srcset="" />
-         <h2>Inventory Management System</h2>
+         <h1>flowVentory</h1>
          <p>Please log in to your account</p>
         <form onSubmit={onSubmitHandler}>
             <Input
@@ -113,8 +114,9 @@ export default function Login() {
                 // error={emailError}
                 onChange={(e)=>onChangeHandler('email', e)}
                 inputPadding={"15px"}
-                bdColor={'blue'}
+                bdColor={'white'}
                 inputWidth={"100%"}
+                labelColor={"white"}
             />
 
              <Input
@@ -127,10 +129,11 @@ export default function Login() {
                 onChange={(e)=>onChangeHandler('password', e)}
                 inputPadding={"15px"}
                 inputWidth={"100%"}
-                bdColor={'blue'}
+                bdColor={'white'}
+                labelColor={"white"}
                     />
                 
-         <Button btnColor={'blue'} btnPd={'15px 30px'} btnText={isLoading? <ButtonLoader text="Processing..." />  : 'Login'}/>
+         <Button btnColor={'orange'} btnPd={'15px 30px'} btnText={isLoading? <ButtonLoader text="Processing..." />  : 'Login'}/>
                 {loginError && 'Incorrect password or email'}
         </form>
         </FormWrapper>
@@ -147,7 +150,7 @@ export default function Login() {
                       draggable
                       pauseOnHover
                       theme="light"
-                    />
+                    /></LoginContent>
     </LoginWrapper>
   )
 }

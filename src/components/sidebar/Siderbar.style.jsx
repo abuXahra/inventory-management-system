@@ -22,7 +22,8 @@ export const SidebarWrapper  = styled.div`
 export const SidebarHeader = styled.div`
 
      display: flex;
-        justify-content: space-between;
+        // justify-content: space-between;
+        gap: 10px;
         align-items: center;
         padding: 1rem;
         border-bottom: 1px solid rgba(255, 255, 255, 0.1);

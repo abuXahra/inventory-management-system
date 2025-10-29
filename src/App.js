@@ -8,7 +8,7 @@ import {
   Navigate,
 } from "react-router-dom";
 import ScrollToTop from "./components/context/ScrollToTop";
-import Login from "./pages/auth/Login";
+import Login from "./pages/auth/login/Login";
 import DashboardHome from "./pages/home/DashboardHome";
 import SalePage from "./pages/sale/SalePage";
 import AddSale from "./pages/sale/Add/AddSale";
@@ -77,6 +77,7 @@ import RequireAddPermissionRoute from "./components/protected_route/RequireAddPe
 import NotFound from "./pages/not_found/NotFound";
 import Unauthorized from "./pages/unauthorized/UnauthorizedPage";
 import RequirePermissionRoute from "./components/protected_route/RequireAddPermissionRoute";
+import Register from "./pages/auth/register/Register";
 
 function usePageTitle() {
   const location = useLocation();
@@ -85,66 +86,63 @@ function usePageTitle() {
     const path = location.pathname;
 
     const titles = {
-      "/": "Login | Inventory Software",
-      "/dashboard": "Dashboard | Inventory Software",
-      "/categories": "Categories | Inventory Software",
-      "/add-category": "Add Category | Inventory Software",
-      "/products": "Products | Inventory Software",
-      "/add-product": "Add Product | Inventory Software",
-      "/sales": "Sales | Inventory Software",
-      "/add-sale": "Add Sale | Inventory Software",
-      "/customers": "Customers | Inventory Software",
-      "/add-customer": "Add Customer | Inventory Software",
-      "/purchase": "Purchases | Inventory Software",
-      "/suppliers": "Suppliers | Inventory Software",
-      "/payments": "Payments | Inventory Software",
-      "/expenses": "Expenses | Inventory Software",
-      "/reports": "Reports | Inventory Software",
-      "/tax": "Tax | Inventory Software",
-      "/units": "Units | Inventory Software",
-      "/users": "Users | Inventory Software",
-      "/company-profile": "Company Profile | Inventory Software",
-      "/permission": "Permissions | Inventory Software",
-      "/not-authorized": "Unauthorized | Inventory Software",
-      "/not-found": "Page Not Found | Inventory Software",
+      "/": "Login | flowVentory",
+      "/dashboard": "Dashboard | flowVentory",
+      "/categories": "Categories | flowVentory",
+      "/add-category": "Add Category | flowVentory",
+      "/products": "Products | flowVentory",
+      "/add-product": "Add Product | flowVentory",
+      "/sales": "Sales | flowVentory",
+      "/add-sale": "Add Sale | flowVentory",
+      "/customers": "Customers | flowVentory",
+      "/add-customer": "Add Customer | flowVentory",
+      "/purchase": "Purchases | flowVentory",
+      "/suppliers": "Suppliers | flowVentory",
+      "/payments": "Payments | flowVentory",
+      "/expenses": "Expenses | flowVentory",
+      "/reports": "Reports | flowVentory",
+      "/tax": "Tax | flowVentory",
+      "/units": "Units | flowVentory",
+      "/users": "Users | flowVentory",
+      "/company-profile": "Company Profile | flowVentory",
+      "/permission": "Permissions | flowVentory",
+      "/not-authorized": "Unauthorized | flowVentory",
+      "/not-found": "Page Not Found | flowVentory",
     };
 
     // Default fallback
-    let title = titles[path] || "Inventory Software";
+    let title = titles[path] || "flowVentory";
 
     // Handle dynamic routes like /edit-category/:id
     if (path.startsWith("/edit-category"))
-      title = "Edit Category | Inventory Software";
+      title = "Edit Category | flowVentory";
     else if (path.startsWith("/category-detail"))
-      title = "Category Detail | Inventory Software";
+      title = "Category Detail | flowVentory";
     else if (path.startsWith("/edit-product"))
-      title = "Edit Product | Inventory Software";
+      title = "Edit Product | flowVentory";
     else if (path.startsWith("/product-detail"))
-      title = "Product Detail | Inventory Software";
-    else if (path.startsWith("/edit-sale"))
-      title = "Edit Sale | Inventory Software";
+      title = "Product Detail | flowVentory";
+    else if (path.startsWith("/edit-sale")) title = "Edit Sale | flowVentory";
     else if (path.startsWith("/sale-invoice"))
-      title = "Sale Invoice | Inventory Software";
+      title = "Sale Invoice | flowVentory";
     else if (path.startsWith("/edit-customer"))
-      title = "Edit Customer | Inventory Software";
+      title = "Edit Customer | flowVentory";
     else if (path.startsWith("/customers/"))
-      title = "Customer Details | Inventory Software";
+      title = "Customer Details | flowVentory";
     else if (path.startsWith("/edit-supplier"))
-      title = "Edit Supplier | Inventory Software";
+      title = "Edit Supplier | flowVentory";
     else if (path.startsWith("/supplier-detail"))
-      title = "Supplier Detail | Inventory Software";
+      title = "Supplier Detail | flowVentory";
     else if (path.startsWith("/edit-purchase"))
-      title = "Edit Purchase | Inventory Software";
+      title = "Edit Purchase | flowVentory";
     else if (path.startsWith("/purchase-invoice"))
-      title = "Purchase Invoice | Inventory Software";
+      title = "Purchase Invoice | flowVentory";
     else if (path.startsWith("/sale-return"))
-      title = "Sale Return | Inventory Software";
+      title = "Sale Return | flowVentory";
     else if (path.startsWith("/purchase-return"))
-      title = "Purchase Return | Inventory Software";
-    else if (path.startsWith("/edit-user"))
-      title = "Edit User | Inventory Software";
-    else if (path.startsWith("/users/"))
-      title = "User Details | Inventory Software";
+      title = "Purchase Return | flowVentory";
+    else if (path.startsWith("/edit-user")) title = "Edit User | flowVentory";
+    else if (path.startsWith("/users/")) title = "User Details | flowVentory";
 
     document.title = title;
   }, [location]);
@@ -161,17 +159,20 @@ function App() {
   if (loading) return <LoaderWrapper>Loading...</LoaderWrapper>;
 
   // ✅ Check if current page is login
-  const isLoginPage = location.pathname === "/";
+  const isAuthPage =
+    location.pathname === "/" || location.pathname === "/register";
 
   return (
     <ScrollToTop>
-      {isLoginPage ? (
+      {isAuthPage ? (
         // ✅ Show only login page, no sidebar/header
         <Routes>
           <Route
             path="/"
             element={user ? <Navigate to="/dashboard" /> : <Login />}
           />
+          <Route path="/register" element={<Register />} />
+          <Route path="/login" element={<Navigate to="/" replace />} />
         </Routes>
       ) : (
         // ✅ Wrap all dashboard pages with layout

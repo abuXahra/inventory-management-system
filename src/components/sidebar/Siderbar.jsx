@@ -14,6 +14,7 @@ import { FaHamburger } from 'react-icons/fa';
 import { MdOutlineMenuOpen } from 'react-icons/md';
 import axios from 'axios';
 import { UserContext } from '../context/UserContext';
+import inventoryLogo from '../../images/icons/icon.png'
 
 export default function Siderbar({
   isOpen, 
@@ -103,7 +104,8 @@ export default function Siderbar({
 
       <SidebarWrapper isOpen={isOpen}>
       <SidebarHeader>
-        <h2>INVENTORY</h2>
+        <img style={{width: "20px", height: "20px"}} src={inventoryLogo} alt="" srcset="" />
+        <h2>flowVentory</h2>
         <HamburgerWrapperi onClick={onClose}>
           <IoMdClose />
         </HamburgerWrapperi>

@@ -13,7 +13,7 @@ export const InputWrapper = styled.div`
 `
 
 export const InputLabel = styled.label`
-    color: #171717;
+    color: ${({labelColor}) => labelColor || "#171717"};
     font-size: 10px;
     display: flex;
     align-items: center; 
@@ -43,7 +43,7 @@ export const InputLabel = styled.label`
 export const InputStyle = styled.input`
     border: 1.5px solid ${({bdColor})=> bdColor || '#0d398420'}; 
     border-radius: 10px;
-    padding: ${({inputPadding})=>inputPadding || '10px'};
+    padding: ${({inputPadding})=>inputPadding || '12px'};
     background-color: ${({inputBg}) => inputBg || 'transparent'};
     color: ${({txtColor})=> txtColor || "grey"};
     font-size: 10px;
