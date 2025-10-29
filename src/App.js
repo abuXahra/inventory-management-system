@@ -710,7 +710,7 @@ function App() {
             />
             <Route
               path="/stock-report"
-              element={<ProtectedRoute element={<PurchaseReport />} />}
+              element={<ProtectedRoute element={<StockReport />} />}
             />
             <Route
               path="/expense-report"

@@ -15,6 +15,7 @@ export const LoginContent = styled.div`
     margin:20px;
     border-radius: 100px 0px;
    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+   border: 1px solid #00032af7;
 
   @media (max-width: 768px) {
     width: 100%;
@@ -89,6 +90,7 @@ export const FormWrapper = styled.div`
     padding-right: 50px;
     font-size: 13px;
     border-radius: 0px;
+    margin-top: -100px;
   }
   `
 

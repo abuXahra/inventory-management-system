@@ -62,7 +62,7 @@ const StockReportTable = ({ data, tbWidth, currencySymbol }) => {
       },
     {
       name: 'In Stock',
-      selector: (row) => row.purchaseQuantity,
+      selector: (row) => row.stockQuantity,
       sortable: true,
     },
     {

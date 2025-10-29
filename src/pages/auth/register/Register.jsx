@@ -66,8 +66,17 @@ export default function Register() {
         }else{
             setIsLoading(true);
             try {
-            
-                const res = await axios.post(`${process.env.REACT_APP_URL}/api/auth/register`, { username, email, password });
+            const newUser ={
+                    username,
+                    email,
+                    password,
+                    phoneNumber: '',
+                    taxNumber: '',
+                    role: "admin",
+                    address: '',
+                    imgUrl: '',
+            }
+                const res = await axios.post(`${process.env.REACT_APP_URL}/api/auth/register`, newUser);
             
                 toast.success('Register successfully')
                 // setUser(userData);    
