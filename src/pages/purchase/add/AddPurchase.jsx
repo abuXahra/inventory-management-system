@@ -593,8 +593,7 @@ if (paymentStatus === 'partial') {
     };
       setIsBtnLoading(true);
       console.log('======new purchase data==========\n', newPurchase)
-            alert('form validated triggered')
-            try {
+             try {
           
               const res = await axios.post(`${process.env.REACT_APP_URL}/api/purchase/create`, newPurchase, {
                                                   headers: {
