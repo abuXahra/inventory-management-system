@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "flowVentory",
+  "name": "flowVentory is a seamless inventory software",
   "icons": [
     {
       "src": "favicon.ico",
