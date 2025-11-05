@@ -67,7 +67,7 @@ import EditSaleReturn from "./pages/return/sale_return/edit/EditSaleReturn";
 import AddPurchaseReturn from "./pages/return/purchase_return/add/AddPurchaseReturn";
 import PurchaseReturnsPage from "./pages/return/purchase_return/PurchaseReturnsPage";
 import PurchaseReturnView from "./pages/return/purchase_return/view/PurchaseReturnView";
-import TopSellingProds from "./pages/product/top_selling_products/TopSellingProds";
+// import TopSellingProds from "./pages/product/top_selling_products/TopSellingProds";
 import LowStock from "./pages/product/product_low_stock/LowStock";
 import ProtectedRoute from "./components/protected_route/ProtectedRoute";
 import { LoaderWrapper } from "./pages/home/Home.style";
@@ -78,6 +78,9 @@ import NotFound from "./pages/not_found/NotFound";
 import Unauthorized from "./pages/unauthorized/UnauthorizedPage";
 import RequirePermissionRoute from "./components/protected_route/RequireAddPermissionRoute";
 import Register from "./pages/auth/register/Register";
+import SalePaymentReport from "./pages/reports/sale_payment_report/salePaymentReport";
+import PurchasePaymentReport from "./pages/reports/purchase_payment_report/PurchasePaymentReport";
+import ItemsSaleReport from "./pages/reports/item_sale_report/ItemsSaleReport";
 
 function usePageTitle() {
   const location = useLocation();
@@ -318,9 +321,15 @@ function App() {
               path="/low-stock"
               element={<ProtectedRoute element={<LowStock />} />}
             />
-            <Route
+            {/* <Route
               path="/top-selling"
               element={<ProtectedRoute element={<TopSellingProds />} />}
+            /> */}
+            {/* ItemsSaleReport */}
+
+            <Route
+              path="/item-sales-report"
+              element={<ProtectedRoute element={<ItemsSaleReport />} />}
             />
             {/* SALE */}
             <Route
@@ -705,8 +714,16 @@ function App() {
               element={<ProtectedRoute element={<SalesReport />} />}
             />
             <Route
+              path="/sale-payment-report"
+              element={<ProtectedRoute element={<SalePaymentReport />} />}
+            />
+            <Route
               path="/purchase-report"
               element={<ProtectedRoute element={<PurchaseReport />} />}
+            />
+            <Route
+              path="/purchase-payment-report"
+              element={<ProtectedRoute element={<PurchasePaymentReport />} />}
             />
             <Route
               path="/stock-report"

@@ -23,7 +23,7 @@ export default function AlertContent() {
                                                                             }
                                                                       }) 
       console.log('low stocks: \n', res.data)
-      setProductData(res.data?.slice(0, 5));
+      setProductData(res.data);
       setIsLoading(false);
     } catch (err) {
       console.log(err);
@@ -44,7 +44,7 @@ export default function AlertContent() {
 
                     <TableReusableHeader>
                                   {'Low Stock Items'}
-                                  <span onClick={()=>navigate('/top-selling')}>View All <FaLongArrowAltRight /></span>
+                                  <span onClick={()=>navigate('/low-stock')}>View All <FaLongArrowAltRight /></span>
               </TableReusableHeader>
          {isLoading ? (
           <div style={{height: "250px", width: "100%", display: 'flex', justifyContent: "center", alignItems: "center" }}>

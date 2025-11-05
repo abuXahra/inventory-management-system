@@ -49,7 +49,7 @@ const HomePurchaseList = () => {
     
                         <TableReusableHeader>
                                       {"Highest Sale Items"}
-                                      <span onClick={()=>navigate('/top-selling')}>View All <FaLongArrowAltRight /></span>
+                                      <span onClick={()=>navigate('/sale')}>View All <FaLongArrowAltRight /></span>
                   </TableReusableHeader>
              {isLoading ? (
               <div style={{height: "250px", width: "100%", display: 'flex', justifyContent: "center", alignItems: "center" }}>

@@ -45,7 +45,7 @@ const token = localStorage.getItem('token');
                const getProducts = async () => { 
                setIsLoading(true)  
                try {
-                   const res = await axios.get(process.env.REACT_APP_URL + "/api/products", {
+                   const res = await axios.get(process.env.REACT_APP_URL + "/api/products/report", {
                                                        headers: {
                                                          Authorization: `Bearer ${token}`
                                                        }

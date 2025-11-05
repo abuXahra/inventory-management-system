@@ -15,26 +15,12 @@ import Overlay from '../../overlay/Overlay';
 import ToastComponents from '../../toast_message/toast_component/ToastComponents';
 
 
-const PaymentTable = ({ data, onDeletePayment, paymentPermission}) => {
+const PaymentTable = ({ data, onDeletePayment, paymentPermission, currencySymbol}) => {
 const token = localStorage.getItem('token');
     
   const navigate = useNavigate();
   
-    // fetching currency from db
-    const [currencySymbol, setCurrencySymbol] =  useState('');
-      useEffect(()=>{
-          const fetchAllCompany = async() =>{
-              try {
-                  const res = await axios.get(`${process.env.REACT_APP_URL}/api/company`);
-                  setCurrencySymbol(res.data[0].currencySymbol)
-              } catch (error) {
-                console.log(error)
-              }
-          }
-          fetchAllCompany();
-        },[]);
-  
-  
+   
      const [showDeleteCard, setShowDeleteCard] = useState(false);
      const [grabId, setGrabId] = useState('');
      const [grabCode, setGrabCode] = useState('');
@@ -122,10 +108,15 @@ const token = localStorage.getItem('token');
       selector: (row) => row.paymentFor,
     },
     {
-      name: 'Amount Paid',
-      selector: (row) => `N${row.payableAmount.toLocaleString()}`,
-      sortable: true,
-    },
+       name: 'Amount Paid',
+       selector: (row) => <div>
+         <span dangerouslySetInnerHTML={{ __html: currencySymbol }}></span>
+         {row.payableAmount !== undefined && row.payableAmount !== null
+        ? row.payableAmount.toLocaleString()
+        : '0'}
+       </div>  ,
+       sortable: true,
+     },
        {
       name: 'Invoice No',
       selector: (row) => row.invoiceNo,

@@ -17,6 +17,7 @@ export default function PaymentPage() {
   const[paymentRecords, setPaymentRecords] = useState([]);
   const [allPaymentRecords, setAllPaymentRecords] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [company, setCompany]= useState('');
 
            // user Permission
            const {user, permissions} = useContext(UserContext);
@@ -29,6 +30,21 @@ export default function PaymentPage() {
                  
 // fetch expense handler 
                           useEffect(() => {
+
+                                    const fetchCompany = async () =>{
+                                        try {
+                                            const res =await axios.get(`${process.env.REACT_APP_URL}/api/company`, {
+                                                                                headers: {
+                                                                                  Authorization: `Bearer ${token}`
+                                                                                }
+                                                                          })
+                                            setCompany(res.data[0]);
+                                            console.log('company:\ln', res.data)
+                                        } catch (error) {
+                                            console.log(error)
+                                        }
+                                    }
+                                    fetchCompany()
                               const getPayment = async () => { 
                                 setIsLoading(true)  
                                 try {
@@ -121,6 +137,7 @@ const handleSearchQueryOnChange = (e) => {
             onDeletePayment={deletePayment} 
             setIsLoading={setIsLoading}
             paymentPermission={effectivePermission}
+            currencySymbol={company?.currencySymbol}
           />
         </PaymentPageContent>
 }

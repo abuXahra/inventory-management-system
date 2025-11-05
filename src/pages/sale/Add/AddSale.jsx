@@ -16,6 +16,7 @@ import ButtonLoader from '../../../components/clicks/button/button_loader/Button
 import ToastComponents from '../../../components/toast_message/toast_component/ToastComponents'
 import { AddSalesContent, AddSalesWrapper, CustomerInfoWrapper, HrStyled, ItemListContent, ItemsWrapper, SelectItemContent, TotalChargesWrapper } from './addSale.style'
 import { AnyItemContainer, DropdownItems, DropdownWrapper, InnerWrapper, TableResponsiveWrapper, TableStyled, TdStyled } from '../../purchase/add/addPurchase.style'
+import Overlay from '../../../components/overlay/Overlay'
 
 export default function AddSale() {
 
@@ -29,7 +30,6 @@ const token = localStorage.getItem('token');
 
 const [itemList, setItemList] = useState([]);
 const [productId, setProductId] = useState('');
-
 
 
 const todayDate = new Date().toISOString().split('T')[0]; // Format: YYYY-MM-DD (2025-02-29)
@@ -103,6 +103,32 @@ const [showPartialField, setShowPartialField] = useState(false);
 const [amountPaid, setAmountPaid] = useState('')
 const [amountPaidError, setAmountPaidError] = useState(false);
 const [dueBalance, setDueBalance] = useState('');
+
+
+// show out of stock overlay:
+const [showOutOfStockCard, setShowOutOfStockCard] = useState(false);
+const [prodTitle, setProdTitle]= useState('');
+
+// navigate to add out of stock item purchaseFunc
+const navigateToAddStock = () =>{
+     navigate('/add-purchase');
+     setShowOutOfStockCard(false)
+}
+
+// close out stock 
+const closOutOfStockCard = () =>{
+        setSearchTitle('');
+        setTitle('')
+        setQuantity('');
+        setPrice('')
+        setTax('')
+        setTaxAmount('')
+        setUnitCost('')
+        setAmount('')
+        setProductId('')
+        setShowOutOfStockCard(false)
+}
+
 
 // onchange handler
 const handleChange = (type, e)=>{
@@ -412,6 +438,10 @@ useEffect(() => {
 
 // search dropdownd handler
 const dropdownHandler = (product) => {
+    if(product.stockQuantity === 0){
+        setProdTitle(product.title)
+        setShowOutOfStockCard(true)
+    }
     setShowDropdwon(false)
     setProductId(product._id)
     setSearchTitle('');
@@ -1057,6 +1087,20 @@ const hanldeSumbit = async (e) =>{
         </AddSalesContent>
         {/* Toast messages */}
         <ToastComponents/>
+
+        {showOutOfStockCard && (
+              <Overlay
+                contentWidth="30%"
+                overlayButtonClick={navigateToAddStock}
+                closeOverlayOnClick={closOutOfStockCard}
+                btnText1={'Add Purchase'}
+                btnText2={'Cancel'}
+              >
+                <p style={{ margin: "40px", textAlign: "center", fontSize: "14px", lineHeight: "25px" }}>
+                  <b style={{textTransform: "capitalize", fontSize:"20px"}}>{prodTitle}</b><br/> Is currently out of stock <br/>please add more purchase
+                </p>
+              </Overlay>
+            )}
     </AddSalesWrapper>
   )
 }
