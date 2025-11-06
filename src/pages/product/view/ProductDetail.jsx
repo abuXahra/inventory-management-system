@@ -234,21 +234,30 @@ export default function ProductDetail() {
                           <span>{prodData?.quantityAlert}</span>
                        </InnerWrapper>
                   </AnyItemContainer>  */}
+                  
                   <AnyItemContainer>
                        <InnerWrapper wd={'100%'}>
-                          <span><b>Quantity In stock</b></span>
+                          <span><b>In stock</b></span>
                           <span>{prodData?.stockQuantity}</span>
                        </InnerWrapper>
                   </AnyItemContainer> 
+                  {prodData?.wasteQuantity > 0 &&
+                  <AnyItemContainer>
+                       <InnerWrapper wd={'100%'}>
+                          <span><b>Wastage</b></span>
+                          <span>{prodData?.wasteQuantity}</span>
+                       </InnerWrapper>
+                  </AnyItemContainer>
+                  }
                  <AnyItemContainer>
                        <InnerWrapper wd={'100%'}>
-                          <span><b>Quantity Sold</b></span>
+                          <span><b>Sold</b></span>
                           <span>{prodData?.saleQuantity}</span>
                        </InnerWrapper>
                   </AnyItemContainer>                 
                    <AnyItemContainer>
                        <InnerWrapper wd={'100%'}>
-                          <span><b>Quantity Purchased</b></span>
+                          <span><b>Purchased</b></span>
                           <span>{prodData?.purchaseQuantity}</span>
                        </InnerWrapper>
                   </AnyItemContainer>
@@ -257,7 +266,7 @@ export default function ProductDetail() {
 
             <ProductDetailPicture>
           <ItemContainer title={'Total Summary'}> 
-         {     netProfit >= 0 &&
+         {     netProfit > 0 &&
              <AnyItemContainer>
                        <InnerWrapper wd={'100%'}>
                           <span><b style={{color:"green"}}>Profit</b></span>

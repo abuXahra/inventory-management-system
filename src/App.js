@@ -81,6 +81,9 @@ import Register from "./pages/auth/register/Register";
 import SalePaymentReport from "./pages/reports/sale_payment_report/salePaymentReport";
 import PurchasePaymentReport from "./pages/reports/purchase_payment_report/PurchasePaymentReport";
 import ItemsSaleReport from "./pages/reports/item_sale_report/ItemsSaleReport";
+import Wastage from "./pages/wastage/Wastage";
+import WastageView from "./pages/wastage/view/WastageView";
+import AddWastage from "./pages/wastage/add/AddWastage";
 
 function usePageTitle() {
   const location = useLocation();
@@ -842,6 +845,58 @@ function App() {
                       action="canView"
                       moduleName="Purchase Return"
                       element={<PurchaseReturnView />}
+                      fallback="/not-authorized"
+                    />
+                  }
+                />
+              }
+            />
+
+            {/* WASTAGE */}
+            <Route
+              path="/wastage"
+              element={
+                <ProtectedRoute
+                  element={
+                    <RequireAddPermissionRoute
+                      user={user}
+                      action="canVisit"
+                      moduleName="Wastage"
+                      element={<Wastage />}
+                      fallback="/not-authorized"
+                    />
+                  }
+                />
+              }
+            />
+
+            <Route
+              path="/add-wastage"
+              element={
+                <ProtectedRoute
+                  element={
+                    <RequireAddPermissionRoute
+                      user={user}
+                      action="canAdd"
+                      moduleName="Wastage"
+                      element={<AddWastage />}
+                      fallback="/not-authorized"
+                    />
+                  }
+                />
+              }
+            />
+
+            <Route
+              path="/wastage-detail/:wastageId"
+              element={
+                <ProtectedRoute
+                  element={
+                    <RequireAddPermissionRoute
+                      user={user}
+                      action="canView"
+                      moduleName="Wastage"
+                      element={<WastageView />}
                       fallback="/not-authorized"
                     />
                   }

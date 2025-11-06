@@ -18,7 +18,7 @@ import { List } from 'react-content-loader'
 import { FaTrash } from 'react-icons/fa'
 import { UserContext } from '../../../components/context/UserContext'
 import PageTitle from '../../../components/page_title/PageTitle'
-import {AnyItemContainer, DropdownItems, DropdownWrapper, HrStyled, InnerWrapper, ItemListContent, ItemsWrapper, SelectItemContent, SupplierInfoWrapper, TableResponsiveWrapper, TableStyled, TdStyled, TotalChargesWrapper } from './addWastage.style'
+import {AddWastageContent, AddWastageWrapper, AnyItemContainer, DropdownItems, DropdownWrapper, HrStyled, InnerWrapper, ItemListContent, ItemsWrapper, SelectItemContent, SupplierInfoWrapper, TableResponsiveWrapper, TableStyled, TdStyled, TotalChargesWrapper } from './addWastage.style'
 import Input from '../../../components/input/Input'
 import ButtonLoader from '../../../components/clicks/button/button_loader/ButtonLoader'
 import Button from '../../../components/clicks/button/Button'
@@ -27,7 +27,6 @@ import ItemContainer from '../../../components/item_container/ItemContainer'
 import { ItemButtonWrapper } from '../../../components/item_container/itemContainer.style'
 import TextArea from '../../../components/input/textArea/TextArea'
 import ToastComponents from '../../../components/toast_message/toast_component/ToastComponents'
-import { AddWastageContent, AddWastageWrapper } from '../wastage.style'
 
 
 // import { UserContext } from '../../../../components/context/UserContext'
@@ -48,7 +47,7 @@ const token = localStorage.getItem('token');
     const { user } = useContext(UserContext);
 
     const [itemList, setItemList] = useState([]);
-    const [itemPurchaseReturnList, setItemPurchaseReturnList] = useState([]);
+    const [itemWastageList, setItemWastageList] = useState([]);
     const [productId, setProductId] = useState('');
 
 
@@ -559,7 +558,7 @@ const token = localStorage.getItem('token');
 
  //   delete refund items
 const deleteRefundItem = (index) => {
-  setItemPurchaseReturnList((prevReturns) => {
+  setItemWastageList((prevReturns) => {
     const deletedItem = prevReturns[index]; // item being deleted
   
     const updatedReturns = prevReturns.filter((_, i) => i !== index);
@@ -628,7 +627,7 @@ const deleteRefundItem = (index) => {
           const totalAmount = unitCost * newQty;
 
           // Handle return list update
-          setItemPurchaseReturnList((prevReturns) => {
+          setItemWastageList((prevReturns) => {
             const existing = prevReturns.find((r) => r.productId === item.productId);
             let updatedReturns = [...prevReturns];
 
@@ -765,64 +764,31 @@ const deleteRefundItem = (index) => {
 
         if (isValid) {
 
-            const newWastage = {
-                // purchaseDate: new Date(purchaseDate),
-                //   supplier: supplier._id || supplier,
+            setIsBtnLoading(true);
+           
+            try {
+                const newWastage = itemWastageList.map((item) => ({
                 wastageDate: new Date(wastageDate),
                 purchaseId: purchase?._id,
                 supplier: supplierId || supplier,
                 wastageAmount: Number(wastageAmount),
-                // purchaseStatus,
-                invoiceNo,
                 reason,
-                // reference,
-                // purchaseAmount: Number(purchaseAmount),
-                paymentStatus,
-                paymentType,
-                amountPaid: Number(amountPaid),
-                dueBalance,
-                // note,
-                subTotal: Number(subTotal),
-                otherCharges: Number(otherCharges),
-                discount: Number(discount),
-                discountValue: Number(discountValue),
-                shipping: Number(shipping),
-                // purchaseItems:
-                //     itemList.length > 0
-                //         ? itemList.map((item) => ({
-                //             productId: item.productId,
-                //             title: item.title,
-                //             quantity: Number(item.quantity),
-                //             price: Number(item.price),
-                //             tax: Number(item.tax),
-                //             taxAmount: Number(item.taxAmount),
-                //             unitCost: Number(item.unitCost),
-                //             amount: Number(item.amount),
-                //         }))
-                //         : [],
-                wastageItems:
-                    itemPurchaseReturnList.length > 0
-                        ? itemPurchaseReturnList.map((item) => ({
-                            productId: item.productId,
-                            title: item.title,
-                            quantity: Number(item.quantity),
-                            price: Number(item.price),
-                            tax: Number(item.tax),
-                            taxAmount: Number(item.taxAmount),
-                            unitCost: Number(item.unitCost),
-                            amount: Number(item.amount),
-                        }))
-                        : [],
-                prefix: prefix,
+                invoiceNo,
+                productId: item.productId,
+                title: item.title,
+                quantity: Number(item.quantity),
+                price: Number(item.price),
+                tax: Number(item.tax),
+                taxAmount: Number(item.taxAmount),
+                unitCost: Number(item.unitCost),
+                amount: Number(item.amount),
                 userId: user._id
-            };
-            setIsBtnLoading(true);
-            console.log('======new wastage data==========\n', newWastage)
-    
-            try {
-
-                const res = await axios.post(`${process.env.REACT_APP_URL}/api/wastage/create`, newWastage, {
-                                                    headers: {
+            }))
+                const res = await axios.post(`${process.env.REACT_APP_URL}/api/wastage/create`, {
+                    item: newWastage,
+                    prefix: prefix,
+                }, {
+                    headers: {
                                                       Authorization: `Bearer ${token}`
                                                     }
                                               })
@@ -830,7 +796,7 @@ const deleteRefundItem = (index) => {
                 // toast success message
                 toast.success('Wastage added Successfully')
                 setIsBtnLoading(false);
-                navigate(`/wastage`);
+                navigate(`/wastage-detail/${res.data?._id}`);
             } catch (err) {
                 console.error(err);
                  toast.error("Something went wrong while processing wastage!");
@@ -1033,7 +999,7 @@ const deleteRefundItem = (index) => {
                                     <HrStyled/>
                                      {/* =========================================RETURN ITEMS ===========================================*/}
                                     <TableResponsiveWrapper>
-                                   {itemPurchaseReturnList.length > 0 ?
+                                   {itemWastageList.length > 0 ?
                                     <>
                                     <h3 style={{textAlign: "center", marginTop: "30px"}}>Return Items</h3> 
                                     <TableStyled>
@@ -1050,7 +1016,7 @@ const deleteRefundItem = (index) => {
                                         </thead>
                                         <tbody>
                                         {/* // {productItemList.length > 0 ? productItemList.map((data, i)=>( */}
-                                   {       itemPurchaseReturnList.map((data, i)=>( 
+                                   {       itemWastageList.map((data, i)=>( 
                                         
                                             <tr key={i}>
                                                 <TdStyled>{i+1}</TdStyled>
@@ -1088,16 +1054,16 @@ const deleteRefundItem = (index) => {
                                                         gap: "10px",
                                                         marginBottom: "20px"
                                                     }}>
-                                                       <h3>Return Items</h3> 
+                                                       <h3>Wastage Items</h3> 
                                                        <p>Not Item on the List</p>
                                                     </div>)
                                     }
                                     </TableResponsiveWrapper>
                     
                     {/* ====================================================RETURN ITEMS END ========================================== */}
-                                 {  itemPurchaseReturnList.length > 0 &&  <HrStyled/>}
+                                 {  itemWastageList.length > 0 &&  <HrStyled/>}
                                       {/* Total ChargesSection */}
-                    {       itemPurchaseReturnList.length > 0 &&
+                    {       itemWastageList.length > 0 &&
                              <TotalChargesWrapper>            
                                        {/* Total quantities */}
                                         <AnyItemContainer justifyContent={'space-between'}>

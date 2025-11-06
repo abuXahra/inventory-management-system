@@ -1,6 +1,11 @@
 import { AiFillApi, AiFillProduct } from "react-icons/ai";
 import { MdDashboard, MdCategory, MdAcUnit } from "react-icons/md";
-import { FaUsers, FaCartPlus, FaArrowUpRightDots } from "react-icons/fa";
+import {
+  FaUsers,
+  FaCartPlus,
+  FaArrowUpRightDots,
+  FaRecycle,
+} from "react-icons/fa";
 import { HiUsers } from "react-icons/hi";
 import { BsFillCartDashFill } from "react-icons/bs";
 import { BsCartX } from "react-icons/bs";
@@ -76,6 +81,11 @@ export const SidebarItemLists = [
     tile: "Report",
     url: "/reports",
     icon: <BsCartX />,
+  },
+  {
+    tile: "Wastage",
+    url: "/wastage",
+    icon: <FaRecycle />,
   },
   {
     tile: "Setting",

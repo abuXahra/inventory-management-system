@@ -4,12 +4,12 @@ import React, { useContext, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { List } from 'react-content-loader'
-
-import { WastageContent, WastageWrapper } from '../return/purchase_return/purchaseReturnsPage.style'
 import { UserContext } from '../../components/context/UserContext'
 import PageTitle from '../../components/page_title/PageTitle'
 import ListHeader from '../../components/page_title/list_header/ListHeader'
 import PurchaseReturnTable from '../../components/table/purchase_table/purchase_return_table/PurchaseReturnTable'
+import { WastageContent, WastageWrapper } from './wastage.style'
+import WastageTable from '../../components/table/wastage_table/WastageTable'
 
 
 
@@ -24,37 +24,44 @@ export default function Wastage() {
 
           // user Permission
           const {user, permissions} = useContext(UserContext);
-          const purchaseReturnPermission = permissions?.find(p => p.module === "Wastage")
+          const wastagePermission = permissions?.find(p => p.module === "Wastage")
           const effectivePermission =
               user?.role === "admin"
                 ? { canView: true, canAdd: true, canEdit: true, canDelete: true }
-                : purchaseReturnPermission;
+                : wastagePermission;
 
        
      // fetch expense handler 
                           useEffect(() => {
-                              const getWastage = async () => { 
-                                setIsLoading(true)  
-                                try {
-                                      const res = await axios.get(process.env.REACT_APP_URL + "/api/wastage/", {
-                                                                          headers: {
-                                                                            Authorization: `Bearer ${token}`
-                                                                          }
-                                                                    })
-                                     
-                                      setWastageRecords(res.data)
-                                      setAllWastageRecords(res.data);
-                                      setIsLoading(false)
-                    
-                                      console.log(res.data)
-                                  } catch (err) {
-                                      console.log(err)
-                                      setIsLoading(false)
-                                  }
-                          
-                              }
-                              getWastage();
-                          }, [])
+  const getWastage = async () => { 
+    setIsLoading(true);  
+    try {
+      const res = await axios.get(`${process.env.REACT_APP_URL}/api/wastage/`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      // Flatten wastage items
+      const flattenedRecords = res.data.flatMap(w => 
+        w.wastageItems.map(item => ({
+          ...item,
+          wastageCode: w.code,
+          supplier: w.supplier,
+          wastageDate: w.wastageDate,
+          totalAmount: w.wastageAmount,
+          wastageId: w._id
+        }))
+      );
+
+      setWastageRecords(flattenedRecords);
+      setAllWastageRecords(flattenedRecords);
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  getWastage();
+}, []);
 
 
 
@@ -116,11 +123,11 @@ export default function Wastage() {
             permission={effectivePermission.canAdd}
           />
           
-          {/* Purchase Return Table */}
-            <PurchaseReturnTable 
-              data={wastageRecords}
+          {/* wastage Table */}
+            <WastageTable 
+              data={wastageRecords?.wastageItems}
               onDeletePurchase={deleteWastage}
-              purchaseReturnPermission={effectivePermission}
+              wastagePermission={effectivePermission}
             />
         </WastageContent>
 

@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from 'react'
-import CompanyLogo from '../../../../images/product_placeholder.jpg'  
+import CompanyLogo from '../../../images/product_placeholder.jpg'  
 import { FaEdit, FaPrint } from 'react-icons/fa'
 import { FaDownload } from 'react-icons/fa6'
 import { useNavigate, useParams } from 'react-router-dom'

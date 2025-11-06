@@ -45,7 +45,7 @@ export default function AddPermission() {
       );
 
       toast.success("Permission module added successfully!");
-      navigate("/permissions"); // redirect back to list page
+      navigate("/permission"); // redirect back to list page
     } catch (error) {
       console.error(error);
       toast.error(error.response?.data?.message || "Failed to add permission module");
