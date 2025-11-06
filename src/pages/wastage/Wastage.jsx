@@ -31,7 +31,7 @@ export default function Wastage() {
                 : wastagePermission;
 
        
-     // fetch expense handler 
+     // fetch expense handlerhhhh 
                           useEffect(() => {
   const getWastage = async () => { 
     setIsLoading(true);  
