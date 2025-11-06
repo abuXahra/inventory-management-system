@@ -785,7 +785,7 @@ const deleteRefundItem = (index) => {
                 userId: user._id
             }))
                 const res = await axios.post(`${process.env.REACT_APP_URL}/api/wastage/create`, {
-                    item: newWastage,
+                    items: newWastage,
                     prefix: prefix,
                 }, {
                     headers: {
@@ -1241,7 +1241,7 @@ const deleteRefundItem = (index) => {
                             />
 
                         </ItemContainer>
-                        <ItemContainer title={'Return Info'}>
+                        <ItemContainer title={'Waste Info'}>
                                             <Input 
                                                         value={wastageDate} 
                                                         title={'Date'}
