@@ -5,7 +5,7 @@ import { FaEdit, FaEnvelope, FaEye, FaFileInvoice, FaTrash } from 'react-icons/f
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import { ActionButton, Container, ActionButtons, SlideUpButton, TableWrapper } from '../expense_table/Expense.style';
+import { ActionButton, Container, ActionButtons, SlideUpButton, TableWrapper, ActionText } from '../expense_table/Expense.style';
 import Button from '../../clicks/button/Button';
 import ButtonLoader from '../../clicks/button/button_loader/ButtonLoader';
 import Overlay from '../../overlay/Overlay';
@@ -14,13 +14,44 @@ import ToastComponents from '../../toast_message/toast_component/ToastComponents
 
 
 
+// ✅ Local row component to isolate hover state
+const ActionCell = ({ row, navigate, wastagePermission, handleGrabId }) => {
+  const [isHovered, setIsHovered] = useState(false);
 
-const WastageTable = ({data, onDeletePurchase, wastagePermission}) => {
+  return (
+    <ActionButtons>
+      {wastagePermission.canView && (
+        <ActionButton clr="green" onClick={() => navigate(`/purchase-invoice/${row.purchaseId}`)}>
+          <div
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+            style={{ position: 'relative' }}
+          >
+            <FaFileInvoice />
+            {isHovered && <ActionText>Purchase Invoice</ActionText>}
+          </div>
+        </ActionButton>
+      )}
+
+      {wastagePermission.canDelete && (
+        <ActionButton clr="red" onClick={() => handleGrabId(row._id, row.title, row.code)}>
+          <FaTrash />
+        </ActionButton>
+      )}
+    </ActionButtons>
+  );
+};
+
+
+
+
+const WastageTable = ({data, onDeleteWastage, wastagePermission}) => {
   const token = localStorage.getItem('token');
     
   const navigate = useNavigate();
-
-   // fetching currency from db
+   // Hover state for invoice icon
+  
+  // fetching currency from db
     const [currencySymbol, setCurrencySymbol] =  useState('');
       useEffect(()=>{
           const fetchAllCompany = async() =>{
@@ -42,24 +73,24 @@ const WastageTable = ({data, onDeletePurchase, wastagePermission}) => {
      const [showDeleteCard, setShowDeleteCard] = useState(false);
      const [grabId, setGrabId] = useState('');
      const [grabCode, setGrabCode] = useState('');
-     const [grabSupplierName, setGrabSupplierName] = useState('');
+     const [grabWastageTitle, setGrabWastageTitle] = useState('');
      const [isLoading, setIsLoading] = useState(false);
     
-     const handleGrabId = (returnId, supplierName, purchaseCode)=>{
+     const handleGrabId = (wastageId, title, wastageCode)=>{
                 setShowDeleteCard(true);
-                setGrabId(returnId);
-                setGrabSupplierName(supplierName); 
-                setGrabCode(purchaseCode) 
+                setGrabId(wastageId);
+                setGrabWastageTitle(title); 
+                setGrabCode(wastageCode) 
             }
   
   // Handle delete
-                 const handleSaleDelete = async (returnId) => {
+                 const handleSaleDelete = async (wastageId) => {
                     setIsLoading(true);
                     try {
-                      const response = await onDeletePurchase(returnId); // call parent function
+                      const response = await onDeleteWastage(wastageId); // call parent function
                   
                       if (response.success) {
-                        toast.success('Purchase Return deleted successfully');
+                        toast.success('wastage item deleted successfully');
                         setShowDeleteCard(false); // Close modal
                       } else {
                         toast.error('Error deleting message: ' + response.message);
@@ -75,7 +106,7 @@ const WastageTable = ({data, onDeletePurchase, wastagePermission}) => {
   
                   
                          // Handle bulk delete
-                         const [selectedPurchaseReturn, setSelectedPurchaseReturn] = useState([]);
+                         const [selectedWastages, setSelectedWastages] = useState([]);
                          const [isDeleting, setIsDeleting] = useState(false);
                          const [showBulkDeleteCard, setShowBulkDeleteCard] = useState(false);
                          
@@ -88,21 +119,21 @@ const WastageTable = ({data, onDeletePurchase, wastagePermission}) => {
                         const confirmBulkDelete = async () => {
                           setIsDeleting(true);
                           try {
-                            await axios.delete(`${process.env.REACT_APP_URL}/api/purchaseReturn/bulk-delete`, {
-                              data: { ids: selectedPurchaseReturn.map((e) => e._id) },
+                            await axios.delete(`${process.env.REACT_APP_URL}/api/wastage/bulk-delete`, {
+                              data: { ids: selectedWastages.map((e) => e._id) },
                               headers: {Authorization: `Bearer ${token}`}
                             });
-                            toast.success(`${selectedPurchaseReturn.length} purchase Return deleted successfully`);
+                            toast.success(`${selectedWastages.length} Wastage items deleted successfully`);
                         
                             // remove deleted from UI
-                              const deletedIds = selectedPurchaseReturn.map((e) => e._id);
-                              const updatedList = data.filter(purchaseReturn => !deletedIds.includes(purchaseReturn._id));
-                              setSelectedPurchaseReturn([]);
-                              onDeletePurchase(null, updatedList); // pass updated list to parent
+                              const deletedIds = selectedWastages.map((e) => e._id);
+                              const updatedList = data.filter(wastage => !deletedIds.includes(wastage._id));
+                              setSelectedWastages([]);
+                              onDeleteWastage(null, updatedList); // pass updated list to parent
                               setShowBulkDeleteCard(false);
                             } catch (err) {
                             console.error(err);
-                            toast.error('Failed to delete selected purchase Returns');
+                            toast.error('Failed to delete selected wastage items');
                           } finally {
                             setIsDeleting(false);
                           }
@@ -110,56 +141,59 @@ const WastageTable = ({data, onDeletePurchase, wastagePermission}) => {
     
 
  const columns = [
-     {
-       name: 'Wastage Date',
-       sortable: true,
-      //  width: '15%',
-       selector: (row) => {
-         const date = new Date(row.wastageDate);
-         return date.toLocaleDateString('en-US', {
-           year: 'numeric',
-           month: 'long',
-           day: 'numeric',
-         });
-       },
-     },
-     {
-       name: 'Code',
-       selector: (row) => row.wastageCode,
-       sortable: true,
-      //  width: '8%',
-     },
-     {
-       name: 'Supplier',
-       selector: (row) => row.supplier?.name || 'N/A',
-       sortable: true,
-     },
-     {
-       name: 'Product',
+  {
+  name: 'Date',
+  sortable: true,
+  selector: (row) => {
+    const date = new Date(row.wastageDate);
+    const parts = date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    }).split(' ');
+    parts[0] = parts[0].replace(/([A-Za-z]+)/, '$1.'); // Add period
+    return parts.join(' ');
+  },
+},
+
+          {
+       name: 'Title',
        selector: (row) => row.title,
        sortable: true,
      },
+          {
+       name: 'Reason',
+       selector: (row) => row.reason,
+       sortable: true,
+     },
+     {
+       name: 'Invoice No.',
+       selector: (row) => row.invoiceNo,
+       sortable: true,
+      //  width: '8%',
+     },
+
      {
        name: 'Quantity',
        selector: (row) => row.quantity,
        sortable: true,
      },
-      {
-       name: 'Unit Amount',
-       selector: (row) => <div>
-         <span dangerouslySetInnerHTML={{ __html: currencySymbol }}/>{row.unitCost.toLocaleString()}
-       </div>  ,
-       sortable: true,
-       width: '13%',
-     },
-    {
-       name: 'Tax Amount',
-       selector: (row) => <div>
-         <span dangerouslySetInnerHTML={{ __html: currencySymbol }}/>{row.taxAmount.toLocaleString()}
-       </div>  ,
-       sortable: true,
-       width: '13%',
-     },
+    //   {
+    //    name: 'Unit Amount',
+    //    selector: (row) => <div>
+    //      <span dangerouslySetInnerHTML={{ __html: currencySymbol }}/>{row.unitCost.toLocaleString()}
+    //    </div>  ,
+    //    sortable: true,
+    //    width: '13%',
+    //  },
+    // {
+    //    name: 'Tax Amount',
+    //    selector: (row) => <div>
+    //      <span dangerouslySetInnerHTML={{ __html: currencySymbol }}/>{row.taxAmount.toLocaleString()}
+    //    </div>  ,
+    //    sortable: true,
+    //    width: '13%',
+    //  },
      {
        name: 'Amount',
        selector: (row) => <div>
@@ -171,13 +205,12 @@ const WastageTable = ({data, onDeletePurchase, wastagePermission}) => {
      {
        name: 'Actions',
        cell: (row) => (
-         <ActionButtons>
-          {wastagePermission.canView &&  <ActionButton clr='green' onClick={() => navigate(`/wastage-detail/${row._id}`)}><FaEye/></ActionButton>}
-          {wastagePermission.canView &&  <ActionButton clr='green' onClick={() => navigate(`/purchase-invoice/${row.purchase?._id}`)}><FaFileInvoice/></ActionButton>}
-           {/* <ActionButton clr='blue' onClick={() => navigate(`/edit-return/${row._id}`)}><FaEdit/></ActionButton> */}
-           {wastagePermission.canDelete && <ActionButton clr="red" onClick={() => handleGrabId(row._id, row.supplier.name, row.code)}><FaTrash/></ActionButton>}
-         </ActionButtons>
-       ),
+       <ActionCell
+          row={row}
+          navigate={navigate}
+          wastagePermission={wastagePermission}
+          handleGrabId={handleGrabId}
+        />),
      },
    ];
  
@@ -192,13 +225,13 @@ const WastageTable = ({data, onDeletePurchase, wastagePermission}) => {
             data={data}
             pagination
             paginationPerPage={50} // Default rows per page
-            paginationRowsPerPageOptions={[10, 25, 50, 100]} // Options in the dropdown
+            paginationRowsPerPageOptions={[50, 100, 200, 500]} // Options in the dropdown
             responsive
             customStyles={customStyles}
             selectableRows={wastagePermission.canDelete} // 👈 only show checkboxes if delete permission is true
             onSelectedRowsChange={
                           wastagePermission.canDelete
-                            ? ({ selectedRows }) => setSelectedPurchaseReturn(selectedRows)
+                            ? ({ selectedRows }) => setSelectedWastages(selectedRows)
                             : undefined
                         }
             selectableRowHighlight={wastagePermission.canDelete}
@@ -206,13 +239,13 @@ const WastageTable = ({data, onDeletePurchase, wastagePermission}) => {
       </TableWrapper>
 
        {/* sliding button for delete bulk list */}
-          {selectedPurchaseReturn.length > 0 && (
+          {selectedWastages.length > 0 && (
           <SlideUpButton>
             {wastagePermission.canDelete &&
              <Button 
               btnColor={'red'} 
               btnOnClick={handleBulkDelete} 
-              btnText= {isDeleting ? <ButtonLoader text="Deleting..." /> : `Delete Selected (${selectedPurchaseReturn.length})`} 
+              btnText= {isDeleting ? <ButtonLoader text="Deleting..." /> : `Delete Selected (${selectedWastages.length})`} 
               disabled={isDeleting}>             
             </Button>}
           </SlideUpButton>
@@ -227,7 +260,7 @@ const WastageTable = ({data, onDeletePurchase, wastagePermission}) => {
                                 btnText1={isLoading ? <ButtonLoader text={'Deleting...'}/> : 'Yes'}
                               >
                                 <p style={{margin: "40px", textAlign:"center", fontSize:"12px", lineHeight: "25px"}}>
-                                        Are you sure You want to delete the Purchase Return items with the  code <strong>{grabCode}</strong> to the Supplier <b>{grabSupplierName} </b> 
+                                        Are you sure You want to delete the Wastage item <b>{grabWastageTitle}</b> with the  code <strong>{grabCode}</strong>
                                   </p>                              </Overlay>
                             }
             
@@ -240,7 +273,7 @@ const WastageTable = ({data, onDeletePurchase, wastagePermission}) => {
         btnText1={isDeleting ? <ButtonLoader text={'Deleting...'} /> : 'Yes'}
       >
         <p style={{ margin: "40px", textAlign: "center", fontSize: "12px", lineHeight: "25px" }}>
-          Are you sure you want to delete <b>{selectedPurchaseReturn.length}</b> selected Purchase Returns?
+          Are you sure you want to delete <b>{selectedWastages.length}</b> selected Wastage Items?
         </p>
       </Overlay>
     )}

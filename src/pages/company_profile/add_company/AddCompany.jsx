@@ -132,6 +132,11 @@ export default function AddCompany() {
                    // purchaseReturn initial require
         const [purchaseReturnInitial, setPurchaseReturnInitial] = useState('RP')
         const [purchaseReturnInitialError, setPurchaseReturnInitialError] = useState(false);
+
+        // wastage initial require
+        const [wastageInitial, setWastageInitial] = useState('WA')
+        const [wastageInitialError, setWastageInitialError] = useState(false);
+             
              
 
 
@@ -198,6 +203,10 @@ export default function AddCompany() {
         }else if(type === 'purchaseReturnInitial'){
             setPurchaseReturnInitial(e.target.value);
             setPurchaseReturnInitialError(false);
+        }
+        else if(type === 'wastageInitial'){
+            setWastageInitial(e.target.value);
+            setWastageInitialError(false);
         }
     }
 
@@ -306,7 +315,11 @@ export default function AddCompany() {
         setPurchaseReturnInitialError(true);
             isValid = false;
         }  
-        
+       
+        if(!wastageInitial){
+        setWastageInitialError(true);
+            isValid = false;
+        } 
         
         if(isValid){
             const company ={
@@ -331,6 +344,8 @@ export default function AddCompany() {
                 expense: expenseInitial,
                 saleReturn: saleReturnInitial,
                 purchaseReturn: purchaseReturnInitial,            
+                wastage: wastageInitial,            
+                
                 userId: user._id,
 
                        }
@@ -611,10 +626,7 @@ export default function AddCompany() {
                                 label={'Purchase'} 
                                 requiredSymbol={'*'}
                             />  
-                        </AnyItemContainer>
-
-                        <AnyItemContainer>
-                        <Input 
+                            <Input 
                                 value={customerInitial} 
                                 title={'Customer'}
                                 onChange={(e)=>handleChange('customerInitial', e)} 
@@ -622,7 +634,11 @@ export default function AddCompany() {
                                 type={'text'} 
                                 label={'Customer'}
                                 requiredSymbol={'*'}
-                            />  
+                            />
+                        </AnyItemContainer>
+
+                        <AnyItemContainer>
+                          
                              <Input 
                                 value={saleInitial} 
                                 title={'Sale'}
@@ -657,6 +673,15 @@ export default function AddCompany() {
                                 error={purchaseReturnInitialError} 
                                 type={'text'} 
                                 label={'Purchase Return'}
+                                requiredSymbol={'*'}
+                            />  
+                         <Input 
+                                value={wastageInitial} 
+                                title={'Wastage'}
+                                onChange={(e)=>handleChange('wastageInitial', e)} 
+                                error={wastageInitialError} 
+                                type={'text'} 
+                                label={'Wastage'}
                                 requiredSymbol={'*'}
                             />  
                         </AnyItemContainer>

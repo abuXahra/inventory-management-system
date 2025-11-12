@@ -84,6 +84,8 @@ import ItemsSaleReport from "./pages/reports/item_sale_report/ItemsSaleReport";
 import Wastage from "./pages/wastage/Wastage";
 import WastageView from "./pages/wastage/view/WastageView";
 import AddWastage from "./pages/wastage/add/AddWastage";
+import WastageReport from "./pages/reports/wastage_report/WastageReport";
+import ItemsDailySaleReport from "./pages/reports/item_daily_sale_report/ItemDailySaleReport";
 
 function usePageTitle() {
   const location = useLocation();
@@ -735,6 +737,14 @@ function App() {
             <Route
               path="/expense-report"
               element={<ProtectedRoute element={<ExpenseReport />} />}
+            />
+            <Route
+              path="/daily-report"
+              element={<ProtectedRoute element={<ItemsDailySaleReport />} />}
+            />
+            <Route
+              path="/wastage-report"
+              element={<ProtectedRoute element={<WastageReport />} />}
             />
             {/* SALE RETURN/REFUND */}
             <Route

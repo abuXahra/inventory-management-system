@@ -4,6 +4,7 @@ import {
   FaChartPie,
   FaOpencart,
   FaRegMoneyBillAlt,
+  FaRecycle,
 } from "react-icons/fa";
 import { PiInvoiceBold } from "react-icons/pi";
 import { IoBagSharp, IoPricetagsSharp } from "react-icons/io5";
@@ -52,5 +53,11 @@ export const ReportItemList = [
     icon: <FaChartPie />,
     bg: "#ef4444",
     url: "/expense-report",
+  },
+  {
+    title: "Wastage Report",
+    icon: <FaRecycle />,
+    bg: "purple",
+    url: "/wastage-report",
   },
 ];

@@ -145,7 +145,10 @@ export default function EditCompany() {
             const [purchaseReturnInitial, setPurchaseReturnInitial] = useState('')
             const [purchaseReturnInitialError, setPurchaseReturnInitialError] = useState(false);
                  
-    
+    // wastage initial require
+            const [wastageInitial, setWastageInitial] = useState('')
+            const [wastageInitialError, setWastageInitialError] = useState(false);
+            
     const handleChange = (type, e) =>{
         if(type === 'name'){
             setCompanyName(e.target.value);
@@ -210,6 +213,9 @@ export default function EditCompany() {
         }else if(type === 'purchaseReturnInitial'){
             setPurchaseReturnInitial(e.target.value);
             setPurchaseReturnInitialError(false);
+        }else if(type === 'wastageInitial'){
+            setWastageInitial(e.target.value);
+            setWastageInitialError(false);
         }
     }
 
@@ -253,6 +259,7 @@ export default function EditCompany() {
                     setExpenseInitial(prefix.expense);
                     setSaleReturnInitial(prefix.saleReturn);
                     setPurchaseReturnInitial(prefix.purchaseReturn);
+                    setWastageInitial(prefix.wastage);
                 }
 
                 setIsLoading(false);
@@ -375,6 +382,11 @@ export default function EditCompany() {
             isValid = false;
         }
         
+               
+        if(!wastageInitial){
+        setWastageInitialError(true);
+            isValid = false;
+        }
         
         if(isValid){
             const company ={
@@ -399,6 +411,7 @@ export default function EditCompany() {
                 expense: expenseInitial,
                 saleReturn: saleReturnInitial,
                 purchaseReturn: purchaseReturnInitial,
+                wastage: wastageInitial,            
                 userId: user._id,
 
                        }
@@ -668,10 +681,7 @@ export default function EditCompany() {
                                 label={'Purchase'} 
                                 requiredSymbol={'*'}
                             />  
-                        </AnyItemContainer>
-
-                        <AnyItemContainer>
-                        <Input 
+                            <Input 
                                 value={customerInitial} 
                                 title={'Customer'}
                                 onChange={(e)=>handleChange('customerInitial', e)} 
@@ -680,6 +690,10 @@ export default function EditCompany() {
                                 label={'Customer'}
                                 requiredSymbol={'*'}
                             />  
+                        
+                        </AnyItemContainer>
+
+                        <AnyItemContainer>
                              <Input 
                                 value={saleInitial} 
                                 title={'Sale'}
@@ -716,6 +730,16 @@ export default function EditCompany() {
                                 label={'Purchase Return'}
                                 requiredSymbol={'*'}
                             /> 
+                              <Input 
+                                 value={wastageInitial} 
+                                 title={'Wastage'}
+                                 onChange={(e)=>handleChange('wastageInitial', e)} 
+                                 error={wastageInitialError} 
+                                 type={'text'} 
+                                 label={'Wastage'}
+                                 requiredSymbol={'*'}
+                                />  
+                                                   
                         </AnyItemContainer>
 
                         {/* button */}

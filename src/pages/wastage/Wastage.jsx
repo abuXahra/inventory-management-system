@@ -40,20 +40,8 @@ export default function Wastage() {
         headers: { Authorization: `Bearer ${token}` }
       });
 
-      // Flatten wastage items
-      const flattenedRecords = res.data.flatMap(w => 
-        w.wastageItems.map(item => ({
-          ...item,
-          wastageCode: w.code,
-          supplier: w.supplier,
-          wastageDate: w.wastageDate,
-          totalAmount: w.wastageAmount,
-          wastageId: w._id
-        }))
-      );
-
-      setWastageRecords(flattenedRecords);
-      setAllWastageRecords(flattenedRecords);
+      setWastageRecords(res.data);
+      setAllWastageRecords(res.data);
     } catch (err) {
       console.log(err);
     } finally {
@@ -96,8 +84,8 @@ export default function Wastage() {
               }else{
                 // Filter records based on query
                 const filterRecords = allWastageRecords.filter(item =>
-                  item.supplier?.name.toLocaleLowerCase().includes(query.toLocaleLowerCase())||
-                  item.code?.toLowerCase().includes(query)
+                  item.title?.toLocaleLowerCase().includes(query.toLocaleLowerCase())||
+                  item.invoiceNo?.toLowerCase().includes(query)
                 );
                 setWastageRecords(filterRecords)
               }
@@ -116,7 +104,7 @@ export default function Wastage() {
           <ListHeader 
             title={'Add Wastage'} 
             btnOnClick={()=>navigate('/add-wastage')}
-            searQuery={'supplier or code'}
+            searQuery={'title or invoice No.'}
             onChange={handleSearchQueryOnChange}
             type={'text'}
             dataLength={wastageRecords.length}
@@ -125,8 +113,8 @@ export default function Wastage() {
           
           {/* wastage Table */}
             <WastageTable 
-              data={wastageRecords?.wastageItems}
-              onDeletePurchase={deleteWastage}
+              data={wastageRecords}
+              onDeleteWastage={deleteWastage}
               wastagePermission={effectivePermission}
             />
         </WastageContent>

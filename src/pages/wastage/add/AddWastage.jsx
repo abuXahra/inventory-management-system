@@ -1,40 +1,21 @@
 
-
-// import ItemContainer from '../../../../components/item_container/ItemContainer'
-// import Input from '../../../../components/input/Input'
-// import SelectInput from '../../../../components/input/selectInput/SelectInput'
-// import Button from '../../../../components/clicks/button/Button'
-// import { ItemButtonWrapper } from '../../../../components/item_container/itemContainer.style'
-// import TextArea from '../../../../components/input/textArea/TextArea'
-
-// import PageTitle from '../../../../components/page_title/PageTitle'
-
-// // import { AddPurchaseContent, AddPurchaseWrapper, AnyItemContainer, DropdownItems, DropdownWrapper, HrStyled, InnerWrapper, ItemListContent, ItemsWrapper, SelectItemContent, SupplierInfoWrapper, TableResponsiveWrapper, TableStyled, TdStyled, TotalChargesWrapper } from './AddWastage.style'
-import axios from 'axios'
 import React, { useContext, useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { toast } from 'react-toastify'
-import { List } from 'react-content-loader'
-import { FaTrash } from 'react-icons/fa'
-import { UserContext } from '../../../components/context/UserContext'
-import PageTitle from '../../../components/page_title/PageTitle'
-import {AddWastageContent, AddWastageWrapper, AnyItemContainer, DropdownItems, DropdownWrapper, HrStyled, InnerWrapper, ItemListContent, ItemsWrapper, SelectItemContent, SupplierInfoWrapper, TableResponsiveWrapper, TableStyled, TdStyled, TotalChargesWrapper } from './addWastage.style'
-import Input from '../../../components/input/Input'
-import ButtonLoader from '../../../components/clicks/button/button_loader/ButtonLoader'
-import Button from '../../../components/clicks/button/Button'
-import SelectInput from '../../../components/input/selectInput/SelectInput'
 import ItemContainer from '../../../components/item_container/ItemContainer'
+import Input from '../../../components/input/Input'
+import SelectInput from '../../../components/input/selectInput/SelectInput'
+import Button from '../../../components/clicks/button/Button'
 import { ItemButtonWrapper } from '../../../components/item_container/itemContainer.style'
 import TextArea from '../../../components/input/textArea/TextArea'
+import { FaTrash } from 'react-icons/fa'
+import PageTitle from '../../../components/page_title/PageTitle'
+import { useNavigate } from 'react-router-dom'
+import axios from 'axios'
+import { UserContext } from '../../../components/context/UserContext'
+import { toast } from 'react-toastify'
+import ButtonLoader from '../../../components/clicks/button/button_loader/ButtonLoader'
 import ToastComponents from '../../../components/toast_message/toast_component/ToastComponents'
-
-
-// import { UserContext } from '../../../../components/context/UserContext'
-
-// import ButtonLoader from '../../../../components/clicks/button/button_loader/ButtonLoader'
-// import ToastComponents from '../../../../components/toast_message/toast_component/ToastComponents'
-// import { AddWastageContent, AddWastageWrapper, AnyItemContainer, DropdownItems, DropdownWrapper, HrStyled, InnerWrapper, ItemListContent, ItemsWrapper, SelectItemContent, SupplierInfoWrapper, TableResponsiveWrapper, TableStyled, TdStyled, TotalChargesWrapper } from './AddWastage.style'
-
+import { AddWastageContent, AddWastageWrapper, AnyItemContainer, DropdownItems, DropdownWrapper, HrStyled, InnerWrapper, ItemListContent, ItemsWrapper, SelectItemContent, SupplierInfoWrapper, TableResponsiveWrapper, TableStyled, TdStyled, TotalChargesWrapper } from './addWastage.style'
+import { List } from 'react-content-loader'
 
 export default function AddWastage() {
 
@@ -82,14 +63,14 @@ const token = localStorage.getItem('token');
     const [purchaseDateError, setPurchaseDateError] = useState(false);
 
     const [wastageDate, setWastageDate] = useState(todayDate);
-    const [wastageDateError, setWastageDateError] = useState(false);
+    const [returnDateError, setReturnDateError] = useState(false);
     
     
     const [supplier, setSupplier] = useState('');
     const [supplierNameError, setSupplierNameError] = useState(false);
     
     const [wastageAmount, setWastageAmount] = useState('');
-    const [wastageAmountError, setWastageAmountError] = useState(false);
+    const [returnAmountError, setReturnAmountError] = useState(false);
     
     const [purchaseAmount, setPurchaseAmount] = useState('');
     const [purchaseAmountError, setPurchaseAmountError] = useState(false);
@@ -197,7 +178,7 @@ const token = localStorage.getItem('token');
             setPurchaseDateError(false);
         }else if(type === 'return-date'){
             setWastageDate(e.target.value);
-            setWastageDateError(false);
+            setReturnDateError(false);
         } else if (type === 'supply-name') {
 
             setSupplier(e.target.value);
@@ -341,6 +322,22 @@ const token = localStorage.getItem('token');
     ]
 
 
+const handleItemReasonChange = (index, value) => {
+    setItemWastageList((prev) =>
+      prev.map((item, i) =>
+        i === index ? { ...item, reason: value } : item
+      )
+    )
+  }
+
+
+ const handleItemWastageDateChange = (index, value) => {
+    setItemWastageList((prev) =>
+      prev.map((item, i) =>
+        i === index ? { ...item, wastageDate: value } : item
+      )
+    )
+  } 
 
     // Fetch expense initial
     const [prefix, setPrefix] = useState('')
@@ -362,7 +359,7 @@ const token = localStorage.getItem('token');
                 setCurrencySymbol(res.data.currencySymbol)
 
                 if (prefixData) {
-                    setPrefix(prefixData.purchase);
+                    setPrefix(prefixData.wastage);
                 }
 
                 setIsLoading(false);
@@ -534,19 +531,6 @@ const token = localStorage.getItem('token');
 
     };
 
-    // search dropdownd handler
-    // const dropdownHandler = (product) => {
-    //     setShowDropdwon(false)
-    //     setProductId(product._id)
-    //     setSearchTitle('');
-    //     setTitle(product.title)
-    //     // setQuantity();
-    //     setPrice(product.price)
-    //     setTax(product.tax)
-    //     setTaxAmount(product.taxAmount)
-    //     setUnitCost(product.unitCost)
-    //     setAmount(product.purchasePrice)
-    // }
 
 
     // search name dropdownd handler
@@ -653,6 +637,8 @@ const deleteRefundItem = (index) => {
                   amount: (unitCost * reducedQty).toFixed(2),
                   unitCost: unitCost.toFixed(2),
                   taxAmount: (taxAmountPerUnit * reducedQty).toFixed(2),
+                  reason: '',
+                  wastageDate: wastageDate,
                 });
               }
             } else if (diff > 0 && existing) {
@@ -734,18 +720,18 @@ const deleteRefundItem = (index) => {
             setPurchaseAmountError(true)
             isValid = false;
         }
-        if (!wastageDate) {
-            setWastageDateError(true);
-            isValid = false;
-        }
+        // if (!wastageDate) {
+        //     setReturnDateError(true);
+        //     isValid = false;
+        // }
         if (!wastageAmount) {
-            setWastageAmountError(true);
+            setReturnAmountError(true);
             isValid = false;
         }
-        if (!reason) {
-            setReasonError(true);
-            isValid = false;
-        }
+        // if (!reason) {
+        //     setReasonError(true);
+        //     isValid = false;
+        // }
         if (!paymentType) {
             setPaymentTypeError(true)
             isValid = false;
@@ -762,44 +748,56 @@ const deleteRefundItem = (index) => {
             }
         }
 
+         if (itemWastageList.some((item) => !item.wastageDate?.trim())) {
+        toast.error('Please provide a date for each wastage item.')
+        return
+        }
+
+        if (itemWastageList.some((item) => !item.reason?.trim())) {
+        toast.error('Please provide a reason for each wastage item.')
+        return
+        }
         if (isValid) {
 
+            const newWastages =  itemWastageList.map((item) => ({
+                            wastageDate: new Date(item.wastageDate) || '',
+                            purchaseId: purchase?._id,
+                            supplier: supplierId || supplier,
+                            invoiceNo,
+                            // reason,
+                            reason: item.reason || '',
+                            userId: user._id,
+                            productId: item.productId,
+                            title: item.title,
+                            quantity: Number(item.quantity),
+                            price: Number(item.price),
+                            tax: Number(item.tax),
+                            taxAmount: Number(item.taxAmount),
+                            unitCost: Number(item.unitCost),
+                            amount: Number(item.amount),
+                        }))           
+        
             setIsBtnLoading(true);
-           
+            console.log('======new wastage data==========\n', newWastages)
+    
             try {
-                const newWastage = itemWastageList.map((item) => ({
-                wastageDate: new Date(wastageDate),
-                purchaseId: purchase?._id,
-                supplier: supplierId || supplier,
-                wastageAmount: Number(wastageAmount),
-                reason,
-                invoiceNo,
-                productId: item.productId,
-                title: item.title,
-                quantity: Number(item.quantity),
-                price: Number(item.price),
-                tax: Number(item.tax),
-                taxAmount: Number(item.taxAmount),
-                unitCost: Number(item.unitCost),
-                amount: Number(item.amount),
-                userId: user._id
-            }))
+
                 const res = await axios.post(`${process.env.REACT_APP_URL}/api/wastage/create`, {
-                    items: newWastage,
+                    items: newWastages,
                     prefix: prefix,
                 }, {
-                    headers: {
+                                                    headers: {
                                                       Authorization: `Bearer ${token}`
                                                     }
                                               })
-                
+                console.log('Response from server:', res.data);
                 // toast success message
                 toast.success('Wastage added Successfully')
                 setIsBtnLoading(false);
-                navigate(`/wastage-detail/${res.data?._id}`);
+                navigate(`/wastage`);
             } catch (err) {
                 console.error(err);
-                 toast.error("Something went wrong while processing wastage!");
+                 toast.error("Something went wrong while processing return!");
                 setIsBtnLoading(false);
             }
         }
@@ -808,7 +806,7 @@ const deleteRefundItem = (index) => {
     return (
         <AddWastageWrapper>
             {/* Page title */}
-            <PageTitle title={'Wastage'} subTitle={'/ Add'} />
+            <PageTitle title={'Purchase Return'} subTitle={'/ Add'} />
             {/* {isLoading ? <List/> : */}
          <AddWastageContent>
                 <ItemsWrapper>
@@ -909,99 +907,13 @@ const deleteRefundItem = (index) => {
                                                     </div>)
                                     }
                                     </TableResponsiveWrapper>
-                    
-                                    <HrStyled />
-                    
-                                    
-                                    {/* Total ChargesSection */}
-                                    <TotalChargesWrapper>            
-                                       {/* Total quantities */}
-                                        <AnyItemContainer justifyContent={'space-between'}>
-                                            <InnerWrapper>
-                                                <span><b>Total Quantities</b></span>
-                                                <span>{totalQuantity}</span>
-                                            </InnerWrapper>
-                                            <InnerWrapper>
-                                                <span><b>Sub Total</b></span>
-                                                <span><span dangerouslySetInnerHTML={{ __html: currencySymbol }}/>{Number(subTotal).toLocaleString()}</span>
-                                            </InnerWrapper>
-                                        </AnyItemContainer>
-                                       
-                                       {/* Other Charges */}
-                                        <AnyItemContainer justifyContent={'space-between'}>
-                                                <InnerWrapper>
-                                                    <span><b> Other Charges</b></span>
-                                                    <span>
-                                                        <Input 
-                                                            value={otherCharges} 
-                                                            placeholder={'Other Charges'}
-                                                            onChange={(e)=>handleChange('otherCharges', e)} 
-                                                            type={'text'}  
-                                                        /> 
-                                                    </span>
-                                                </InnerWrapper>
-                                                <InnerWrapper>
-                                                    <span><b> Other Charges</b></span>
-                                                    <span><span dangerouslySetInnerHTML={{ __html: currencySymbol }}/>{otherCharges? otherCharges: 0}</span>
-                                                </InnerWrapper>
-                                        </AnyItemContainer>
-                    
-                                              {/* Discount */}
-                                              <AnyItemContainer justifyContent={'space-between'}>
-                                                <InnerWrapper>
-                                                    <span><b>Discount</b></span>
-                                                    <span>
-                                                        <Input 
-                                                            value={discount} 
-                                                            placeholder={'Discount'}
-                                                            onChange={(e)=>handleChange('discount', e)} 
-                                                            type={'text'}  
-                                                        /> 
-                                                    </span>
-                                                </InnerWrapper>
-                                                <InnerWrapper>
-                                                    <span><b> Discount {discount && '('+ discount + '%)'}</b></span>
-                                                    <span><span dangerouslySetInnerHTML={{ __html: currencySymbol }}/>{discountValue? Number(discountValue).toLocaleString():0}</span>
-                                                </InnerWrapper>
-                                        </AnyItemContainer>
-                    
-                                         {/* Grand Total */}
-                                         <AnyItemContainer justifyContent={'space-between'}>
-                                                <InnerWrapper>
-                                                    <span><b>Shipping</b></span>
-                                                    <span>
-                                                         <Input 
-                                                            value={shipping} 
-                                                            placeholder={'Shipping'}
-                                                            onChange={(e)=>handleChange('shipping', e)} 
-                                                            type={'text'}  
-                                                        /> 
-                                                    </span>
-                                                </InnerWrapper>
-                                                <InnerWrapper>
-                                                    <span><b>Shipping</b></span>
-                                                    <span><span dangerouslySetInnerHTML={{ __html: currencySymbol }}/>{shipping? shipping: 0}</span>
-                                                </InnerWrapper>
-                                        </AnyItemContainer>
-                    
-                                                             {/* Grand Total */}
-                                         <AnyItemContainer justifyContent={'space-between'}>
-                                                <InnerWrapper>
-                                                   
-                                                </InnerWrapper>
-                                                <InnerWrapper>
-                                                    <span><b> Grand Total</b></span>
-                                                    <span><b><span dangerouslySetInnerHTML={{ __html: currencySymbol }}/>{grandTotal? grandTotal : 0}</b></span>
-                                                </InnerWrapper>
-                                        </AnyItemContainer>
-                                    </TotalChargesWrapper>
-                    
+                                        
                                     <HrStyled/>
-                                     {/* =========================================RETURN ITEMS ===========================================*/}
+                                     {/* =========================================Wastage ITEMS ===========================================*/}
                                     <TableResponsiveWrapper>
                                    {itemWastageList.length > 0 ?
                                     <>
-                                    <h3 style={{textAlign: "center", marginTop: "30px"}}>Return Items</h3> 
+                                    <h3 style={{textAlign: "center", marginTop: "30px"}}>Wastage Items</h3> 
                                     <TableStyled>
                                         <thead>
                                             <TdStyled><b>#</b></TdStyled>
@@ -1061,36 +973,6 @@ const deleteRefundItem = (index) => {
                                     </TableResponsiveWrapper>
                     
                     {/* ====================================================RETURN ITEMS END ========================================== */}
-                                 {  itemWastageList.length > 0 &&  <HrStyled/>}
-                                      {/* Total ChargesSection */}
-                    {       itemWastageList.length > 0 &&
-                             <TotalChargesWrapper>            
-                                       {/* Total quantities */}
-                                        <AnyItemContainer justifyContent={'space-between'}>
-                                            <InnerWrapper>
-                                                {/* <span><b>Sub Total</b></span>
-                                                <span><span dangerouslySetInnerHTML={{ __html: currencySymbol }}/>{Number(subTotal).toLocaleString()}</span> */}
-                                            </InnerWrapper>
-                                              <InnerWrapper>
-                                                <span><b>Total Quantities</b></span>
-                                                <span>{refundQuantity}</span>
-                                            </InnerWrapper>
-                                        </AnyItemContainer>
-                                       
-                    
-                                        {/* Grand Total */}
-                                         <AnyItemContainer justifyContent={'space-between'}>
-                            
-                                                <InnerWrapper>
-                                                    <span><b>Total Refund</b></span>
-                                                    <span><b><span dangerouslySetInnerHTML={{ __html: currencySymbol }}/>{refundTotal? refundTotal : 0}</b></span>
-                                                </InnerWrapper>                    
-                                                <InnerWrapper>
-                                                   
-                                                </InnerWrapper>
-                                        </AnyItemContainer>
-                                    </TotalChargesWrapper>  
-                                    }
                                     </ItemContainer>     
                                 </ItemListContent>
                                 }
@@ -1100,170 +982,55 @@ const deleteRefundItem = (index) => {
                             
 
                 {/* Supply info */}
-               {showReturnComponents &&  <SupplierInfoWrapper>
+               {showReturnComponents && 
+                itemWastageList.length > 0 &&
+                 <SupplierInfoWrapper>
                     <form action="" onSubmit={(e) => handleSubmit(e)}>
-                        <ItemContainer title={'Supply Info'}>
-
-                            <Input
-                                value={supplier}
-                                title={'Supplier Name'}
-                                onChange={(e) => handleChange('supply-name', e)}
-                                error={supplierNameError}
-                                type={'text'}
-                                label={'Supplier Name'}
-                                placeholder={'search...'}
-                                requiredSymbol={'*'}
-                            />
-
-
-                            {showSupDropdown && (
-                                <DropdownWrapper topPosition={'80px'} width={"96%"}>
-                                    {supplierItems.filter(c =>
-                                        supplier.length > 0 &&
-                                        c.name.toLowerCase().includes(supplier.toLowerCase())
-                                    ).length > 0 ? (
-                                        supplierItems
-                                            .filter(c =>
-                                                supplier.length > 0 &&
-                                                c.name.toLowerCase().includes(supplier.toLowerCase())
-                                            )
-                                            .map((data, i) => (
-                                                <DropdownItems key={i} onClick={() => dropdownSupplierName(data)}>
-                                                    {data.name}
-                                                </DropdownItems>
-                                            ))
-                                    ) : (
-                                        <DropdownItems>
-                                            <div style={{ width: "100%", display: "flex", flexDirection: "column", gap: "5px", padding: "20px", justifyContent: "center", alignItems: "center" }}>
-                                                <span>No such supplier </span>
-                                                <a href="/add-supplier">Please click here to add </a>
-                                            </div>
-
-                                        </DropdownItems>
-                                    )}
-                                </DropdownWrapper>
-                            )}
-
-                            <Input
-                                value={purchaseDate}
-                                title={'Date'}
-                                onChange={(e) => handleChange('purchase-date', e)}
-                                type={'date'}
-                                label={'Date'}
-                                error={purchaseDateError}
-                                requiredSymbol={'*'}
-                            />
-
-                            <SelectInput
-                                options={purchaseStatusItem}
-                                label={'Purchase Status'}
-                                value={purchaseStatus}
-                                error={purchaseStatusError}
-                                requiredSymbol={'*'}
-                                title={'Purchase Status'}
-                                onChange={(e) => handleChange('purchase-status', e)}
-                            />
-
-                            <Input
-                                value={reference}
-                                title={'References'}
-                                onChange={(e) => handleChange('references', e)}
-                                type={'text'}
-                                label={'References'}
-                            // error={purchaseDateError}
-                            />
-
-                        </ItemContainer>
-                        <ItemContainer title={'Payment Info'}>
-                            <Input
-                                value={purchaseAmount}
-                                title={'Purchase Amount'}
-                                onChange={(e) => handleChange('purchase-amount', e)}
-                                type={'text'}
-                                label={'Purchase Amount'}
-                                requiredSymbol={'*'}
-                                readOnly
-                                inputBg='#c4c4c449'
-                                error={purchaseAmountError}
-                            />
-
-
-                            <SelectInput
-                                options={paymentStatusItems}
-                                label={'Payment Status'}
-                                value={paymentStatus}
-                                error={paymentStatusError}
-                                requiredSymbol={'*'}
-                                title={'Payment Status'}
-                                onChange={(e) => handleChange('payment-status', e)}
-                            />
-
-                            <div style={{ display: "flex", gap: "10px" }}>
-                                {showPartialField &&
-                                    <Input
-                                        value={amountPaid}
-                                        title={'Amount Paid'}
-                                        onChange={(e) => handleChange('amount-paid', e)}
-                                        type={'text'}
-                                        label={'Amount Paid'}
-                                        requiredSymbol={'*'}
-                                        placeholder={'0.00'}
-                                        error={amountPaidError}
-                                    />}
-
-                                {showPartialField &&
-                                    <Input
-                                        value={dueBalance}
-                                        title={'Due Balance'}
-                                        onChange={(e) => handleChange('due-amount', e)}
-                                        type={'text'}
-                                        label={'Due Balance'}
-                                        readOnly
-                                        inputBg='#c4c4c449'
-                                    />
-                                }
-                            </div>
-                            <SelectInput
-                                options={paymentTypeItems}
-                                label={'Payment Type'}
-                                value={paymentType}
-                                error={paymentTypeError}
-                                requiredSymbol={'*'}
-                                title={'Payment Type'}
-                                onChange={(e) => handleChange('payment-type', e)}
-                            />
-
-                            <TextArea
-                                label={'Note'}
-                                title={'Note'}
-                                onChange={(e) => handleChange('note', e)}
-                                value={note}
-                            />
-
-                        </ItemContainer>
-                        <ItemContainer title={'Waste Info'}>
-                                            <Input 
-                                                        value={wastageDate} 
-                                                        title={'Date'}
-                                                        onChange={(e)=>handleChange('return-date', e)} 
-                                                        type={'date'} 
-                                                        label={'Date'} 
-                                                        error={wastageDateError}
-                                                        requiredSymbol={'*'}
-                                                    /> 
                         
+                        <ItemContainer title={'Wastage Reasons'}>
+                                      {itemWastageList.map((item, i) => ( 
+                                        <div style={{borderBottom: i === itemWastageList.length - 1 ? 'none' : '1px solid #ccc'}}>
+                                        <b style={{textTransform: 'Capitalize'}}>{item.title}</b>
                                             <Input 
-                                                        value={wastageAmount} 
-                                                        title={'Refund Amount'}
-                                                        onChange={()=>{}} 
-                                                        type={'text'} 
-                                                        label={'Refund Amount'} 
+                                                        label={'Date'}
+                                                        title={'Date'}
+                                                        onChange={(e) => handleItemWastageDateChange(i, e.target.value)} 
+                                                        type={'date'}  
+                                                        value={item.wastageDate} 
+                                                        // error={returnDateError}
                                                         requiredSymbol={'*'}
-                                                        readOnly 
-                                                        inputBg='#c4c4c449'
-                                                        error={wastageAmountError}
                                                     /> 
                                             <TextArea 
+                                                            label={`Reason`}
+                                                            title={`Reason`}
+                                                            placeholder="Enter reason..."
+                                                            value={item.reason || ''}
+                                                            onChange={(e) => handleItemReasonChange(i, e.target.value)}
+                                                            requiredSymbol="*"
+                                                    />
+                                                    <br/>
+                                                </div>))}
+
+                                                    {/* {itemWastageList.length > 0 && (
+                                                    <div style={{ marginTop: '10px' }}>
+                                                        <h4>Wastage Reasons</h4>
+                                                        {itemWastageList.map((item, i) => (
+                                                        <div key={i} style={{ marginBottom: '15px' }}>
+                                                            <TextArea
+                                                            label={`Reason for ${item.title}`}
+                                                            title={`Reason for ${item.title}`}
+                                                            placeholder="Enter reason..."
+                                                            value={item.reason || ''}
+                                                            onChange={(e) => handleItemReasonChange(i, e.target.value)}
+                                                            requiredSymbol="*"
+                                                            />
+                                                        </div>
+                                                        ))}
+                                                    </div>
+                                                    )} */}
+
+                        
+                                            {/* <TextArea 
                                                         label={'Reason'} 
                                                         title={'Reason'} 
                                                         onChange={(e) => handleChange('reason', e)} 
@@ -1271,7 +1038,7 @@ const deleteRefundItem = (index) => {
                                                         error={reasonError}
                                                         requiredSymbol={'*'}
                                                     />
-                                            
+                                             */}
                             {/* Add to Purchase Return button */}
                                     <ItemButtonWrapper btnAlign={'flex-start'}>
                                         <Button
@@ -1280,6 +1047,7 @@ const deleteRefundItem = (index) => {
                                             btnColor={'green'}
                                             btnTxtClr={'white'}
                                             btnAlign={'flex-end'}
+                                            type={"submit"}
                                         />
                                     </ItemButtonWrapper>
                             </ItemContainer>
@@ -1292,3 +1060,5 @@ const deleteRefundItem = (index) => {
         </AddWastageWrapper>
     )
 }
+
+

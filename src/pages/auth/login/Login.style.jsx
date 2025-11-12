@@ -6,12 +6,13 @@ export const LoginWrapper = styled.div`
    height: 100vh;
    display: flex;
    background-color: white;
+   padding: 50px;
 `
 
 export const LoginContent = styled.div`
    width:100% ;
    display: flex;
-    background-color: white;
+    background-color: #0037eb16;
     margin:20px;
     border-radius: 100px 0px;
    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
@@ -86,11 +87,11 @@ export const FormWrapper = styled.div`
     @media (max-width: 768px) {
     width: 100%;
     height: 100vh;
+    padding: -100px;
     padding-left:50px;
     padding-right: 50px;
     font-size: 13px;
     border-radius: 0px;
-    margin-top: -100px;
   }
   `
 

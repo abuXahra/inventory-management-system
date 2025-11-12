@@ -16,6 +16,7 @@ export const TableWrapper = styled.div`
 export const ActionButtons = styled.div`
   display: flex;
   gap: 5px;
+  position: relative;
 `;
 
 export const ActionButton = styled.button`
@@ -26,9 +27,27 @@ export const ActionButton = styled.button`
   background-color: transparent;
   font-size: 10px;
 
-  &:hover {
+  /* &:hover {
     opacity: 0.8;
-  }
+  } */
+`;
+
+export const ActionText = styled.span`
+  width: 100px;
+  padding: 3px;
+  background-color: #383838ff;
+  color: #767676ff;
+  position: absolute;
+  bottom: -22px;
+  left: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 30px;
+  border-radius: 10px;
+  border: 0.5px solid #cccccc;
+  z-index: 999;
+  font-size: 10px;
 `;
 
 export const SlideUpButton = styled.div`
