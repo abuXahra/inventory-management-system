@@ -111,7 +111,7 @@ export default function Register() {
         </RegisterContentLeft>
        <FormWrapper>
         <img src={RegisterIcon} alt="" srcset="" />
-         <h1>flowVentory</h1>
+         <h1>JewelVentory</h1>
          <p>Please log in to your account</p>
         <form onSubmit={onSubmitHandler}>
              <Input
