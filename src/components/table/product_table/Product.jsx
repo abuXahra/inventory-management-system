@@ -147,18 +147,23 @@ const ProductTable = ({ data, onDeleteProd, currencySymbol, show = true, product
       width: '10%',
     },
     {
-      name: 'Price',
+      name: 'Purchase',
       selector: (row) =><div>
-         <span dangerouslySetInnerHTML={{ __html: currencySymbol }}/>{row.price.toLocaleString()}
+         <span dangerouslySetInnerHTML={{ __html: currencySymbol }}/>{row.purchasePrice.toLocaleString()}
        </div>,
       sortable: true,        
-      width: '10%', // Set a different width
+      // width: '10%', // Set a different width
 
     },
-   show && {
-      name: 'Alert',
-      selector: (row) => row.quantityAlert,
-      width: '10%',
+ 
+    {
+      name: 'Sale',
+      selector: (row) =><div>
+         <span dangerouslySetInnerHTML={{ __html: currencySymbol }}/>{row.salePrice.toLocaleString()}
+       </div>,
+      sortable: true,        
+      // width: '10%', // Set a different width
+
     },
     show && {
       name: 'Actions',
@@ -184,7 +189,7 @@ const ProductTable = ({ data, onDeleteProd, currencySymbol, show = true, product
           data={data}
           pagination
           paginationPerPage={50} // Default rows per page
-          paginationRowsPerPageOptions={[10, 25, 50, 100]} // Options in the dropdown
+          paginationRowsPerPageOptions={[10, 25, 50, 100, 500, 1000]} // Options in the dropdown
           responsive
           customStyles={customStyles}
           selectableRows={productPermission.canDelete} // 👈 only show checkboxes if delete permission is true

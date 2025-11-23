@@ -10,7 +10,7 @@ import { useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import "react-toastify/ReactToastify.css"
 import ButtonLoader from '../../../components/clicks/button/button_loader/ButtonLoader';
-import RegisterPicture from '../../../images/inventoryimage.jpg'
+import RegisterPicture from '../../../images/inventoryimage.png'
 import RegisterIcon from '../../../images/icons/icon.png'
 
 
@@ -111,7 +111,7 @@ export default function Register() {
         </RegisterContentLeft>
        <FormWrapper>
         <img src={RegisterIcon} alt="" srcset="" />
-         <h1>JewelVentory</h1>
+         <h1>flowVentory</h1>
          <p>Please log in to your account</p>
         <form onSubmit={onSubmitHandler}>
              <Input

@@ -116,7 +116,10 @@ export default function ProductDetail() {
                       }
                     };
               
-           
+      const imgSrc = prodData?.imgUrl
+  ? `${process.env.REACT_APP_URL}/images/${encodeURIComponent(prodData.imgUrl)}`
+  : productPicture;
+     
             
   return (
         <ProductDetailWrapper>
@@ -298,7 +301,7 @@ export default function ProductDetail() {
                 </ItemContainer>
 
                 <ItemContainer title={'Product Picture'}> 
-                  <PictureWrapper onClick={()=>setShowProdImage(true)} heights={'300px'} imgUrl={prodData?.imgUrl ? `${process.env.REACT_APP_URL}/images/${prodData?.imgUrl}` : productPicture}></PictureWrapper>          
+                  <PictureWrapper onClick={()=>setShowProdImage(true)} heights={'300px'} imgUrl={imgSrc}></PictureWrapper>          
               </ItemContainer>
 
 

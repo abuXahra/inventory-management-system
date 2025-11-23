@@ -1,5 +1,5 @@
 
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import ItemContainer from '../../../components/item_container/ItemContainer'
 import Input from '../../../components/input/Input'
 import SelectInput from '../../../components/input/selectInput/SelectInput'
@@ -20,7 +20,10 @@ import { List } from 'react-content-loader'
 
 export default function EditPurchase() {
 const token = localStorage.getItem('token');
-    
+
+const productDropdownRef = useRef(null);
+const supplierDropdownRef = useRef(null);
+
 // const [productItemList, setProductItemList] = useState(ProductItemList);
 const {purchaseId} = useParams();
   
@@ -105,6 +108,8 @@ const [showPartialField, setShowPartialField] = useState(false);
 const [amountPaid, setAmountPaid] = useState('')
 const [amountPaidError, setAmountPaidError] = useState(false);
 const [dueBalance, setDueBalance] = useState('');
+
+const [purchaseCode, setPurchaseCode] = useState('');
 
 
 // onchange handler
@@ -307,7 +312,9 @@ useEffect(()=>{
                                                    })
                      
                      const formattedPurchaseDate = new Date(res.data.purchaseDate).toISOString().split('T')[0];
+                     setPurchaseCode(res.data.code)
                      setPurchaseDate(formattedPurchaseDate);
+                     setPurchaseCode(res.data.code)
                      setSupplier(res.data.supplier.name)
                      setPurchaseStatus(res.data.purchaseStatus)
                      setReference(res.data.reference)
@@ -335,6 +342,30 @@ useEffect(()=>{
                  getPurchaseData()
 
 },[purchaseId])
+
+useEffect(() => {
+                const handleClickOutside = (e) => {
+                    if (
+                        productDropdownRef.current &&
+                        !productDropdownRef.current.contains(e.target)
+                    ) {
+                        setShowDropdwon(false);
+                    }
+            
+                    if (
+                        supplierDropdownRef.current &&
+                        !supplierDropdownRef.current.contains(e.target)
+                    ) {
+                        setShowSupDropdown(false);
+                    }
+                };
+            
+                document.addEventListener("mousedown", handleClickOutside);
+            
+                return () => {
+                    document.removeEventListener("mousedown", handleClickOutside);
+                };
+            }, []);
 
   // Fetch expense initial
     const [prefix, setPrefix] = useState('')
@@ -654,7 +685,7 @@ const hanldeSumbit = async (e) =>{
   return (
     <EditPurchaseWrapper>
      {/* Page title */}
-        <PageTitle title={'Purchase'} subTitle={'/Edit'}/>
+        <PageTitle title={`Purchase (${purchaseCode})`} subTitle={'/Edit'}/>
         <>
         {isLoading? <List/> : 
         <EditPurchaseContent>
@@ -676,27 +707,37 @@ const hanldeSumbit = async (e) =>{
                             />  
                            { showDropdwon && 
                           
-                            <DropdownWrapper>
-                                 {/* {
-                                 products && products.map((data, i)=>(
-                                    <DropdownItems key={i} onClick={()=>dropdownHandler(data)}>{data.title}</DropdownItems>
-                                 ))}   */}
-                        {products &&
-                        products
-                            .filter((product) => {
-                            const search = searchTitle.toLowerCase();
-                            return (
-                                product.title.toLowerCase().includes(search) ||
-                                product.barcode?.toLowerCase().includes(search)
-                            );
-                            })
-                            // .slice(0, 10)
-                            .map((data, i) => (
-                            <DropdownItems key={i} onClick={() => dropdownHandler(data)}>
-                                {data.title}
-                            </DropdownItems>
-                            ))}
-                        </DropdownWrapper>
+                           <DropdownWrapper topPosition={'70px'} ref={productDropdownRef}>
+                                                           {(() => {
+                                                             const search = searchTitle.toLowerCase();
+                                                             const filtered = products?.filter((product) => {
+                                                               return (
+                                                                 product.title.toLowerCase().includes(search) ||
+                                                                 product.barcode?.toLowerCase().includes(search)
+                                                               );
+                                                             });
+                                                       
+                                                             // If nothing matches → show "product doesn't exist"
+                                                             if (!filtered || filtered.length === 0) {
+                                                               return (
+                                                                 <DropdownItems>
+                                                                   <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '5px', padding: '50px', justifyContent: 'center', alignItems: 'center' }}>
+                                                                                     <span>Product doesn’t exist </span>
+                                                                                     <a href="/add-product">Please click here to register it </a>
+                                                                                   </div>
+                                                                 </DropdownItems>
+                                                               );
+                                                             }
+                                                       
+                                                             // Otherwise → show matching items
+                                                             return filtered.map((data, i) => (
+                                                               <DropdownItems key={i} onClick={() => dropdownHandler(data)}>
+                                                                 {data.title}
+                                                               </DropdownItems>
+                                                             ));
+                                                           })()}
+                                                         </DropdownWrapper>
+                           
                         
                         }
                         </AnyItemContainer>
@@ -962,7 +1003,7 @@ const hanldeSumbit = async (e) =>{
                      
     
                             {showSupDropdown && (
-                                        <DropdownWrapper topPosition={'80px'} width={"96%"}>
+                                        <DropdownWrapper ref={supplierDropdownRef} topPosition={'90px'} width={"96%"}>
                                           {supplierItems.filter(c =>supplier.length > 0 && c.name.toLowerCase().includes(supplier.toLowerCase())).length > 0 ? 
                                            (supplierItems.filter(c => supplier.length > 0 && c.name.toLowerCase().includes(supplier.toLowerCase())).map((data, i) => (
                                                                                       <DropdownItems key={i} onClick={() => dropdownSupplierName(data)}>

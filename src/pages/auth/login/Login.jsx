@@ -102,8 +102,8 @@ export default function Login() {
         </LoginContentLeft>
        <FormWrapper>
         <img src={loginIcon} alt="" srcset="" />
-         {/* <h1>flowVentory</h1> */}
-          <h1>JewelVentory</h1>
+         <h1>flowVentory</h1>
+          {/* <h1>JewelVentory</h1> */}
          <p>Please log in to your account</p>
         <form onSubmit={onSubmitHandler}>
             <Input

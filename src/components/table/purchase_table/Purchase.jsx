@@ -91,7 +91,7 @@ const PurchaseTable = ({data, onDeletePurchase, purchasePermission}) => {
                           await axios.delete(`${process.env.REACT_APP_URL}/api/purchase/bulk-delete`, {
                             data: { ids: selectedPurchase.map((e) => e._id) },
                             headers: {Authorization: `Bearer ${token}`}
-                          })
+                          });
                           toast.success(`${selectedPurchase.length} purchases deleted successfully`);
                       
                           // remove deleted from UI

@@ -18,7 +18,7 @@ import ToastComponents from '../../toast_message/toast_component/ToastComponents
 
 const SalesTable = ({data, onDeleteSale, salePermission}) => {
   const token = localStorage.getItem('token');
-    
+
   const navigate = useNavigate();
 
    // fetching currency from db
@@ -89,11 +89,15 @@ const SalesTable = ({data, onDeleteSale, salePermission}) => {
                         const confirmBulkDelete = async () => {
                           setIsDeleting(true);
                           try {
-                            await axios.delete(`${process.env.REACT_APP_URL}/api/sale/bulk-delete`, {
-                              data: { ids: selectedSale.map((e) => e._id) },
-                              headers: {Authorization: `Bearer ${token}`}
-                           }
-)
+                          //   await axios.delete(`${process.env.REACT_APP_URL}/api/sale/bulk-delete`, {
+                          //     data: { ids: selectedSale.map((e) => e._id) },
+                          //     headers: {Authorization: `Bearer ${token}`}
+                          //  });
+                           await axios.delete(`${process.env.REACT_APP_URL}/api/sale/bulk-delete`, {
+                            data: { ids: selectedSale.map(e => e._id) },
+                              headers: { Authorization: `Bearer ${token}` }
+                            }); 
+
                             toast.success(`${selectedSale.length} sales deleted successfully`);
                         
                             // remove deleted from UI

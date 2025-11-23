@@ -10,7 +10,7 @@ import HomePurchaseList from '../../components/table/purchase_table/home_purchas
 import HomeSaleList from '../../components/table/sale_table/home_salelist/HomeSaleList'
 import { UserContext } from '../../components/context/UserContext'
 import { ArrowWrapper, ItemDetails } from '../reports/reportsPage.style'
-import { FaChartPie, FaLongArrowAltRight, FaPeopleCarry } from 'react-icons/fa'
+import { FaChartPie, FaLongArrowAltRight, FaPeopleCarry, FaRecycle } from 'react-icons/fa'
 import { IoIosPeople } from 'react-icons/io'
 import { PiInvoiceBold } from 'react-icons/pi'
 import { IoBagSharp, IoPricetagsSharp } from 'react-icons/io5'
@@ -36,8 +36,12 @@ function DashboardHome() {
   const navigate = useNavigate();
   const [customer, setCustomer] = useState([]);
   const [saleInvoice, setSaleInvoice] = useState(null);
+  const [saleOutstanding, setSaleOutstanding] = useState(null);
   const [supplier, setSupplier] = useState([]);
   const [purchaseInvoice, setPurchaseInvoice] = useState(null);
+  const [purchaseOutstanding, setPurchaseOutstanding] = useState(null);
+  const [totalWastageAmount, setTotalWastageAmount] = useState(null);
+  const [totalStockAmount, setTotalStockAmount] = useState(null);
   const [items, setItems] = useState([]);
   const [category, setCategory] = useState([]);
   const [paymentCount, setPaymentCount] = useState(null);
@@ -46,8 +50,7 @@ function DashboardHome() {
   const [companyData, setCompanyData] = useState('')
   const [isLoading, setIsLoading] = useState(false);
 
-  
-  const fetchCompany = async() =>{
+    const fetchCompany = async() =>{
                       // setIsLoading(true)
                         try {
                             const res = await axios.get(`${process.env.REACT_APP_URL}/api/company`, {
@@ -64,19 +67,6 @@ function DashboardHome() {
                   
                     }
            
-  // customer
-  const fetchCustomer = async () =>{
-      try {
-        const res = await axios.get(process.env.REACT_APP_URL+ '/api/customers', {
-                                            headers: {
-                                              Authorization: `Bearer ${token}`
-                                            }
-                                      })
-        setCustomer(res.data);
-      } catch (error) {
-        console.log(error)
-      }
-    }
 
   // saleInvoice
   const fetchSaleInvoice = async () =>{
@@ -87,25 +77,41 @@ function DashboardHome() {
                                             }
                                       })
         setSaleInvoice(res.data.totalSaleAmount);
-      } catch (error) {
-        console.log(error)
-      }
-    }
-  
-  // supplier
-  const fetchSupplier = async () =>{
-      try {
-        const res = await axios.get(process.env.REACT_APP_URL+ '/api/suppliers', {
-                                            headers: {
-                                              Authorization: `Bearer ${token}`
-                                            }
-                                      })
-        setSupplier(res.data);
+        // setSaleInvoice(res.data.totalAmountPaid);
       } catch (error) {
         console.log(error)
       }
     }
 
+
+    // sale outstaning
+  const fetchSaleOutstanding = async () =>{
+      try {
+        const res = await axios.get(process.env.REACT_APP_URL+ '/api/sale/outstanding-sale' , {
+                                            headers: {
+                                              Authorization: `Bearer ${token}`
+                                            }
+                                      })
+        setSaleOutstanding(res.data.totalOutstanding);
+      } catch (error) {
+        console.log(error)
+      }
+    }
+
+        // sale outstaning
+  const fetchTotalWastageAmount = async () =>{
+      try {
+        const res = await axios.get(process.env.REACT_APP_URL+ '/api/wastage/total-waste' , {
+                                            headers: {
+                                              Authorization: `Bearer ${token}`
+                                            }
+                                      })
+        setTotalWastageAmount(res.data.totalWastageAmount);
+      } catch (error) {
+        console.log(error)
+      }
+    }
+ 
   // Purchase Invoice
   const fetchPurchaseInvoice = async () =>{
       try {
@@ -120,36 +126,24 @@ function DashboardHome() {
       }
     }
 
+ 
 
-  // Items
-  const fetchItems = async () =>{
+
+     // Purchase Outstanding
+  const fetchPurchaseOutstanding = async () =>{
       try {
-        const res = await axios.get(process.env.REACT_APP_URL+ '/api/products', {
+        const res = await axios.get(process.env.REACT_APP_URL+ '/api/purchase/outstanding-purchase', {
                                             headers: {
                                               Authorization: `Bearer ${token}`
                                             }
                                       })
-        setItems(res.data);
+        setPurchaseOutstanding(res.data.totalOutstanding);
       } catch (error) {
         console.log(error)
       }
     }
 
-
-    // Category
-  const fetchCategory = async () =>{
-      try {
-        const res = await axios.get(process.env.REACT_APP_URL+ '/api/category', {
-                                            headers: {
-                                              Authorization: `Bearer ${token}`
-                                            }
-                                      })
-        setCategory(res.data);
-      } catch (error) {
-        console.log(error)
-      }
-    }
-
+  
 // Payment
       const fetchPayment = async () =>{
       try {
@@ -182,21 +176,39 @@ function DashboardHome() {
       }
     }
 
+    
+      // tota tock amount
+  const fetchTotalStockAmount = async () =>{
+      try {
+        const res = await axios.get(process.env.REACT_APP_URL+ '/api/products/stock-amount' , {
+                                            headers: {
+                                              Authorization: `Bearer ${token}`
+                                            }
+                                      })
+        setTotalStockAmount(res.data.totalStockAmount);
+      } catch (error) {
+        console.log(error)
+      }
+    }
+
 
     useEffect(()=>{
-      fetchCustomer();
-      fetchSupplier();
-      fetchItems();
-      fetchCategory();
+      fetchCompany();
       fetchPayment();
       fetchSaleInvoice();
+      fetchSaleOutstanding();
       fetchPurchaseInvoice();
+      fetchPurchaseOutstanding();
+      fetchTotalWastageAmount();
       fetchExpenses();
-      fetchCompany();
+      fetchTotalStockAmount();
+
     }, []);
     
   
-  
+    const overAllProfit = 
+    saleInvoice - (purchaseInvoice + expenses + totalWastageAmount )
+    
   const TopCardItemList = [
     {
       title: "Sales Invoice",
@@ -220,18 +232,7 @@ function DashboardHome() {
       url: "/purchase",
       currency: companyData,
     },
-        {
-      title: "Payments",
-      count: paymentCount?.toLocaleString('en-NG', { 
-                      minimumFractionDigits: 2, 
-                      maximumFractionDigits: 2 
-                    }),
-      icon: <HiMiniReceiptRefund />,
-      bg: "#f59e0b",
-      url: "/sale-return",
-      currency: companyData,
-    },
-    {
+      {
       title: "Expenses",
       count: expenses?.toLocaleString('en-NG', { 
                       minimumFractionDigits: 2, 
@@ -242,37 +243,69 @@ function DashboardHome() {
       url: "/expenses",
        currency: companyData,
     },
+      {
+      title: "In Stock",
+      count: totalStockAmount?.toLocaleString('en-NG', { 
+                      minimumFractionDigits: 2, 
+                      maximumFractionDigits: 2 
+                    }),
+      icon: <HiMiniReceiptRefund />,
+      // bg: "#f59e0b",
+      bg: "purple",
+      url: "/sale-return",
+      currency: companyData,
+    },
     {
-      title: "Customer",
-      count: customer.length,
+      title: "Sale Outstanding",
+      count: saleOutstanding?.toLocaleString('en-NG', { 
+                      minimumFractionDigits: 2, 
+                      maximumFractionDigits: 2 
+                    }),
       icon: <IoIosPeople />,
-      bg: "#2563eb",
-      url: "/customers",
-    },
-    {
-      title: "Suppliers",
-      count: supplier.length,
-      icon: <FaPeopleCarry />,
       bg: "#16a34a",
-      url: "/suppliers",
+      url: "/customers",
+      currency: companyData,
     },
     {
-      title: "Items",
-      count: items.length,
-      icon: <IoBagSharp />,
+      title: "Purchase Outstanding",
+      count: purchaseOutstanding?.toLocaleString('en-NG', { 
+                      minimumFractionDigits: 2, 
+                      maximumFractionDigits: 2 
+                    }),
+      icon: <FaPeopleCarry />,
       bg: "#2563eb",
-      url: "/products",
+      url: "/suppliers",
+      currency: companyData,
+    },
+    {
+      title: "Wastage",
+      count: totalWastageAmount?.toLocaleString('en-NG', { 
+                      minimumFractionDigits: 2, 
+                      maximumFractionDigits: 2 
+                    }),
+      icon: <FaRecycle />,
+      bg: "#ef4444",
+      url: "/wastage",
+      currency: companyData,
     },
   
     {
-      title: "Items Category",
-      count: category.length,
+      title: "Net Profit",
+      count: overAllProfit?.toLocaleString('en-NG', { 
+                      minimumFractionDigits: 2, 
+                      maximumFractionDigits: 2 
+                    }),
       icon: <IoPricetagsSharp />,
-      bg: "#f59e0b",
-      url: "/categories",
+      bg: "purple",
+      url: "",
+         currency: companyData,
     },
   ];
   
+
+  // title: "Wastage Report",
+  //     icon: <FaRecycle />,
+  //     bg: "purple",
 
 
   const data = [

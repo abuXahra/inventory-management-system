@@ -78,14 +78,14 @@ export const SidebarItemLists = [
     ],
   },
   {
-    tile: "Report",
-    url: "/reports",
-    icon: <BsCartX />,
-  },
-  {
     tile: "Wastage",
     url: "/wastage",
     icon: <FaRecycle />,
+  },
+  {
+    tile: "Report",
+    url: "/reports",
+    icon: <BsCartX />,
   },
   {
     tile: "Setting",

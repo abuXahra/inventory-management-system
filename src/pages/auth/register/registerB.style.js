@@ -5,12 +5,13 @@ export const RegisterWrapper = styled.div`
   height: 100vh;
   display: flex;
   background-color: white;
+  padding: 50px;
 `;
 
 export const RegisterContent = styled.div`
   width: 100%;
   display: flex;
-  background-color: white;
+  background-color: #0037eb16;
   margin: 20px;
   border-radius: 100px 0px;
   box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
@@ -31,16 +32,6 @@ export const RegisterContentLeft = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  /* background-color: white; */
-  /* margin-top:20px;
- margin-bottom:20px;
- margin-left:20px;
- border-top: 2px solid #00032a;
- border-bottom: 2px solid #00032a;
- border-left: 2px solid #00032a;
- border-right: 20px;
- border-top-left-radius: 20px;
- border-bottom-left-radius: 20px; */
 
   img {
     height: 400px;
@@ -74,7 +65,7 @@ export const FormWrapper = styled.div`
     display: flex;
     flex-direction: column;
     // padding: 0px 40px;
-    gap: 20px;
+    gap: 10px;
   }
 
   img {
@@ -88,6 +79,5 @@ export const FormWrapper = styled.div`
     padding-left: 50px;
     padding-right: 50px;
     border-radius: 0px;
-    margin-top: -100px;
   }
 `;

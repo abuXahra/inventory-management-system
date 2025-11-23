@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState, useRef  } from 'react'
 import ItemContainer from '../../../components/item_container/ItemContainer'
 import Input from '../../../components/input/Input'
 import SelectInput from '../../../components/input/selectInput/SelectInput'
@@ -23,6 +23,10 @@ export default function AddSale() {
 // const [productItemList, setProductItemList] = useState(ProductItemList);
 const token = localStorage.getItem('token');
     
+
+const productDropdownRef = useRef(null);
+const customerDropdownRef = useRef(null);
+
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [isBtnLoading, setIsBtnLoading] = useState(false);
@@ -107,12 +111,17 @@ const [dueBalance, setDueBalance] = useState('');
 
 // show out of stock overlay:
 const [showOutOfStockCard, setShowOutOfStockCard] = useState(false);
+const [showStockCard, setShowStockCard] = useState(false);
+
 const [prodTitle, setProdTitle]= useState('');
+const [prodStock, setProdStock]= useState('');
+
 
 // navigate to add out of stock item purchaseFunc
 const navigateToAddStock = () =>{
      navigate('/add-purchase');
      setShowOutOfStockCard(false)
+     setShowStockCard(false)
 }
 
 // close out stock 
@@ -127,7 +136,14 @@ const closOutOfStockCard = () =>{
         setAmount('')
         setProductId('')
         setShowOutOfStockCard(false)
+        setShowStockCard(false)
 }
+
+ // close out stock
+  const closAboveStockCard = () => {
+    setShowOutOfStockCard(false)
+    setShowStockCard(false)
+  }
 
 
 // onchange handler
@@ -312,6 +328,30 @@ const paymentStatusItems = [
     },
 ]
 
+useEffect(() => {
+    const handleClickOutside = (e) => {
+        if (
+            productDropdownRef.current &&
+            !productDropdownRef.current.contains(e.target)
+        ) {
+            setShowDropdwon(false);
+        }
+
+        if (
+            customerDropdownRef.current &&
+            !customerDropdownRef.current.contains(e.target)
+        ) {
+            setShowCusDropdown(false);
+        }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+        document.removeEventListener("mousedown", handleClickOutside);
+    };
+}, []);
+
 
   // Fetch sale initial
     const [prefix, setPrefix] = useState('')
@@ -442,6 +482,7 @@ const dropdownHandler = (product) => {
         setProdTitle(product.title)
         setShowOutOfStockCard(true)
     }
+    setProdStock(product.stockQuantity)
     setShowDropdwon(false)
     setProductId(product._id)
     setSearchTitle('');
@@ -487,6 +528,17 @@ const addToList = (e) =>{
     }
     if(isValid){
        
+                // find the product in products array to get stockQuantity
+        const product = products.find(p => p._id === productId);
+        if (product) {
+            if (Number(quantity) > product.stockQuantity) {
+                setShowStockCard(true)
+                setProdTitle(product.title)
+                return; // stop adding
+            }
+        }
+
+
         const newItem = {productId, title, quantity, price, tax, taxAmount, unitCost, amount};
         setItemList((prevItems)=>[...prevItems, newItem]);
 
@@ -662,32 +714,44 @@ const hanldeSumbit = async (e) =>{
                                 label={'Barcode/Item Code/name'} 
                                 placeholder={'search...'}
                                 requiredSymbol={'*'}
-                            />  
+                            /> 
+            
                            { showDropdwon && 
                           
-                            <DropdownWrapper>
-                                 {/* {
-                                 products && products.map((data, i)=>(
-                                    <DropdownItems key={i} onClick={()=>dropdownHandler(data)}>{data.title}</DropdownItems>
-                                 ))}   */}
-                        {products &&
-                        products
-                            .filter((product) => {
-                            const search = searchTitle.toLowerCase();
-                            return (
-                                product.title.toLowerCase().includes(search) ||
-                                product.barcode?.toLowerCase().includes(search)
-                            );
-                            })
-                            // .slice(0, 10)
-                            .map((data, i) => (
-                            <DropdownItems key={i} onClick={() => dropdownHandler(data)}>
-                                {data.title}
-                            </DropdownItems>
-                            ))}
-                        </DropdownWrapper>
+                            <DropdownWrapper topPosition={'70px'} ref={productDropdownRef}>
+                                {(() => {
+                                  const search = searchTitle.toLowerCase();
+                                  const filtered = products?.filter((product) => {
+                                    return (
+                                      product.title.toLowerCase().includes(search) ||
+                                      product.barcode?.toLowerCase().includes(search)
+                                    );
+                                  });
+                            
+                                  // If nothing matches → show "product doesn't exist"
+                                  if (!filtered || filtered.length === 0) {
+                                    return (
+                                      <DropdownItems>
+                                        <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '5px', padding: '50px', justifyContent: 'center', alignItems: 'center' }}>
+                                                          <span>Product doesn’t exist </span>
+                                                          <a href="/add-product">Please click here to register it </a>
+                                                        </div>
+                                      </DropdownItems>
+                                    );
+                                  }
+                            
+                                  // Otherwise → show matching items
+                                  return filtered.map((data, i) => (
+                                    <DropdownItems key={i} onClick={() => dropdownHandler(data)}>
+                                      {data.title}
+                                    </DropdownItems>
+                                  ));
+                                })()}
+                              </DropdownWrapper>
                         
                         }
+
+                        
                         </AnyItemContainer>
                         <AnyItemContainer>
                             <Input 
@@ -936,7 +1000,7 @@ const hanldeSumbit = async (e) =>{
     {/* Customer info */}
         <CustomerInfoWrapper>
             <form action="" onSubmit={(e)=>hanldeSumbit(e)}>
-                <ItemContainer title={'Customer Info'}>
+                <ItemContainer title={'Customer Info'}> 
                     
                   <Input 
                                 value={customer} 
@@ -949,7 +1013,7 @@ const hanldeSumbit = async (e) =>{
                                 requiredSymbol={'*'}
                             />  
                            {showCusDropdown && (
-                                    <DropdownWrapper topPosition={'80px'} width={"96%"}>
+                                    <DropdownWrapper topPosition={'90px'} width={"96%"} ref={customerDropdownRef}>
                                         {customerItems.filter(c =>
                                         customer.length > 0 &&
                                         c.name.toLowerCase().includes(customer.toLowerCase())
@@ -1101,6 +1165,22 @@ const hanldeSumbit = async (e) =>{
                 </p>
               </Overlay>
             )}
+
+
+        {showStockCard && (
+              <Overlay
+                contentWidth="30%"
+                overlayButtonClick={navigateToAddStock}
+                closeOverlayOnClick={closAboveStockCard}
+                btnText1={'Add Purchase'}
+                btnText2={'Cancel'}
+              >
+                <p style={{ margin: "40px", textAlign: "center", fontSize: "14px", lineHeight: "25px" }}>
+                  <b style={{textTransform: "capitalize", fontSize:"20px"}}>{prodTitle}</b><br/> cannot be added. Quantity exceeds stock quantity <b>{prodStock}</b><br/>Please add more purchase
+                </p>
+              </Overlay>
+            )}
+
     </AddSalesWrapper>
   )
 }
