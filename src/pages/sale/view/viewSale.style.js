@@ -65,7 +65,7 @@ export const DateWrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: 10px;
-  width: 35%;
+  width: 40%;
 
   div {
     display: flex;

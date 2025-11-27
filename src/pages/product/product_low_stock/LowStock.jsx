@@ -45,7 +45,7 @@ export default function LowStock() {
                                     }
                               });
                  console.log(res.data)
-                 setProducts(res.data.slice(0, 5))
+                 setProducts(res.data)
                  setAllProducts(res.data);
                  setIsLoading(false)
                  

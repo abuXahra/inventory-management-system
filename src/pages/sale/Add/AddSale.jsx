@@ -72,7 +72,8 @@ const [customerNameError, setCustomerNameError] = useState(false);
 const [saleStatus, setSaleStatus] = useState('');
 const [saleStatusError, setSaleStatusError] = useState(false);
 
-const [reference, setReference] = useState('');
+const [walkingCustomerEmail, setWalkingCustomerEmail] = useState('');
+const [walkingCustomerNumber, setWalkingCustomerNumber] = useState('');
 
 const [saleAmount, setSaleAmount] = useState('');
 const [saleAmountError, setSaleAmountError] = useState(false);
@@ -204,8 +205,10 @@ const handleChange = (type, e)=>{
         }else if(type === 'sale-status'){
             setSaleStatus(e.target.value);
             setSaleStatusError(false);
-        }else if(type === 'references'){
-            setReference(e.target.value);
+        }else if(type === 'walkInCustomer-email'){
+            setWalkingCustomerEmail(e.target.value);
+        }else if(type === 'walkInCustomer-number'){
+            setWalkingCustomerNumber(e.target.value);
         }else if(type === 'sale-amount'){
             setSaleAmount(e.target.value);
             setSaleAmountError(false);
@@ -477,38 +480,169 @@ useEffect(() => {
 };
 
 // search dropdownd handler
+// const dropdownHandler1 = (product) => {
+//     if(product.stockQuantity === 0){
+//         setProdTitle(product.title)
+//         setShowOutOfStockCard(true)
+//     }
+//     setProdStock(product.stockQuantity)
+//     setShowDropdwon(false)
+//     setProductId(product._id)
+//     setSearchTitle('');
+//     setTitle(product.title)
+//     setQuantity('1');
+//     setPrice(product.salePrice)
+//     setTax(product.tax)
+//     setTaxAmount()
+//     setUnitCost()
+//     setAmount()
+// }
+
+// search dropdown handler
 const dropdownHandler = (product) => {
-    if(product.stockQuantity === 0){
-        setProdTitle(product.title)
-        setShowOutOfStockCard(true)
-    }
-    setProdStock(product.stockQuantity)
+
     setShowDropdwon(false)
-    setProductId(product._id)
+    if(product.stockQuantity === 0){
+        setProdTitle(product.title);
+        setShowOutOfStockCard(true);
+        return;
+    }
+
+    setProdStock(product.stockQuantity);
+    setProductId(product._id);
     setSearchTitle('');
-    setTitle(product.title)
-    setQuantity();
-    setPrice(product.salePrice)
-    setTax(product.tax)
-    setTaxAmount()
-    setUnitCost()
-    setAmount()
-}
+    setTitle(product.title);
+
+    // Default quantity = 1
+    const qty = "1";
+
+    setQuantity(qty);
+    setPrice(product.salePrice);
+    setTax(product.tax);
+
+    // ✅ Use your calculation function HERE
+    calculateSalePrice(product.salePrice, product.tax, qty);
+};
 
 
-
+const [showWalkingCustomerField, setShowWalkingCustomerField] = useState(false)
 
 // search name dropdownd handler
 const dropdownCustomerName = (customer) => {
     setShowCusDropdown(false)
     setCustomerId(customer._id)
-    setCustomer(customer.name)    
+    setCustomer(customer.name)   
+    customer.name === 'Walk in customer' ? setShowWalkingCustomerField(true) : setShowWalkingCustomerField(false)
 }
 
+const [showZeroQtyCard, setShowZeroQtyCard] = useState(false)
+const [showExcesStockCard, setShowExcesStockCard] = useState(false)
+// add to array list
+const addToList = (e) => {
 
+    e.preventDefault();
+
+    let isValid = true;
+
+    if (!title) {
+        setTitleError(true);
+        isValid = false;
+    }
+
+    // ====================================
+    // ✅ NEW CONDITION — Prevent 0 quantity
+    // ====================================
+    if (!quantity || Number(quantity) === 0) {
+        setQuantityError(true);
+        setShowZeroQtyCard(true);  
+        setProdTitle("Quantity must be greater than zero.");
+        return;   // STOP HERE
+    }
+
+    if (!price) {
+        setPriceError(true);
+        isValid = false;
+    }
+
+    if (isValid) {
+
+        // 1. Get the product for stockQuantity check
+        const product = products.find(p => p._id === productId);
+
+        if (product) {
+
+            const stockQty = Number(product.stockQuantity);
+            const selectedQty = Number(quantity);
+
+            // ================================
+            // CONDITION 1 — Out of stock
+            // ================================
+            if (stockQty <= 0) {
+                setShowStockCard(true);
+                setProdTitle(product.title);
+                return;
+            }
+
+            // ================================
+            // CONDITION 2 — quantity > stock
+            // ================================
+            if (selectedQty > stockQty) {
+                setShowStockCard(true);
+                setProdTitle(product.title);
+                return;
+            }
+
+            // ================================
+            // CONDITION 3 — already added full stock
+            // ================================
+            const existingItem = itemList.find(item => item.productId === productId);
+
+            if (existingItem) {
+                const alreadyAddedQty = Number(existingItem.quantity);
+
+            if (alreadyAddedQty === stockQty) {
+                      setShowExcesStockCard(true);
+                      setProdTitle(`You have already added all available stock of "${product.title}"`);
+                      return;
+                  }
+
+                if (alreadyAddedQty + selectedQty > stockQty) {
+                    setShowStockCard(true);
+                    setProdTitle(`You cannot exceed the available stock of "${product.title}"`);
+                    return;
+                }
+            }
+        }
+
+        // Passed all validations — ADD
+        const newItem = {
+            productId,
+            title,
+            quantity,
+            price,
+            tax,
+            taxAmount,
+            unitCost,
+            amount
+        };
+
+        setItemList((prevItems) => [...prevItems, newItem]);
+
+        // CLEAR FIELDS
+        setSearchTitle('');
+        setTitle('');
+        setQuantity('');
+        setPrice('');
+        setTax('');
+        setTaxAmount('');
+        setUnitCost('');
+        setAmount('');
+        setProductId('');
+    }
+};
 
 // add to array list
-const addToList = (e) =>{
+const addToList1 = (e) =>{
 
     e.preventDefault();
 
@@ -640,7 +774,8 @@ const hanldeSumbit = async (e) =>{
     //   customer: customer._id || customer,
       customer: customerId,
       saleStatus,
-      reference,
+      walkingCustomerEmail,
+      walkingCustomerNumber,
       saleAmount: Number(saleAmount),
       paymentStatus,
       paymentType,
@@ -1060,14 +1195,28 @@ const hanldeSumbit = async (e) =>{
                                 onChange={(e)=>handleChange('sale-status', e)}
                             />
 
+                   {showWalkingCustomerField &&
                     <Input 
-                                value={reference} 
-                                title={'References'}
-                                onChange={(e)=>handleChange('references', e)} 
-                                type={'text'} 
-                                label={'References'} 
+                                value={walkingCustomerEmail} 
+                                title={'Email'}
+                                onChange={(e)=>handleChange('walkInCustomer-email', e)} 
+                                type={'email'} 
+                                label={'Email'} 
+                                placeholder={'Optional'}
                                 // error={saleDateError}
                             /> 
+                        }
+
+                   { showWalkingCustomerField &&
+                       <Input 
+                                value={walkingCustomerNumber} 
+                                title={'Phone Number'}
+                                onChange={(e)=>handleChange('walkInCustomer-number', e)} 
+                                type={'text'} 
+                                label={'Phone Number'} 
+                                placeholder={'Optional'}
+                                // error={saleDateError}
+                            /> }
 
                 </ItemContainer>
                 <ItemContainer title={'Payment Info'}>
@@ -1181,6 +1330,32 @@ const hanldeSumbit = async (e) =>{
               </Overlay>
             )}
 
+
+    {showZeroQtyCard && (
+              <Overlay
+                contentWidth="30%"
+                overlayButtonClick={()=>setShowZeroQtyCard(false)}
+                closeOverlayOnClick={()=>setShowZeroQtyCard(false)}
+                btnText1={'Ok'}
+                btnText2={'Cancel'}
+              >
+                <p style={{ margin: "40px", textAlign: "center", fontSize: "14px", lineHeight: "25px" }}>
+                  <b style={{textTransform: "capitalize", fontSize:"20px"}}>{prodTitle}</b><br/> cannot be added. Quantity is below stock quantity <b>{prodStock}</b><br/>Please add valid quantity to continue
+                </p>
+              </Overlay>
+            )}
+
+    {showExcesStockCard && (
+        <Overlay contentWidth="30%" 
+            overlayButtonClick={navigateToAddStock} 
+            closeOverlayOnClick={()=>setShowExcesStockCard(false)} 
+            btnText1={'Add Purchase'} btnText2={'Cancel'}>
+          <p style={{ margin: '40px', textAlign: 'center', fontSize: '14px', lineHeight: '25px' }}>
+            <b style={{ textTransform: 'capitalize', fontSize: '20px' }}>{prodTitle}</b>
+            <br />please add more purchase
+          </p>
+        </Overlay>
+      )}
     </AddSalesWrapper>
   )
 }

@@ -88,6 +88,7 @@ import WastageView from "./pages/wastage/view/WastageView";
 import AddWastage from "./pages/wastage/add/AddWastage";
 import WastageReport from "./pages/reports/wastage_report/WastageReport";
 import ItemsDailySaleReport from "./pages/reports/item_daily_sale_report/ItemDailySaleReport";
+import PagePreloader from "./components/loader/page_preloader/PagePreloader";
 
 function usePageTitle() {
   const location = useLocation();
@@ -166,7 +167,7 @@ function App() {
   usePageTitle();
 
   // If still verifying the user, show nothing or a loader
-  if (loading) return <LoaderWrapper>Loading...</LoaderWrapper>;
+  if (loading) return <PagePreloader text={"Loading"} />;
 
   // ✅ Check if current page is login
   const isAuthPage =
@@ -181,6 +182,7 @@ function App() {
             path="/"
             element={user ? <Navigate to="/dashboard" /> : <Login />}
           />
+          <Route path="/loader" element={<PagePreloader />} />
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Navigate to="/" replace />} />
         </Routes>

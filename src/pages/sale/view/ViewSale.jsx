@@ -248,9 +248,9 @@ const token = localStorage.getItem('token');
               <hr />
               <div>
                   <span><b>{customerData?.name?.toUpperCase()}</b></span>
-                  <span>Address: {customerData?.address}</span>
-                  <span>Phone: {customerData?.phoneNumber}</span>
-                  <span>Email: {customerData?.email}</span>
+                  {customerData?.name === 'Walk in customer'? "" :(<span>Address: {customerData?.address}</span>)}   
+                  <span>Phone: {customerData?.name === 'Walk in customer'? saleData?.walkingCustomerNumber : customerData?.phoneNumber}</span>
+                  <span>Email: {customerData?.name === 'Walk in customer'? saleData?.walkingCustomerEmail : customerData?.email}</span>
               </div>
            </div>
         </InfoBillWrapper>

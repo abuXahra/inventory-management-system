@@ -13,23 +13,46 @@ export default function AlertContent() {
  const [productData, setProductData] = useState([])
  const [isLoading, setIsLoading] = useState(false)
 
-  const getProducts = async () => {
-    setIsLoading(true);
-     try {
-      // Fetch only products with stockQuantity <= quantityAlert
-      const res = await axios.get(process.env.REACT_APP_URL + "/api/products/low-stock", {
-                                                                            headers: {
-                                                                              Authorization: `Bearer ${token}`
-                                                                            }
-                                                                      }) 
-      console.log('low stocks: \n', res.data)
-      setProductData(res.data);
-      setIsLoading(false);
-    } catch (err) {
-      console.log(err);
-      setIsLoading(false);
-    }
-  };
+  // const getProducts = async () => {
+  //   setIsLoading(true);
+  //    try {
+  //     // Fetch only products with stockQuantity <= quantityAlert
+  //     const res = await axios.get(process.env.REACT_APP_URL + "/api/products/low-stock", {
+  //                                                                           headers: {
+  //                                                                             Authorization: `Bearer ${token}`
+  //                                                                           }
+  //                                                                     }) 
+  //     console.log('low stocks: \n', res.dataslice(0, 5))
+  //     setProductData(res.data);
+  //     setIsLoading(false);
+  //   } catch (err) {
+  //     console.log(err);
+  //     setIsLoading(false);
+  //   }
+  // };
+
+  const getProducts = async () => { 
+             setIsLoading(true)  
+             try {
+                 const res = await axios.get(process.env.REACT_APP_URL + "/api/products/low-stock", {
+                                    headers: {
+                                      Authorization: `Bearer ${token}`
+                                    }
+                              });
+                 console.log(res.data)
+                 setProductData(res.data.slice(0, 5))
+  
+                 setIsLoading(false)
+                 
+                 console.log(res.data)
+             } catch (err) {
+                 console.log(err)
+                 setIsLoading(false)
+                 }
+         }
+               
+       
+        
 
   // Call getProducts once component mounts
   useEffect(() => {

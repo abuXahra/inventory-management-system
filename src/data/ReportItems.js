@@ -33,19 +33,19 @@ export const ReportItemList = [
   {
     title: "Purchase Payment Report",
     icon: <FaRegMoneyBillAlt />,
-    bg: "#16a34a",
+    bg: "#2563eb",
     url: "/purchase-payment-report",
   },
   {
-    title: "Stock Report",
-    icon: <BiShoppingBag />,
-    bg: "#f59e0b",
-    url: "/stock-report",
+    title: "Daily Sale Report",
+    icon: <FaOpencart />,
+    bg: "purple",
+    url: "/daily-report",
   },
   {
     title: "Items Sales Report",
     icon: <RiBarChartGroupedFill />,
-    bg: "#2563eb",
+    bg: "purple",
     url: "/item-sales-report",
   },
   {
@@ -57,7 +57,13 @@ export const ReportItemList = [
   {
     title: "Wastage Report",
     icon: <FaRecycle />,
-    bg: "purple",
+    bg: "#ef4444",
     url: "/wastage-report",
+  },
+  {
+    title: "Stock Report",
+    icon: <BiShoppingBag />,
+    bg: "#f59e0b",
+    url: "/stock-report",
   },
 ];
