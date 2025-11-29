@@ -806,7 +806,7 @@ const deleteRefundItem = (index) => {
     return (
         <AddWastageWrapper>
             {/* Page title */}
-            <PageTitle title={'Purchase Return'} subTitle={'/ Add'} />
+            <PageTitle title={'Wastage'} subTitle={'/ Add'} />
             {/* {isLoading ? <List/> : */}
          <AddWastageContent>
                 <ItemsWrapper>
@@ -823,7 +823,7 @@ const deleteRefundItem = (index) => {
                                 error={invoiceNoError} 
                                 type={'text'} 
                                 label={'Search Invoice'} 
-                                placeholder={'Enter Invoice No...'}
+                                placeholder={'Purchase Invoice No.'}
                                 requiredSymbol={'*'}
                             />  
                           

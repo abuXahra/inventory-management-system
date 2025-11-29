@@ -207,7 +207,7 @@ function DashboardHome() {
     
   
     const overAllProfit = 
-    saleInvoice - (purchaseInvoice + expenses + totalWastageAmount )
+    (saleInvoice + totalStockAmount ) - (purchaseInvoice + expenses + totalWastageAmount )
     
   const TopCardItemList = [
     {
