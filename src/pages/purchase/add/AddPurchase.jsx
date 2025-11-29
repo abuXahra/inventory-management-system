@@ -16,6 +16,7 @@ import { UserContext } from '../../../components/context/UserContext'
 import { toast } from 'react-toastify'
 import ButtonLoader from '../../../components/clicks/button/button_loader/ButtonLoader'
 import ToastComponents from '../../../components/toast_message/toast_component/ToastComponents'
+import Overlay from '../../../components/overlay/Overlay'
 
 export default function AddPurchase() {
 const token = localStorage.getItem('token');
@@ -200,6 +201,25 @@ const handleChange = (type, e)=>{
             setNote(e.target.value);
         }
 }
+
+  // Amount paid === saleAmount Handler:
+const [showAmountIsEQualBalance, setShowAmountIsEQualBalance] = useState(false)
+
+const amountPaidEqlTotalHandler = () =>{
+    setPaymentStatus(paymentStatusItems[3].value)
+    setShowAmountIsEQualBalance(false)
+    setShowPartialField(false)
+    setAmountPaidError(false)
+}
+  // Amount paid > saleAmount Handler:
+const [showAmountExceedBalance, setShowAmountExceedBalance] = useState(false)
+
+const amountExceedBalanceHandler = () =>{
+    setAmountPaid(0.00)
+    setShowAmountExceedBalance(false)
+    setAmountPaidError(false)
+}
+
 
 
 // TextITe
@@ -580,6 +600,21 @@ if (paymentStatus === 'partial') {
     setAmountPaidError(true);
     isValid = false;
   }
+
+    if(amountPaid === purchaseAmount){
+        setShowAmountIsEQualBalance(true);
+        setAmountPaidError(true);
+        setIsBtnLoading(false)
+        isValid = false;
+    ;
+    }
+ if(amountPaid > purchaseAmount){
+    setShowAmountExceedBalance(true);
+    setIsBtnLoading(false)
+    setAmountPaidError(true);
+    isValid = false;
+   }
+
 }
     
     if(isValid){
@@ -1103,6 +1138,30 @@ if (paymentStatus === 'partial') {
         </AddPurchaseContent>
         {/* Toast messages */}
         <ToastComponents/>
+
+        {showAmountIsEQualBalance && (
+                <Overlay contentWidth="30%" 
+                    overlayButtonClick={amountPaidEqlTotalHandler} 
+                    closeOverlayOnClick={()=>setShowAmountIsEQualBalance(false)} 
+                    btnText1={'Ok'} btnText2={'Cancel'}>
+                  <p style={{ margin: '40px', textAlign: 'center', fontSize: '14px', lineHeight: '25px' }}>
+                    <b style={{ textTransform: 'capitalize', fontSize: '20px' }}>Amount Paid</b>
+                    <br />is equal to total sale amount, please change the payment status to <strong>paid</strong>
+                  </p>
+                </Overlay>
+              )}
+        
+          {showAmountExceedBalance && (
+                <Overlay contentWidth="30%" 
+                    overlayButtonClick={amountExceedBalanceHandler} 
+                    closeOverlayOnClick={()=>setShowAmountExceedBalance(false)} 
+                    btnText1={'Ok'} btnText2={'Cancel'}>
+                  <p style={{ margin: '40px', textAlign: 'center', fontSize: '14px', lineHeight: '25px' }}>
+                    <b style={{ textTransform: 'capitalize', fontSize: '20px' }}>Amount Paid</b>
+                    <br />cannot be greater than the sale amount,  please enter a valid paid amount.
+                  </p>
+                </Overlay>
+              )}
     </AddPurchaseWrapper>
   )
 }

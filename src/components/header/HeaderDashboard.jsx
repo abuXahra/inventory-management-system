@@ -72,10 +72,10 @@ return (
 
 
        {/* notification icon */}
-       {/* <IconWrapper>
+       <IconWrapper>
           <IoMdNotificationsOutline/>
           <NotificationWrapper>0</NotificationWrapper>
-       </IconWrapper> */}
+       </IconWrapper>
 
        {/* setting icon */}
  { user?.role === "admin" &&    <IconWrapper ref={dropdownRef} onClick={()=>setToggleDropdown(!toggleDropdown)}>

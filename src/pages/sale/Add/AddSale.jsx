@@ -17,6 +17,7 @@ import ToastComponents from '../../../components/toast_message/toast_component/T
 import { AddSalesContent, AddSalesWrapper, CustomerInfoWrapper, HrStyled, ItemListContent, ItemsWrapper, SelectItemContent, TotalChargesWrapper } from './addSale.style'
 import { AnyItemContainer, DropdownItems, DropdownWrapper, InnerWrapper, TableResponsiveWrapper, TableStyled, TdStyled } from '../../purchase/add/addPurchase.style'
 import Overlay from '../../../components/overlay/Overlay'
+import { List } from 'react-content-loader'
 
 export default function AddSale() {
 
@@ -147,6 +148,9 @@ const closOutOfStockCard = () =>{
   }
 
 
+
+
+
 // onchange handler
 const handleChange = (type, e)=>{
         if (type === 'searchTitle'){
@@ -218,6 +222,7 @@ const handleChange = (type, e)=>{
 
             if(e.target.value === 'partial'){
                 setShowPartialField(true)
+
             }else{
                 setShowPartialField(false);
             }
@@ -239,6 +244,25 @@ const handleChange = (type, e)=>{
         }
 }
 
+
+
+  // Amount paid === saleAmount Handler:
+const [showAmountIsEQualBalance, setShowAmountIsEQualBalance] = useState(false)
+
+const amountPaidEqlTotalHandler = () =>{
+    setPaymentStatus(paymentStatusItems[3].value)
+    setShowAmountIsEQualBalance(false)
+    setShowPartialField(false)
+    setAmountPaidError(false)
+}
+  // Amount paid > saleAmount Handler:
+const [showAmountExceedBalance, setShowAmountExceedBalance] = useState(false)
+
+const amountExceedBalanceHandler = () =>{
+    setAmountPaid(0.00)
+    setShowAmountExceedBalance(false)
+    setAmountPaidError(false)
+}
 
 // TextITe
 const TaxItem = [
@@ -363,7 +387,7 @@ useEffect(() => {
 useEffect(() => {
 
      const fetchCompany = async() =>{
-          setIsLoading(true)
+        //   setIsLoading(true)
             try {
                 const res = await axios.get(`${process.env.REACT_APP_URL}/api/company`, {
                                                     headers: {
@@ -378,10 +402,10 @@ useEffect(() => {
                     setPrefix(prefixData.sale);
                 }
   
-                setIsLoading(false);
+                // setIsLoading(false);
             } catch (error) {
                 console.log(error);
-                setIsLoading(false);
+                // setIsLoading(false);
             }
       
         }
@@ -389,7 +413,7 @@ useEffect(() => {
      
             // fetch products data
             const getProducts = async () => { 
-                 setIsLoading(true)  
+                //  setIsLoading(true)  
                  try {
                      const res = await axios.get(process.env.REACT_APP_URL + "/api/products", {
                                                          headers: {
@@ -398,19 +422,19 @@ useEffect(() => {
                                                    })
                      console.log(res.data)
                      setProducts(res.data)
-                     setIsLoading(false)
+                    //  setIsLoading(false)
                      
                      console.log(res.data)
                  } catch (err) {
                      console.log(err)
-                     setIsLoading(false)
+                    //  setIsLoading(false)
                      }
                    }
                  getProducts();
  
             // fetch customer data
             const getCustomers = async () => { 
-                 setIsLoading(true)  
+                //  setIsLoading(true)  
                  try {
             
                      const res = await axios.get(process.env.REACT_APP_URL + "/api/customers/", {
@@ -427,11 +451,11 @@ useEffect(() => {
                     //         value: customer._id,
                     //     }))
                     // ]);
-                     setIsLoading(false)
+                    //  setIsLoading(false)
                      
                  } catch (err) {
                      console.log(err)
-                     setIsLoading(false)
+                    //  setIsLoading(false)
                      }
                    }
                    
@@ -641,56 +665,6 @@ const addToList = (e) => {
     }
 };
 
-// add to array list
-const addToList1 = (e) =>{
-
-    e.preventDefault();
-
-    let isValid = true;
-
-    if(!title){
-        setTitleError(true)
-        isValid = false;
-    }
-    if(!quantity){
-        setQuantityError(true)
-        isValid = false;
-    }
-    if(!price){
-        setPriceError(true)
-        isValid = false;
-    }
-    if(isValid){
-       
-                // find the product in products array to get stockQuantity
-        const product = products.find(p => p._id === productId);
-        if (product) {
-            if (Number(quantity) > product.stockQuantity) {
-                setShowStockCard(true)
-                setProdTitle(product.title)
-                return; // stop adding
-            }
-        }
-
-
-        const newItem = {productId, title, quantity, price, tax, taxAmount, unitCost, amount};
-        setItemList((prevItems)=>[...prevItems, newItem]);
-
-        console.log(itemList?.productId);
-
-    setSearchTitle('');
-    setTitle('')
-    setQuantity('');
-    setPrice('')
-    setTax('')
-    setTaxAmount('')
-    setUnitCost('')
-    setAmount('')
-    setProductId('')
-    }
-
-}
-
 
       // delete item from list
       const deleteItem = (index) => {
@@ -728,10 +702,16 @@ const addToList1 = (e) =>{
 
 
 
+
 //submit handler
 const hanldeSumbit = async (e) =>{
 
     e.preventDefault();
+
+if (itemList.length === 0) {
+    toast.error("Please add at least one item to the sale.");
+    return;
+  }
 
     let isValid = true;
 
@@ -765,6 +745,20 @@ const hanldeSumbit = async (e) =>{
     setAmountPaidError(true);
     isValid = false;
   }
+
+  if(amountPaid === saleAmount){
+        setShowAmountIsEQualBalance(true);
+        setAmountPaidError(true);
+        setIsBtnLoading(false)
+        isValid = false;
+    ;
+    }
+ if(amountPaid > saleAmount){
+    setShowAmountExceedBalance(true);
+    setIsBtnLoading(false)
+    setAmountPaidError(true);
+    isValid = false;
+   }
 }
     
     if(isValid){
@@ -815,7 +809,7 @@ const hanldeSumbit = async (e) =>{
                                             })
 
               console.log(res.data)
-              navigate(`/sale-invoice/${res.data.newSale._id}`);
+              navigate(`/sale-invoice/${res.data.sale?._id}`);
               
               
                 // toast success message
@@ -823,6 +817,17 @@ const hanldeSumbit = async (e) =>{
                    setIsBtnLoading(false);
                 } catch (err) {
                 console.error(err);
+                 if (err.response) {
+      const msg = err.response.data.message;
+
+      // Show toast for stock errors
+      if (msg.includes("Not enough stock")) {
+        toast.error(msg);
+        setIsBtnLoading(false);  
+        return;
+      }
+
+      toast.error(msg || "Something went wrong");}
                 setIsBtnLoading(false);
             }
     }
@@ -833,6 +838,10 @@ const hanldeSumbit = async (e) =>{
                 {/* Page title */}
                 <PageTitle title={'Sale'} subTitle={'/ Add'}/>
             
+     <>
+        {isLoading ? (
+          <List />
+        ) : (
         <AddSalesContent>
         <ItemsWrapper>
             {/* SelectItem */}
@@ -1298,6 +1307,8 @@ const hanldeSumbit = async (e) =>{
             </form>
         </CustomerInfoWrapper>
         </AddSalesContent>
+           )}
+      </>
         {/* Toast messages */}
         <ToastComponents/>
 
@@ -1353,6 +1364,31 @@ const hanldeSumbit = async (e) =>{
           <p style={{ margin: '40px', textAlign: 'center', fontSize: '14px', lineHeight: '25px' }}>
             <b style={{ textTransform: 'capitalize', fontSize: '20px' }}>{prodTitle}</b>
             <br />please add more purchase
+          </p>
+        </Overlay>
+      )}
+
+
+  {showAmountIsEQualBalance && (
+        <Overlay contentWidth="30%" 
+            overlayButtonClick={amountPaidEqlTotalHandler} 
+            closeOverlayOnClick={()=>setShowAmountIsEQualBalance(false)} 
+            btnText1={'Ok'} btnText2={'Cancel'}>
+          <p style={{ margin: '40px', textAlign: 'center', fontSize: '14px', lineHeight: '25px' }}>
+            <b style={{ textTransform: 'capitalize', fontSize: '20px' }}>Amount Paid</b>
+            <br />is equal to total sale amount, please change the payment status to <strong>paid</strong>
+          </p>
+        </Overlay>
+      )}
+
+  {showAmountExceedBalance && (
+        <Overlay contentWidth="30%" 
+            overlayButtonClick={amountExceedBalanceHandler} 
+            closeOverlayOnClick={()=>setShowAmountExceedBalance(false)} 
+            btnText1={'Ok'} btnText2={'Cancel'}>
+          <p style={{ margin: '40px', textAlign: 'center', fontSize: '14px', lineHeight: '25px' }}>
+            <b style={{ textTransform: 'capitalize', fontSize: '20px' }}>Amount Paid</b>
+            <br />cannot be greater than the sale amount,  please enter a valid paid amount.
           </p>
         </Overlay>
       )}
